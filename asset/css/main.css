@@ -89,7 +89,8 @@ sup {
     /*background: #552db7;*/
     /*box-shadow: 0 10px 0 #40218a;*/
 }
-.btn-upload:active {
+.btn-upload:active,
+.btn-upload:focus {
     top: 10px;
     box-shadow: 0 0 0 #40218a;
     transition: none;
