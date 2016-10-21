@@ -1,0 +1,15 @@
+{
+  "name": "gugugram",
+  "version": "1.0.0",
+  "description": "fotos online",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gugugram",
+    "show"
+  ],
+  "author": "Diogo Ferreira Fernandes",
+  "license": "ISC"
+}

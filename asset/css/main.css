@@ -1,0 +1,177 @@
+body {
+    margin: 0;
+    background: #847272;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1,62em;
+}
+a {
+    color: #2B64A7;
+}
+h2,
+h3 {
+    margin-top: 0;
+    color: #271070;
+}
+sup {
+    position: relative;
+    top: 2px;
+    font-size: 10px;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding-right: 8px;
+    padding-left: 8px;
+}
+.row {
+    width: 100%;
+    display: table;
+}
+
+.main-header {
+    padding: 20px 0 10px;
+    background: #2A1C4C;
+}
+.photos,
+.special-infos {
+    display: table-cell;
+    vertical-align: top;
+}
+.photos {
+    padding-right: 20px;
+    width: auto;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
+}
+.photos p {
+    margin: 0;
+    color: #666;
+    text-align: center;
+}
+.photos-container {
+    padding: 20px;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 4px 0px rgba(0,0,0,0.50);
+    border-radius: 10px;
+}
+.special-infos {
+    width: 100%;
+}
+.special-infos-container {
+    padding: 20px;
+    background: #D8D8D8;
+    border-radius: 4px;
+}
+
+.btn-upload {
+    position: relative;
+    display: block;
+    margin: 20px 0 30px;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+
+    color: #fff;
+    border-radius: 100px;
+    background: #854646;
+    text-align: center;
+    font-size: 36px;
+    font-weight: bold;
+    box-shadow: 0 10px 0 #6E3A3A;
+    transition: filter .2s ease-in-out;
+
+    cursor: pointer;
+}
+.btn-upload:hover {
+    filter: hue-rotate(-100deg);
+    /*background: #552db7;*/
+    /*box-shadow: 0 10px 0 #40218a;*/
+}
+.btn-upload:active {
+    top: 10px;
+    box-shadow: 0 0 0 #40218a;
+    transition: none;
+}
+.btn-upload small {
+    display: block;
+    font-size: 16px;
+
+    display: none;
+}
+#upload-photo {
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+}
+
+.fbi-logo {
+    margin: 0;
+    text-align: center;
+}
+
+
+
+.icon-plus {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+}
+.icon-plus:before,
+.icon-plus:after {
+    position: absolute;
+    display: block;
+    content: ' ';
+    background: #333;
+}
+.icon-plus:before {
+    top: 23px;
+    width: 100%;
+    height: 3px;
+}
+.icon-plus:after {
+    left: 23px;
+    width: 3px;
+    height: 100%;
+}
+
+.file-drop {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+
+    visibility: hidden;
+    opacity: 0;
+}
+
+.file-drop-container {
+    padding: 150px 20px;
+    margin: 60px auto 0;
+    max-width: 90%;
+    background: #aeffe8;
+    border-radius: 10px;
+    border: 5px dashed #6da998;
+    text-align: center;
+
+    box-shadow: 0 0 0 15px #fff;
+}
+
+@media (max-width: 760px) {
+    .main-header {
+        text-align: center;
+    }
+    .btn-upload small {
+        display: none;
+    }
+    .photos {
+        display: block;
+        margin: 0 auto;
+        padding: 0;
+    }
+    .special-infos {
+        display: none;
+    }
+}
