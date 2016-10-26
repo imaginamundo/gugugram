@@ -1,0 +1,63 @@
+<header class="main-header">
+    <div class="container">
+        <a href="/"><img src="asset/image/logo.png" alt="gugugram" /></a>
+
+        <a href="/" class="new-photos">
+            <i class="icon-refresh"> </i>
+            Novas fotos adicionadas
+        </a>
+    </div>
+</header>
+
+<div class="container">
+    <form class="input-form" action="" method="POST">
+        <label class="btn-upload" for="upload-photo" for="upload-photo">
+            Enviar foto
+            <small>(você pode arrastar uma fota pra ca, se quiser)</small>
+        </label>
+        <input type="file" id="upload-photo" name="upload-photo" accept="image/*" />
+    </form>
+
+    <div class="row">
+        <div class="photos">
+            <div id="list" class="photos-container">
+                <p>Nenhuma foto até o momento 😢</p>
+            </div>
+        </div>
+
+        <div class="special-infos">
+            <div class="special-infos-container">
+                <h2>Estatísticas show</h2>
+                <p>
+                    Foram enviadas
+                    {{:número}}
+                    fotos para o
+                    <b>gugu<sup>gram</sup></b>.
+                </p>
+                <p>Eu não quero colocar mais estatísticas aqui, quem sabe no futuro.</p>
+
+                <hr />
+
+                <p>
+                    Esse projeto é oferecido pela equipe <a href="http://www.gugu.space/" target="_blank">gugu</a>.
+                </p>
+                <p class="fbi-logo">
+                    <a href="https://www.fbi.gov/" target="_blank">
+                        <img src="asset/image/fbi.png" alt="FBI" />
+                    </a>
+                </p>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="file-drop">
+    <div class="file-drop-container">
+        <h3>Joga a fota aqui</h3>
+        <i class="icon-plus"> </i>
+    </div>
+</div>
+
+<script src="/asset/javascript/main.js"></script>
+
