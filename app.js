@@ -20,7 +20,7 @@ app.engine('handlebars',
 );
 
 // main page
-app.get('/', function (req, res) {
+app.get('*', function (req, res) {
     res.render('index');
 });
 
