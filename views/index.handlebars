@@ -11,7 +11,7 @@
 
 <div class="container">
     <form class="input-form" action="/upload">
-        <label class="btn-upload" for="upload-photo">
+        <label class="btn-upload dropzone" for="upload-photo">
             Enviar foto
             <small>(você pode arrastar uma fota pra ca, se quiser)</small>
         </label>
@@ -60,4 +60,20 @@
 </div>
 
 <script src="/asset/javascript/main.js"></script>
+<script src="/asset/javascript/imgur.min.js"></script>
+
+<script type="text/javascript">
+    var feedback = function (res) {
+        if (res.success === true) {
+            document.querySelector('.status').classList.add('bg-success');
+            document.querySelector('.status').innerHTML = 'Image url: ' + res.data.link;
+        }
+    };
+
+    new Imgur({
+//        clientid: 'cc86a8de0e7c459',
+        clientid: '79ffafde8128991',
+        callback: feedback
+    });
+</script>
 
