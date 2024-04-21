@@ -1,10 +1,9 @@
 import type { MessagesData } from "@api/profile/[username]/messages/route";
 import Button from "@components/Button";
-import Input from "@components/Input";
+import ProfileWallForm from "@components/ProfileWallForm";
 import cn from "@utils/cn";
 import { parseDate } from "@utils/date";
 import Close from "pixelarticons/svg/close.svg";
-import MailArrowRight from "pixelarticons/svg/mail-arrow-right.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 
 import styles from "./ProfileWall.module.css";
@@ -54,20 +53,7 @@ export default function ProfileWall({
           );
         })}
       </div>
-      {!owner && (
-        <form className={styles.form}>
-          <Input
-            className={styles.form}
-            type="text"
-            placeholder="Escreva aqui seu recado…"
-          />
-
-          <Button className={styles.noWrap}>
-            <MailArrowRight />
-            Enviar recado
-          </Button>
-        </form>
-      )}
+      {!owner && <ProfileWallForm />}
     </div>
   );
 }

@@ -37,19 +37,6 @@
     align-items: center;
 }
 
-.form {
-    display: flex;
-    flex-wrap: wrap;
-    flex-grow: 1;
-    justify-content: flex-end;
-    padding: 8px;
-    gap: 8px;
-}
-
 .grow {
     width: 100%;
-}
-
-.noWrap {
-    white-space: nowrap;
 }

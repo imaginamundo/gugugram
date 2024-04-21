@@ -65,12 +65,10 @@ export default function Register() {
 const requiredMessage = "Campo obrigatório";
 const invalidEmailMessage = "E-mail invalido";
 
-const schema = yup
-  .object({
-    username: yup.string().required(requiredMessage),
-    email: yup.string().email(invalidEmailMessage).required(requiredMessage),
-    password: yup.string().required(requiredMessage),
-  })
-  .required();
+const schema = yup.object({
+  username: yup.string().required(requiredMessage),
+  email: yup.string().email(invalidEmailMessage).required(requiredMessage),
+  password: yup.string().required(requiredMessage),
+});
 
 type Inputs = yup.InferType<typeof schema>;

@@ -1,0 +1,15 @@
+.form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    padding: 8px;
+    gap: 8px;
+}
+
+.input {
+    flex-grow: 1;
+}
+
+.noWrap {
+    white-space: nowrap;
+}
