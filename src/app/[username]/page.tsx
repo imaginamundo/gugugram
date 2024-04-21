@@ -8,7 +8,7 @@ export default async function Profile({
   params: { username: string };
 }) {
   const data: MessagesData = await getMessagesData(params.username);
-  return <ProfileWall messages={data.messages} owner={false} />;
+  return <ProfileWall messages={data.messages} owner={data.owner} />;
 }
 
 async function getMessagesData(username: string) {

@@ -26,9 +26,15 @@
     flex-wrap: wrap;
     gap: 8px;
 }
+.messageWrapper {
+    display: flex;
+    gap: 8px;
+}
 .message {
     background: #ffc107;
     padding: 8px;
+    display: inline-flex;
+    align-items: center;
 }
 
 .form {

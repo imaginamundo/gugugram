@@ -6,6 +6,7 @@ import styles from "./ProfileWall.module.css";
 import { parseDate } from "@utils/date";
 import cn from "@utils/cn";
 import type { MessagesData } from "@api/profile/[username]/messages/route";
+import Close from "pixelarticons/svg/close.svg";
 
 export default function ProfileWall({
   messages,
@@ -38,9 +39,16 @@ export default function ProfileWall({
                   <span>{parseDate(message.date)}</span>
                 </p>
               </div>
-              <p className={cn("border-radius", styles.message)}>
-                {message.message}
-              </p>
+              <div className={styles.messageWrapper}>
+                <p className={cn("border-radius", styles.message)}>
+                  {message.message}
+                </p>
+                {owner && (
+                  <Button variant="destructive">
+                    <Close />
+                  </Button>
+                )}
+              </div>
             </div>
           );
         })}

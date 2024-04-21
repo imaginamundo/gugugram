@@ -89,6 +89,7 @@
 }
 
 .buttonDefault {
+    color: #fff;
     background: var(--link);
     &:after {
         background: var(--link-hover);
@@ -98,8 +99,12 @@
     }
 }
 .buttonDestructive {
+    color: #fff;
     background: tomato;
     &:after {
+        background: red;
+    }
+    &:hover {
         background: red;
     }
 }

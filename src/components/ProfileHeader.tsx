@@ -47,7 +47,7 @@ export default function ProfileHeader({
         {!owner && (
           <Button className={styles.profileButtons}>
             <HumanHandsup />
-            Amizade
+            Adicionar amigo
           </Button>
         )}
       </div>

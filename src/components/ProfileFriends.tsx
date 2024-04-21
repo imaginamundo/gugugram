@@ -3,6 +3,8 @@ import cn from "@utils/cn";
 import type { FriendsData } from "@api/profile/[username]/friends/route";
 import Link from "next/link";
 import Button from "@components/Button";
+import Close from "pixelarticons/svg/close.svg";
+import HumanHandsup from "pixelarticons/svg/human-handsup.svg";
 
 export default function ProfileFriends({
   owner,
@@ -29,7 +31,16 @@ export default function ProfileFriends({
               <div className={styles.friendInformation}>
                 <Link href={`/${friend.username}`}>{friend.username}</Link>
                 {owner && (
-                  <Button variant="destructive">Remover amizade</Button>
+                  <Button variant="destructive">
+                    <Close />
+                    Remover amizade
+                  </Button>
+                )}
+                {!owner && (
+                  <Button className={styles.profileButtons}>
+                    <HumanHandsup />
+                    Adicionar amigo
+                  </Button>
                 )}
               </div>
             </div>
