@@ -1,11 +1,11 @@
-import styles from "./ProfileHeader.module.css";
-import HumanHandsup from "pixelarticons/svg/human-handsup.svg";
-import MoodHappy from "pixelarticons/svg/mood-happy.svg";
-import Mail from "pixelarticons/svg/mail.svg";
-
-import cn from "@utils/cn";
 import Button from "@components/Button";
+import cn from "@utils/cn";
 import Link from "next/link";
+import HumanHandsup from "pixelarticons/svg/human-handsup.svg";
+import Mail from "pixelarticons/svg/mail.svg";
+import MoodHappy from "pixelarticons/svg/mood-happy.svg";
+
+import styles from "./ProfileHeader.module.css";
 
 export const dynamic = "force-dynamic";
 export default function ProfileHeader({

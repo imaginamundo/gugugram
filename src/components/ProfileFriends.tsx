@@ -1,10 +1,11 @@
-import styles from "./ProfileFriends.module.css";
-import cn from "@utils/cn";
 import type { FriendsData } from "@api/profile/[username]/friends/route";
-import Link from "next/link";
 import Button from "@components/Button";
+import cn from "@utils/cn";
+import Link from "next/link";
 import Close from "pixelarticons/svg/close.svg";
 import HumanHandsup from "pixelarticons/svg/human-handsup.svg";
+
+import styles from "./ProfileFriends.module.css";
 
 export default function ProfileFriends({
   owner,

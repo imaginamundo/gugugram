@@ -13,9 +13,6 @@
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
     "next": "^14.2.2",
     "pixelarticons": "^1.8.1",
     "react": "^18",
@@ -28,6 +25,10 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-simple-import-sort": "^12.1.0",
     "typescript": "^5"
   }
 }

@@ -1,8 +1,8 @@
-import styles from "./Footer.module.css";
-import Image from "next/image";
-
 import cn from "@utils/cn";
+import Image from "next/image";
 import Link from "next/link";
+
+import styles from "./Footer.module.css";
 
 export default function Footer() {
   return (

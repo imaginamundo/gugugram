@@ -1,9 +1,10 @@
-import styles from "./layout.module.css";
-import ProfileHeader from "@components/ProfileHeader";
-import ProfileGrid from "@components/ProfileGrid";
 import type { ProfileData } from "@api/profile/[username]/route";
-import ImagePlus from "pixelarticons/svg/image-plus.svg";
 import Button from "@components/Button";
+import ProfileGrid from "@components/ProfileGrid";
+import ProfileHeader from "@components/ProfileHeader";
+import ImagePlus from "pixelarticons/svg/image-plus.svg";
+
+import styles from "./layout.module.css";
 
 export const dynamic = "force-dynamic";
 export default async function ProfileLayout({

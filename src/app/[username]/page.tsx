@@ -1,5 +1,5 @@
-import ProfileWall from "@components/ProfileWall";
 import type { MessagesData } from "@api/profile/[username]/messages/route";
+import ProfileWall from "@components/ProfileWall";
 
 export const dynamic = "force-dynamic";
 export default async function Profile({
@@ -8,8 +8,6 @@ export default async function Profile({
   params: { username: string };
 }) {
   const data: MessagesData = await getMessagesData(params.username);
-
-  console.log(data);
 
   return <ProfileWall messages={data.messages} owner={data.owner} />;
 }

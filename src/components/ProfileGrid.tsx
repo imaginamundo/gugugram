@@ -1,5 +1,6 @@
-import styles from "./ProfileGrid.module.css";
 import type { ProfileData } from "@api/profile/[username]/route";
+
+import styles from "./ProfileGrid.module.css";
 
 export default function ProfileGrid({
   owner,

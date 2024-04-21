@@ -1,9 +1,8 @@
-import styles from "./Input.module.css";
-
-import React from "react";
-
 import cn from "@utils/cn";
 import WarningBox from "pixelarticons/svg/warning-box.svg";
+import React from "react";
+
+import styles from "./Input.module.css";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

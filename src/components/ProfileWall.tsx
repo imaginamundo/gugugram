@@ -1,12 +1,13 @@
+import type { MessagesData } from "@api/profile/[username]/messages/route";
 import Button from "@components/Button";
 import Input from "@components/Input";
+import cn from "@utils/cn";
+import { parseDate } from "@utils/date";
+import Close from "pixelarticons/svg/close.svg";
 import MailArrowRight from "pixelarticons/svg/mail-arrow-right.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
+
 import styles from "./ProfileWall.module.css";
-import { parseDate } from "@utils/date";
-import cn from "@utils/cn";
-import type { MessagesData } from "@api/profile/[username]/messages/route";
-import Close from "pixelarticons/svg/close.svg";
 
 export default function ProfileWall({
   messages,

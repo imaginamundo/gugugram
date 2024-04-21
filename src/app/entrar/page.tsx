@@ -2,12 +2,13 @@
 
 import Button from "@components/Button";
 import Input from "@components/Input";
-import styles from "./page.module.css";
+import { yupResolver } from "@hookform/resolvers/yup";
+import useFormErrors from "@hooks/useFormErrors";
 import cn from "@utils/cn";
 import yup from "@utils/yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import useFormErrors from "@hooks/useFormErrors";
+
+import styles from "./page.module.css";
 
 export default function Login() {
   const { register, handleSubmit, control } = useForm<Inputs>({

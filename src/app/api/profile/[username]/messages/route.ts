@@ -7,8 +7,6 @@ export async function GET(
   data.username = params.username;
   if (params.username === "dio") data.owner = true;
 
-  console.log({ server: data });
-
   const headers = new Headers({
     "Content-Type": "application/json; charset=utf-8",
   });
