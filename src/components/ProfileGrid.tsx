@@ -15,8 +15,8 @@ export default function ProfileGrid({
           key={`image-${image.id}`}
           src={image.url}
           alt={image.description}
-          width="120"
-          height="120"
+          width="105px"
+          height="105px"
         />
       ))}
     </div>

@@ -10,8 +10,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <main className="container">
-      A sua rede social de compartilhar imagens feitas com 5px², 10px², 15px² e
-      20px².
+      A sua rede social de compartilhar imagens feitas com 5px², 10px² e 15px².
       <div className="border-radius padding">
         <nav>
           <ul>

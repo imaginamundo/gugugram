@@ -1,8 +1,8 @@
 .profileWall {
     display: flex;
     flex-direction: column;
-    flex: 2;
-    flex-grow: 3;
+    flex: 1;
+    flex-grow: 4;
     width: 100%;
 }
 .profileWallHeader {
