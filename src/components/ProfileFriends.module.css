@@ -23,3 +23,8 @@
     width: 60px;
     height: 60px;
 }
+.friendInformation {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}

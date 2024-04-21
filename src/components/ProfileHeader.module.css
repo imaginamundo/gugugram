@@ -11,7 +11,6 @@
 
 .profileLinks {
     margin-top: 8px;
-    margin-bottom: 8px;
 }
 .profileLink {
     white-space: nowrap;
@@ -24,6 +23,9 @@
 }
 .profileLinkIcon {
     margin-right: 4px;
+}
+.profileButtons {
+    margin-top: 8px;
 }
 @keyframes jiggle {
     from {

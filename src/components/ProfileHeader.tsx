@@ -44,10 +44,12 @@ export default function ProfileHeader({
             </Link>{" "}
           </p>
         </div>
-        <Button>
-          <HumanHandsup />
-          Amizade
-        </Button>
+        {!owner && (
+          <Button className={styles.profileButtons}>
+            <HumanHandsup />
+            Amizade
+          </Button>
+        )}
       </div>
     </div>
   );

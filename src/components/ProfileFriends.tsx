@@ -2,6 +2,7 @@ import styles from "./ProfileFriends.module.css";
 import cn from "@utils/cn";
 import type { FriendsData } from "@api/profile/[username]/friends/route";
 import Link from "next/link";
+import Button from "@components/Button";
 
 export default function ProfileFriends({
   owner,
@@ -18,17 +19,20 @@ export default function ProfileFriends({
       <div className={styles.friends}>
         {friends.map((friend) => {
           return (
-            <Link
-              href={`/${friend.username}`}
-              key={`friend-${friend.id}`}
-              className={styles.friend}
-            >
-              <img
-                src={friend.image}
-                className={cn("border-radius", styles.friendImage)}
-              />
-              {friend.username}
-            </Link>
+            <div key={`friend-${friend.id}`} className={styles.friend}>
+              <Link href={`/${friend.username}`}>
+                <img
+                  src={friend.image}
+                  className={cn("border-radius", styles.friendImage)}
+                />
+              </Link>
+              <div className={styles.friendInformation}>
+                <Link href={`/${friend.username}`}>{friend.username}</Link>
+                {owner && (
+                  <Button variant="destructive">Remover amizade</Button>
+                )}
+              </div>
+            </div>
           );
         })}
       </div>
