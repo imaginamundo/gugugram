@@ -8,6 +8,9 @@ export default async function Profile({
   params: { username: string };
 }) {
   const data: MessagesData = await getMessagesData(params.username);
+
+  console.log(data);
+
   return <ProfileWall messages={data.messages} owner={data.owner} />;
 }
 

@@ -1,3 +1,26 @@
+export const dynamic = "force-dynamic";
+export async function GET(
+  _: Request,
+  { params }: { params: { username: string } },
+) {
+  const data = getData();
+  data.username = params.username;
+  if (params.username === "dio") data.owner = true;
+
+  console.log({ server: data });
+
+  const headers = new Headers({
+    "Content-Type": "application/json; charset=utf-8",
+  });
+
+  const options = {
+    status: 200,
+    headers,
+  };
+
+  return new Response(JSON.stringify(data), options);
+}
+
 const data = {
   owner: false,
   username: "dio",
@@ -19,25 +42,8 @@ const data = {
   ],
 };
 
-export type MessagesData = typeof data;
-
-export const dynamic = "force-dynamic";
-export async function GET(
-  _: Request,
-  { params }: { params: { username: string } },
-) {
-  data.username = params.username;
-
-  if (params.username === "dio") data.owner = true;
-
-  const headers = new Headers({
-    "Content-Type": "application/json; charset=utf-8",
-  });
-
-  const options = {
-    status: 200,
-    headers,
-  };
-
-  return new Response(JSON.stringify(data), options);
+function getData() {
+  return { ...data };
 }
+
+export type MessagesData = typeof data;

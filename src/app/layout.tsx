@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Gugugram",
-  description: "Your 15x15 image repository",
+  description: "Guarde suas fotos num lugar",
 };
 
 const silkcreen = Silkscreen({

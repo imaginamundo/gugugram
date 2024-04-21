@@ -8,6 +8,9 @@ export default async function Friends({
   params: { username: string };
 }) {
   const data: FriendsData = await getFriendsData(params.username);
+
+  console.log({ client: data });
+
   return <ProfileFriends friends={data.friends} owner={data.owner} />;
 }
 
