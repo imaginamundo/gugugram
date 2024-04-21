@@ -3,7 +3,13 @@
     padding-inline: 8px;
     height: 46px;
     color: black;
+    appearance: none;
+    border-radius: 0;
     border: 2px solid gray;
+    &:focus {
+        outline: none;
+        border-color: black;
+    }
 }
 .error {
     display: flex;
