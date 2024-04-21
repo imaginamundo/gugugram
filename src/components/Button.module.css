@@ -84,6 +84,7 @@
     gap: 8px;
     height: 46px;
     cursor: pointer;
+    appearance: none;
     padding: 8px;
 }
 
