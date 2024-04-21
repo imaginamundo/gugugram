@@ -1,0 +1,11 @@
+.footer {
+    max-width: var(--max-width);
+    padding: var(--padding);
+    margin: auto;
+    font-size: 8px;
+}
+
+.firefox {
+    display: inline-block;
+    margin-top: 8px;
+}

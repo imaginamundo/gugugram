@@ -1,0 +1,49 @@
+.profileWall {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    flex-grow: 3;
+    width: 100%;
+}
+.profileWallHeader {
+    padding: 8px;
+}
+.messages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding);
+    height: 100%;
+    border-bottom: 2px solid black;
+    padding: 8px;
+}
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.completeMessage {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.message {
+    background: #ffc107;
+    padding: 8px;
+}
+
+.form {
+    display: flex;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    justify-content: flex-end;
+    padding: 8px;
+    gap: 8px;
+}
+
+.grow {
+    width: 100%;
+}
+
+.noWrap {
+    white-space: nowrap;
+}

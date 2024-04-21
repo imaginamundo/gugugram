@@ -1,0 +1,109 @@
+.buttonDefault,
+.buttonDestructive {
+    clip-path: polygon(
+        0px calc(100% - 4px),
+        2px calc(100% - 4px),
+        2px calc(100% - 2px),
+        4px calc(100% - 2px),
+        4px 100%,
+        calc(100% - 4px) 100%,
+        calc(100% - 4px) calc(100% - 2px),
+        calc(100% - 2px) calc(100% - 2px),
+        calc(100% - 2px) calc(100% - 4px),
+        100% calc(100% - 4px),
+        100% 4px,
+        calc(100% - 2px) 4px,
+        calc(100% - 2px) 2px,
+        calc(100% - 4px) 2px,
+        calc(100% - 4px) 0px,
+        4px 0px,
+        4px 2px,
+        2px 2px,
+        2px 4px,
+        0px 4px
+    );
+    position: relative;
+    border: 2px solid transparent;
+    &::after {
+        content: "";
+        position: absolute;
+        clip-path: polygon(
+            0px calc(100% - 4px),
+            2px calc(100% - 4px),
+            2px calc(100% - 2px),
+            4px calc(100% - 2px),
+            4px 100%,
+            calc(100% - 4px) 100%,
+            calc(100% - 4px) calc(100% - 2px),
+            calc(100% - 2px) calc(100% - 2px),
+            calc(100% - 2px) calc(100% - 4px),
+            100% calc(100% - 4px),
+            100% 4px,
+            calc(100% - 2px) 4px,
+            calc(100% - 2px) 2px,
+            calc(100% - 4px) 2px,
+            calc(100% - 4px) 0px,
+            4px 0px,
+            4px 2px,
+            2px 2px,
+            2px 4px,
+            0px 4px,
+            0px 50%,
+            2px 50%,
+            2px 4px,
+            4px 4px,
+            4px 2px,
+            calc(100% - 4px) 2px,
+            calc(100% - 4px) 4px,
+            calc(100% - 2px) 4px,
+            calc(100% - 2px) calc(100% - 4px),
+            calc(100% - 4px) calc(100% - 4px),
+            calc(100% - 4px) calc(100% - 2px),
+            4px calc(100% - 2px),
+            4px calc(100% - 4px),
+            2px calc(100% - 4px),
+            2px 50%,
+            0px 50%
+        );
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: block;
+        pointer-events: none;
+        margin: -2px;
+    }
+}
+
+.buttonBase,
+.buttonDefault,
+.buttonDestructive {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 46px;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.buttonDefault {
+    background: var(--link);
+    &:after {
+        background: var(--link-hover);
+    }
+    &:hover {
+        background: var(--link-hover);
+    }
+}
+.buttonDestructive {
+    background: tomato;
+    &:after {
+        background: red;
+    }
+}
+.buttonLink {
+    &:hover {
+        text-decoration: underline 2px;
+    }
+}

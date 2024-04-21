@@ -1,0 +1,35 @@
+.profileHeader {
+    padding: 8px;
+    margin-bottom: var(--padding);
+}
+
+.profileUser {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.profileLinks {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+.profileLink {
+    white-space: nowrap;
+    margin-right: 8px;
+    &:hover {
+        .profileLinkIcon {
+            animation: jiggle 1s steps(2) infinite;
+        }
+    }
+}
+.profileLinkIcon {
+    margin-right: 4px;
+}
+@keyframes jiggle {
+    from {
+        transform: translateY(1px);
+    }
+    to {
+        transform: translateY(-4px);
+    }
+}

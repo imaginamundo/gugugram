@@ -1,0 +1,8 @@
+.form {
+    padding: var(--padding);
+}
+.label {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}

@@ -1,0 +1,25 @@
+.profileFriends {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    flex-grow: 3;
+    width: 100%;
+    padding: 8px;
+}
+
+.friends {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 8px;
+}
+.friend {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 4px;
+}
+.friendImage {
+    width: 60px;
+    height: 60px;
+}

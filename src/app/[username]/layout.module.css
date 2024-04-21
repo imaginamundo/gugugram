@@ -1,0 +1,17 @@
+.layout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 32px;
+    padding: var(--padding);
+}
+
+.profileWrapper {
+    min-width: min(100%, 392px);
+    flex: 1 1;
+}
+
+.addImageButton {
+    width: 100%;
+    margin-bottom: var(--padding);
+}

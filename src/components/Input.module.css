@@ -1,0 +1,12 @@
+.input {
+    background: white;
+    padding-inline: 8px;
+    height: 46px;
+    color: black;
+    border: 2px solid gray;
+}
+.error {
+    display: flex;
+    align-items: center;
+    color: var(--danger);
+}
