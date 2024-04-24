@@ -27,12 +27,12 @@ const data = {
   friends: [
     {
       id: 0,
-      username: "Nome da pessoa",
+      username: "nomedapessoa",
       image: "https://art.pixilart.com/50d9ba576541e17.png",
     },
     {
       id: 1,
-      username: "Nome de outra pessoa",
+      username: "nomedeoutrapessoa",
       image: "https://art.pixilart.com/50d9ba576541e17.png",
     },
   ],

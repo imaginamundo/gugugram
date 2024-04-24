@@ -1,0 +1,11 @@
+.addImageLabel {
+    margin-bottom: var(--padding);
+    width: 100%;
+}
+.addImageInput {
+    display: none;
+}
+.image {
+    object-fit: none;
+    /* transform: scale(5); */
+}

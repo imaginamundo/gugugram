@@ -77,7 +77,8 @@
 
 .buttonBase,
 .buttonDefault,
-.buttonDestructive {
+.buttonDestructive,
+.buttonLink {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -86,6 +87,9 @@
     cursor: pointer;
     appearance: none;
     padding: 8px;
+    &[hidden] {
+        display: none;
+    }
 }
 
 .buttonDefault {
@@ -109,6 +113,10 @@
     }
 }
 .buttonLink {
+    cursor: pointer;
+    color: currentColor;
+    border: none;
+    background: none;
     &:hover {
         text-decoration: underline 2px;
     }

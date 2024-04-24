@@ -3,6 +3,7 @@ import Button from "@components/Button";
 import ProfileWallForm from "@components/ProfileWallForm";
 import cn from "@utils/cn";
 import { parseDate } from "@utils/date";
+import Link from "next/link";
 import Close from "pixelarticons/svg/close.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 
@@ -33,7 +34,9 @@ export default function ProfileWall({
                 </span>
                 <p>
                   <span>
-                    <b>{message.from}</b>
+                    <Link href={`/${message.from}`}>
+                      <b>{message.from}</b>
+                    </Link>
                   </span>
                   <br />
                   <span>{parseDate(message.date)}</span>

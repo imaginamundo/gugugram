@@ -24,7 +24,12 @@ export default function ProfileHeader({
       <div>
         <div>
           <h2 className={styles.profileUser}>
-            <span className="border-radius profile-picture">
+            <span
+              className={cn(
+                "border-radius profile-picture",
+                styles.profilePicture,
+              )}
+            >
               <MoodHappy />
             </span>
             {username}

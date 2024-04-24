@@ -2,7 +2,6 @@ import { FriendsData } from "@api/profile/[username]/friends/route";
 import ProfileFriends from "@components/ProfileFriends";
 
 export const dynamic = "force-dynamic";
-
 export default async function Friends({
   params,
 }: {

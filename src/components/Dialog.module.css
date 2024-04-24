@@ -1,0 +1,41 @@
+.overlay {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 50;
+    inset: 0;
+}
+
+.dialogContent {
+    position: fixed;
+    width: calc(100% - 32px);
+    max-width: var(--max-width);
+    top: 50%;
+    left: 50%;
+    z-index: 50;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    color: black;
+}
+
+.dialogClose {
+    margin-left: auto;
+}
+
+.dialogHeader {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px;
+    gap: 8px;
+}
+.dialogMain {
+    padding: 8px;
+}
+.dialogFooter {
+    padding: 8px;
+}
+
+.dialogTitle {
+}
+
+.dialogDescription {
+}

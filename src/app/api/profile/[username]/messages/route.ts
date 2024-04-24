@@ -27,13 +27,13 @@ const data = {
   messages: [
     {
       id: 2,
-      from: "Nome da pessoa",
+      from: "nomedousuario",
       date: new Date().toISOString(),
       message: "Olá, pessoa!",
     },
     {
       id: 3,
-      from: "Nome de outra pessoa",
+      from: "nomedeoutrousuario",
       date: new Date().toISOString(),
       message: "Olá, pessoa 2!",
     },

@@ -1,4 +1,4 @@
-.input {
+.input:not([type="file"]) {
     background: white;
     padding-inline: 8px;
     height: 46px;
@@ -10,6 +10,9 @@
         outline: none;
         border-color: black;
     }
+}
+.input[type="file"] {
+    max-width: 100%;
 }
 .error {
     display: flex;

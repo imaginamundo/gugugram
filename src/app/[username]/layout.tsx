@@ -1,8 +1,7 @@
 import type { ProfileData } from "@api/profile/[username]/route";
-import Button from "@components/Button";
 import ProfileGrid from "@components/ProfileGrid";
 import ProfileHeader from "@components/ProfileHeader";
-import ImagePlus from "pixelarticons/svg/image-plus.svg";
+import UploadImage from "@components/UploadImage";
 
 import styles from "./layout.module.css";
 
@@ -25,12 +24,7 @@ export default async function ProfileLayout({
           messagesCount={data.messagesCount}
           owner={data.owner}
         />
-        {data.owner && (
-          <Button className={styles.addImageButton}>
-            <ImagePlus />
-            Adicionar nova foto
-          </Button>
-        )}
+        {data.owner && <UploadImage />}
         <ProfileGrid images={data.images} owner={data.owner} />
       </div>
       {children}
