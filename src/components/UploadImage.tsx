@@ -42,6 +42,7 @@ export default function UploadImage() {
   const clearSelectedImage = () => {
     if (inputFileRef.current) inputFileRef.current.value = "";
     setImageSrc("");
+    setImageResize(false);
   };
 
   const drawCrop = () => {
