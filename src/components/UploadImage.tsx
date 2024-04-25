@@ -21,7 +21,7 @@ import styles from "./UploadImage.module.css";
 export default function UploadImage() {
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
-  const [imageSize, setImageSize] = useState(20);
+  const [imageSize, setImageSize] = useState(30);
 
   const inputFileRef = useRef<HTMLInputElement>(null);
 
@@ -61,33 +61,64 @@ export default function UploadImage() {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Subir Foto</DialogTitle>
+          <DialogTitle>Subir imagem</DialogTitle>
           <DialogDescription>
             Você pode escolher o tamanho da imagem antes de subi-la.
           </DialogDescription>
         </DialogHeader>
         <DialogMain>
           {imageSrc && (
-            <img
-              alt="Cropped"
-              src={imageSrc}
-              width={imageSize}
-              height={imageSize}
-              className={styles.image}
-            />
+            <div className={styles.imageSettings}>
+              <div className={styles.imageSettingsColumns}>
+                <fieldset>
+                  <legend>Escolha o tamanho da imagem</legend>
+                  {imageOptions.map((imageOption) => (
+                    <label
+                      key={`image-option-${imageOption}`}
+                      className={styles.label}
+                    >
+                      <Input
+                        type="radio"
+                        name="image-size"
+                        value={imageOption}
+                        onChange={() => setImageSize(imageOption)}
+                        checked={imageOption === imageSize}
+                      />
+                      {imageOption}px²
+                    </label>
+                  ))}
+                </fieldset>
+              </div>
+              <div className={styles.imageSettingsColumns}>
+                <p>Tamanho original</p>
+                <div className={styles.imageWrap}>
+                  <img
+                    src={imageSrc}
+                    width={imageSize}
+                    height={imageSize}
+                    className={styles.image}
+                  />
+                </div>
+                <p>Zooooooom</p>
+                <div className={styles.imageZoomWrap}>
+                  <div
+                    style={{
+                      backgroundImage: `url(${imageSrc})`,
+                      width: imageSize,
+                      height: imageSize,
+                      transform: `scale(${120 / imageSize})`,
+                      transformOrigin: "0 0",
+                    }}
+                    className={styles.imageZoom}
+                  />
+                </div>
+              </div>
+            </div>
           )}
         </DialogMain>
         <DialogFooter>
           <div>
-            {imageOptions.map((imageOption) => (
-              <Button
-                key={`image-option-${imageOption}`}
-                onClick={() => setImageSize(imageOption)}
-              >
-                {imageOption}px²
-              </Button>
-            ))}
-            <Button>Subir imagem</Button>
+            <Button>Publicar</Button>
           </div>
         </DialogFooter>
       </DialogContent>
@@ -95,4 +126,4 @@ export default function UploadImage() {
   );
 }
 
-const imageOptions = [5, 10, 15, 20];
+const imageOptions = [5, 10, 15, 20, 30];

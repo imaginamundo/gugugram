@@ -59,6 +59,12 @@ ul li {
     list-style: square;
 }
 
+fieldset {
+    border: 2px solid black;
+    legend {
+        margin-left: 2px;
+    }
+}
 button,
 input {
     font-family: inherit;

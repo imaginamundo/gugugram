@@ -5,7 +5,32 @@
 .addImageInput {
     display: none;
 }
+
+.imageSettings {
+    display: flex;
+    gap: 16px;
+}
+.imageSettingsColumns {
+    width: 50%;
+}
+.label {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+}
+.imageWrap {
+    height: 30px;
+}
 .image {
     object-fit: none;
     /* transform: scale(5); */
+}
+
+.imageZoomWrap {
+    width: 120px;
+    height: 120px;
+}
+.imageZoom {
+    background-position: center;
+    position: absolute;
 }
