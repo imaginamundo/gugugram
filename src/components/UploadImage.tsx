@@ -134,7 +134,7 @@ export default function UploadImage() {
                       onChange={() => setImageResize(!imageResize)}
                       checked={imageResize}
                     />
-                    Redimensionar imagem
+                    Redimensionar
                   </label>
                 </fieldset>
               </div>

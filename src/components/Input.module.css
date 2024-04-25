@@ -26,15 +26,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 .input[type="checkbox"] {
-    background: url("/checkbox-on.svg");
+    background: url("/checkbox-on.svg") no-repeat center;
     &:checked {
-        background: url("/checkbox.svg");
+        background: url("/checkbox.svg") no-repeat center;
     }
 }
 .input[type="radio"] {
-    background: url("/circle.svg");
+    background: url("/circle.svg") no-repeat center;
     &:checked::before {
         content: " ";
         width: 6px;
