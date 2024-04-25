@@ -32,5 +32,6 @@
 }
 .imageZoom {
     background-position: center;
+    background-repeat: no-repeat;
     position: absolute;
 }
