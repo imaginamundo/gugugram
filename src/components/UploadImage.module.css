@@ -23,7 +23,6 @@
 }
 .image {
     object-fit: none;
-    /* transform: scale(5); */
 }
 
 .imageZoomWrap {
@@ -31,7 +30,5 @@
     height: 120px;
 }
 .imageZoom {
-    background-position: center;
-    background-repeat: no-repeat;
     position: absolute;
 }

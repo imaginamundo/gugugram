@@ -24,13 +24,15 @@ export default function UploadImage() {
   const [imageSize, setImageSize] = useState(30);
 
   const inputFileRef = useRef<HTMLInputElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const imageSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
-      reader.addEventListener("load", () =>
-        setImageSrc(reader.result?.toString() || ""),
-      );
+      reader.addEventListener("load", () => {
+        setImageSrc(reader.result?.toString() || "");
+      });
       reader.readAsDataURL(e.target.files[0]);
       setOpen(true);
     }
@@ -41,9 +43,50 @@ export default function UploadImage() {
     setImageSrc("");
   };
 
+  const drawCrop = () => {
+    if (imageRef.current && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+      canvas.width = imageSize;
+      canvas.height = imageSize;
+
+      const cropArea = calculateCenter(
+        imageRef.current.naturalWidth,
+        imageRef.current.naturalHeight,
+        imageSize,
+      );
+
+      ctx!.drawImage(
+        imageRef.current,
+        cropArea.x,
+        cropArea.y,
+        imageSize,
+        imageSize,
+        cropArea.canvasX,
+        cropArea.canvasY,
+        imageSize,
+        imageSize,
+      );
+    }
+  };
+
+  const publish = () => {
+    if (canvasRef.current) {
+      const link = document.createElement("a");
+      link.download = "cropped-image.png";
+      link.href = canvasRef.current.toDataURL("image/png");
+      link.click();
+      link.remove();
+    }
+  };
+
   useEffect(() => {
     if (!open && imageSrc) clearSelectedImage();
   }, [open]);
+
+  useEffect(() => {
+    drawCrop();
+  }, [imageSize]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -93,7 +136,9 @@ export default function UploadImage() {
                 <p>Tamanho original</p>
                 <div className={styles.imageWrap}>
                   <img
+                    ref={imageRef}
                     src={imageSrc}
+                    onLoad={drawCrop}
                     width={imageSize}
                     height={imageSize}
                     className={styles.image}
@@ -101,15 +146,13 @@ export default function UploadImage() {
                 </div>
                 <p>Zooooooom</p>
                 <div className={styles.imageZoomWrap}>
-                  <div
+                  <canvas
+                    ref={canvasRef}
+                    className={styles.imageZoom}
                     style={{
-                      backgroundImage: `url(${imageSrc})`,
-                      width: imageSize,
-                      height: imageSize,
                       transform: `scale(${120 / imageSize})`,
                       transformOrigin: "0 0",
                     }}
-                    className={styles.imageZoom}
                   />
                 </div>
               </div>
@@ -118,7 +161,7 @@ export default function UploadImage() {
         </DialogMain>
         <DialogFooter>
           <div>
-            <Button>Publicar</Button>
+            <Button onClick={publish}>Publicar</Button>
           </div>
         </DialogFooter>
       </DialogContent>
@@ -127,3 +170,28 @@ export default function UploadImage() {
 }
 
 const imageOptions = [5, 10, 15, 20, 30];
+
+function calculateCenter(
+  cropWidth: number,
+  cropHeight: number,
+  imageSize: number,
+) {
+  let x = 0;
+  let y = 0;
+  let canvasX = 0;
+  let canvasY = 0;
+
+  if (cropWidth > imageSize) {
+    x = Math.floor(cropWidth / 2 - imageSize / 2);
+  } else {
+    canvasX = Math.floor(imageSize / 2 - cropWidth / 2);
+  }
+
+  if (cropHeight > imageSize) {
+    y = Math.floor(cropHeight / 2 - imageSize / 2);
+  } else {
+    canvasY = Math.floor(imageSize / 2 - cropHeight / 2);
+  }
+
+  return { x, y, canvasX, canvasY };
+}
