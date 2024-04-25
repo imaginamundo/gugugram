@@ -4,6 +4,7 @@
     justify-content: flex-end;
     padding: 8px;
     gap: 8px;
+    border-top: 4px solid rgb(var(--background));
 }
 
 .input {

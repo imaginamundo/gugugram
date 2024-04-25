@@ -18,13 +18,18 @@
     align-items: center;
     margin-top: 8px;
 }
+.imageResize {
+    margin-top: 16px;
+}
 .imageWrap {
     height: 30px;
 }
 .image {
     object-fit: none;
 }
-
+.imageResized {
+    object-fit: cover;
+}
 .imageZoomWrap {
     width: 120px;
     height: 120px;

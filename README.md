@@ -16,9 +16,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## To do list
 
-[ ] Authenticated user actions;
-[ ] Database setup;
-[ ] Database schemas;
-[ ] Image crop;
-[ ] Image upload;
-[ ] Etc…
+- [ ] Database setup ([Vercel Postgres](https://vercel.com/storage/postgres));
+- [ ] Database schemas;
+- [ ] Auth setup;
+- [ ] Authenticated user actions;
+- [ ] Image upload;
+- [ ] Add friend;
+- [ ] Friends page;
+- [ ] Add message;
+- [ ] Messages page;
+- [ ] Error management ([Sentry](https://sentry.io/pricing/));
+- [ ] Analitycs ([Posthog](https://posthog.com))

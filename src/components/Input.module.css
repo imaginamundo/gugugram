@@ -26,18 +26,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.input[type="checkbox"] {
+    background: url("/checkbox-on.svg");
+    &:checked {
+        background: url("/checkbox.svg");
+    }
+}
+.input[type="radio"] {
+    background: url("/circle.svg");
     &:checked::before {
         content: " ";
         width: 6px;
         height: 6px;
         background: black;
     }
-}
-.input[type="checkbox"] {
-    background: url("/checkbox-on.svg");
-}
-.input[type="radio"] {
-    background: url("/circle.svg");
 }
 .error {
     display: flex;

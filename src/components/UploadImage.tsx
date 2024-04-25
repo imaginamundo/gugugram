@@ -22,6 +22,7 @@ export default function UploadImage() {
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const [imageSize, setImageSize] = useState(30);
+  const [imageResize, setImageResize] = useState(false);
 
   const inputFileRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -50,23 +51,14 @@ export default function UploadImage() {
       canvas.width = imageSize;
       canvas.height = imageSize;
 
-      const cropArea = calculateCenter(
+      const options = calculateCropCenter(
         imageRef.current.naturalWidth,
         imageRef.current.naturalHeight,
         imageSize,
+        imageResize,
       );
 
-      ctx!.drawImage(
-        imageRef.current,
-        cropArea.x,
-        cropArea.y,
-        imageSize,
-        imageSize,
-        cropArea.canvasX,
-        cropArea.canvasY,
-        imageSize,
-        imageSize,
-      );
+      ctx!.drawImage(imageRef.current, ...options);
     }
   };
 
@@ -86,7 +78,10 @@ export default function UploadImage() {
 
   useEffect(() => {
     drawCrop();
-  }, [imageSize]);
+  }, [imageSize, imageResize]);
+
+  const imageClasses = [styles.image];
+  if (imageResize) imageClasses.push(styles.imageResized);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -114,7 +109,7 @@ export default function UploadImage() {
             <div className={styles.imageSettings}>
               <div className={styles.imageSettingsColumns}>
                 <fieldset>
-                  <legend>Escolha o tamanho da imagem</legend>
+                  <legend>Tamanho da imagem:</legend>
                   {imageOptions.map((imageOption) => (
                     <label
                       key={`image-option-${imageOption}`}
@@ -130,6 +125,17 @@ export default function UploadImage() {
                       {imageOption}px²
                     </label>
                   ))}
+
+                  <label className={cn(styles.label, styles.imageResize)}>
+                    <Input
+                      type="checkbox"
+                      name="image-resize"
+                      value={imageResize.toString()}
+                      onChange={() => setImageResize(!imageResize)}
+                      checked={imageResize}
+                    />
+                    Redimensionar imagem
+                  </label>
                 </fieldset>
               </div>
               <div className={styles.imageSettingsColumns}>
@@ -141,7 +147,7 @@ export default function UploadImage() {
                     onLoad={drawCrop}
                     width={imageSize}
                     height={imageSize}
-                    className={styles.image}
+                    className={cn(imageClasses)}
                   />
                 </div>
                 <p>Zooooooom</p>
@@ -171,27 +177,53 @@ export default function UploadImage() {
 
 const imageOptions = [5, 10, 15, 20, 30];
 
-function calculateCenter(
-  cropWidth: number,
-  cropHeight: number,
+function calculateCropCenter(
+  naturalWidth: number,
+  naturalHeight: number,
   imageSize: number,
+  imageResize: boolean,
 ) {
   let x = 0;
   let y = 0;
+
+  if (imageResize) {
+    const smallestSize = Math.min(naturalWidth, naturalHeight);
+    const largestSize = Math.max(naturalWidth, naturalHeight);
+    const biggestSize = naturalWidth > naturalHeight ? "width" : "heigth";
+
+    const delta = largestSize / 2 - smallestSize / 2;
+
+    if (biggestSize === "width") {
+      x = delta;
+    } else {
+      y = delta;
+    }
+
+    console.log({
+      delta,
+      imageSize,
+      smallestSize,
+    });
+
+    return [x, y, smallestSize, smallestSize, 0, 0, imageSize, imageSize];
+  }
+
   let canvasX = 0;
   let canvasY = 0;
 
-  if (cropWidth > imageSize) {
-    x = Math.floor(cropWidth / 2 - imageSize / 2);
+  // Center crop width
+  if (naturalWidth > imageSize) {
+    x = Math.floor(naturalWidth / 2 - imageSize / 2);
   } else {
-    canvasX = Math.floor(imageSize / 2 - cropWidth / 2);
+    canvasX = Math.floor(imageSize / 2 - naturalWidth / 2);
   }
 
-  if (cropHeight > imageSize) {
-    y = Math.floor(cropHeight / 2 - imageSize / 2);
+  // Center crop height
+  if (naturalHeight > imageSize) {
+    y = Math.floor(naturalHeight / 2 - imageSize / 2);
   } else {
-    canvasY = Math.floor(imageSize / 2 - cropHeight / 2);
+    canvasY = Math.floor(imageSize / 2 - naturalHeight / 2);
   }
 
-  return { x, y, canvasX, canvasY };
+  return [x, y, imageSize, imageSize, canvasX, canvasY, imageSize, imageSize];
 }
