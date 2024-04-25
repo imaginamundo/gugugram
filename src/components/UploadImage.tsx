@@ -107,7 +107,7 @@ export default function UploadImage() {
         <DialogMain>
           {imageSrc && (
             <div className={styles.imageSettings}>
-              <div className={styles.imageSettingsColumns}>
+              <div className={styles.imageSettingsColumn}>
                 <fieldset>
                   <legend>Tamanho da imagem:</legend>
                   {imageOptions.map((imageOption) => (
@@ -138,7 +138,7 @@ export default function UploadImage() {
                   </label>
                 </fieldset>
               </div>
-              <div className={styles.imageSettingsColumns}>
+              <div className={styles.imagePreviewColumn}>
                 <p>Tamanho original</p>
                 <div className={styles.imageWrap}>
                   <img

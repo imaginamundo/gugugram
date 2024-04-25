@@ -10,8 +10,12 @@
     display: flex;
     gap: 16px;
 }
-.imageSettingsColumns {
+.imageSettingsColumn {
     width: 50%;
+}
+.imagePreviewColumn {
+    width: 50%;
+    flex: 0;
 }
 .label {
     display: flex;
