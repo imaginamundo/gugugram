@@ -140,7 +140,7 @@ export default function UploadImage() {
                 </fieldset>
               </div>
               <div className={styles.imagePreviewColumn}>
-                <p>Tamanho original</p>
+                <p>Original</p>
                 <div className={styles.imageWrap}>
                   <img
                     ref={imageRef}
