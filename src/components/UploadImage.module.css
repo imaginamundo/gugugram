@@ -12,6 +12,8 @@
 }
 .imageSettingsColumn {
     width: 50%;
+    flex-grow: 1;
+    max-width: 330px;
 }
 .imagePreviewColumn {
     width: 50%;
