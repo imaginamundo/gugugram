@@ -8,24 +8,22 @@ import cn from "@utils/cn";
 import yup from "@utils/yup";
 import { useForm } from "react-hook-form";
 
+import loginAction from "./action";
 import styles from "./page.module.css";
+import { type LoginInputs, loginSchema } from "./types";
 
 export default function Login() {
-  const { register, handleSubmit, control } = useForm<Inputs>({
-    resolver: yupResolver(schema),
+  const { register, control } = useForm<LoginInputs>({
+    resolver: yupResolver(loginSchema),
   });
   const fieldError = useFormErrors(control);
-
-  const authenticate = (data: Inputs) => {
-    console.log(data);
-  };
 
   return (
     <main className="container">
       <h1>Entrar</h1>
       <form
         className={cn("border-radius", styles.form)}
-        onSubmit={handleSubmit(authenticate)}
+        action={async (formData) => loginAction(formData)}
       >
         <label className={styles.label}>
           E-mail
@@ -52,13 +50,3 @@ export default function Login() {
     </main>
   );
 }
-
-const requiredMessage = "Campo obrigatório";
-const invalidEmailMessage = "E-mail invalido";
-
-const schema = yup.object({
-  email: yup.string().email(invalidEmailMessage).required(requiredMessage),
-  password: yup.string().required(requiredMessage),
-});
-
-type Inputs = yup.InferType<typeof schema>;
