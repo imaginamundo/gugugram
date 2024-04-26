@@ -1,12 +1,12 @@
 "use client";
 
-import Button from "@components/Button";
-import Input from "@components/Input";
 import { yupResolver } from "@hookform/resolvers/yup";
-import useFormErrors from "@hooks/useFormErrors";
-import cn from "@utils/cn";
-import yup from "@utils/yup";
 import { useForm } from "react-hook-form";
+
+import Button from "@/components/Button";
+import Input from "@/components/Input";
+import useFormErrors from "@/hooks/useFormErrors";
+import cn from "@/utils/cn";
 
 import loginAction from "./action";
 import styles from "./page.module.css";

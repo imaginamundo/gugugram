@@ -1,9 +1,10 @@
-import type { FriendsData } from "@api/profile/[username]/friends/route";
-import Button from "@components/Button";
-import cn from "@utils/cn";
 import Link from "next/link";
 import Close from "pixelarticons/svg/close.svg";
 import HumanHandsup from "pixelarticons/svg/human-handsup.svg";
+
+import type { FriendsData } from "@/api/profile/[username]/friends/route";
+import Button from "@/components/Button";
+import cn from "@/utils/cn";
 
 import styles from "./ProfileFriends.module.css";
 
@@ -27,6 +28,7 @@ export default function ProfileFriends({
                 <img
                   src={friend.image}
                   className={cn("border-radius", styles.friendImage)}
+                  alt={friend.username}
                 />
               </Link>
               <div className={styles.friendInformation}>

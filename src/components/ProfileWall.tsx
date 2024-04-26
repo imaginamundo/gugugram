@@ -1,11 +1,12 @@
-import type { MessagesData } from "@api/profile/[username]/messages/route";
-import Button from "@components/Button";
-import ProfileWallForm from "@components/ProfileWallForm";
-import cn from "@utils/cn";
-import { parseDate } from "@utils/date";
 import Link from "next/link";
 import Close from "pixelarticons/svg/close.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
+
+import type { MessagesData } from "@/api/profile/[username]/messages/route";
+import Button from "@/components/Button";
+import ProfileWallForm from "@/components/ProfileWallForm";
+import cn from "@/utils/cn";
+import { parseDate } from "@/utils/date";
 
 import styles from "./ProfileWall.module.css";
 

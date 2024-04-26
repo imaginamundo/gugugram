@@ -1,19 +1,17 @@
 "use client";
 
-import Button from "@components/Button";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import cn from "@utils/cn";
 import Close from "pixelarticons/svg/close.svg";
 import * as React from "react";
+
+import Button from "@/components/Button";
+import cn from "@/utils/cn";
 
 import styles from "./Dialog.module.css";
 
 const Dialog = DialogPrimitive.Root;
-
 const DialogTrigger = DialogPrimitive.Trigger;
-
 const DialogPortal = DialogPrimitive.Portal;
-
 const DialogClose = DialogPrimitive.Close;
 
 const DialogOverlay = React.forwardRef<
@@ -22,14 +20,7 @@ const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    className={cn(
-      // `data-[state=open]:animate-in
-      // data-[state=closed]:animate-out
-      // data-[state=closed]:fade-out-0
-      // data-[state=open]:fade-in-0`,
-      className,
-      styles.overlay,
-    )}
+    className={cn(className, styles.overlay)}
     {...props}
   />
 ));
@@ -72,14 +63,7 @@ const DialogFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      // "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-      className,
-      styles.dialogFooter,
-    )}
-    {...props}
-  />
+  <div className={cn(className, styles.dialogFooter)} {...props} />
 );
 DialogFooter.displayName = "DialogFooter";
 
@@ -89,11 +73,7 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn(
-      // "text-lg font-semibold leading-none tracking-tight",
-      className,
-      styles.dialogTitle,
-    )}
+    className={cn(className, styles.dialogTitle)}
     {...props}
   />
 ));
@@ -105,11 +85,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn(
-      // "text-sm text-muted-foreground",
-      className,
-      styles.dialogDescription,
-    )}
+    className={cn(className, styles.dialogDescription)}
     {...props}
   />
 ));

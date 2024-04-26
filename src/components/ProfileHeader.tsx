@@ -1,9 +1,10 @@
-import Button from "@components/Button";
-import cn from "@utils/cn";
 import Link from "next/link";
 import HumanHandsup from "pixelarticons/svg/human-handsup.svg";
 import Mail from "pixelarticons/svg/mail.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
+
+import Button from "@/components/Button";
+import cn from "@/utils/cn";
 
 import styles from "./ProfileHeader.module.css";
 

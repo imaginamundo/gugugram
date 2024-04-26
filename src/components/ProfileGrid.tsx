@@ -1,4 +1,4 @@
-import type { ProfileData } from "@api/profile/[username]/route";
+import type { ProfileData } from "@/api/profile/[username]/route";
 
 import styles from "./ProfileGrid.module.css";
 

@@ -1,7 +1,10 @@
 "use client";
 
-import Button from "@components/Button";
-import buttonStyles from "@components/Button.module.css";
+import ImagePlus from "pixelarticons/svg/image-plus.svg";
+import { useEffect, useRef, useState } from "react";
+
+import Button from "@/components/Button";
+import buttonStyles from "@/components/Button.module.css";
 import {
   Dialog,
   DialogContent,
@@ -10,11 +13,9 @@ import {
   DialogHeader,
   DialogMain,
   DialogTitle,
-} from "@components/Dialog";
-import Input from "@components/Input";
-import cn from "@utils/cn";
-import ImagePlus from "pixelarticons/svg/image-plus.svg";
-import { useEffect, useRef, useState } from "react";
+} from "@/components/Dialog";
+import Input from "@/components/Input";
+import cn from "@/utils/cn";
 
 import styles from "./UploadImage.module.css";
 

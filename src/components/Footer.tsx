@@ -1,6 +1,7 @@
-import cn from "@utils/cn";
 import Image from "next/image";
 import Link from "next/link";
+
+import cn from "@/utils/cn";
 
 import styles from "./Footer.module.css";
 

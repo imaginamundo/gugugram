@@ -1,7 +1,7 @@
-import type { ProfileData } from "@api/profile/[username]/route";
-import ProfileGrid from "@components/ProfileGrid";
-import ProfileHeader from "@components/ProfileHeader";
-import UploadImage from "@components/UploadImage";
+import type { ProfileData } from "@/api/profile/[username]/route";
+import ProfileGrid from "@/components/ProfileGrid";
+import ProfileHeader from "@/components/ProfileHeader";
+import UploadImage from "@/components/UploadImage";
 
 import styles from "./layout.module.css";
 

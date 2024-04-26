@@ -1,4 +1,4 @@
-import yup from "@utils/yup";
+import yup from "@/utils/yup";
 
 const requiredMessage = "Campo obrigatório";
 const fieldLimitMessage = (n: number) =>
