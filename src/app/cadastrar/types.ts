@@ -5,7 +5,13 @@ const fieldLimitMessage = (n: number) =>
   `Campo pode ter até ${n.toString()} caracteres`;
 const invalidEmailMessage = "E-mail invalido";
 
-export const loginSchema = yup.object({
+export const registerSchema = yup.object({
+  username: yup
+    .string()
+    .matches(/^[a-zA-Z0-9]+$/, {
+      message: "Apenas caracteres de A a z sem espaços",
+    })
+    .required(requiredMessage),
   email: yup.string().email(invalidEmailMessage).required(requiredMessage),
   password: yup
     .string()
@@ -13,4 +19,4 @@ export const loginSchema = yup.object({
     .required(requiredMessage),
 });
 
-export type LoginInputs = yup.InferType<typeof loginSchema>;
+export type RegisterInputs = yup.InferType<typeof registerSchema>;

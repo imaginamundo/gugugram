@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import { ValidationError } from "yup";
 
 // From Zod
 const emailRegex =
@@ -13,3 +14,21 @@ yup.addMethod(yup.string, "email", function (message) {
 });
 
 export default yup;
+
+export const getValidationErrors = (err: ValidationError) => {
+  const validationErrors: ValidationErrorsObject = {};
+
+  err.inner.forEach((error) => {
+    if (error.path) {
+      validationErrors[error.path] = { message: error.message };
+    }
+  });
+
+  return validationErrors;
+};
+
+export type ValidationErrorsObject = {
+  [key: string]: {
+    message: string;
+  };
+};

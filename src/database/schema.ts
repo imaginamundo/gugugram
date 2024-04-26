@@ -1,5 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
+import crypto from "node:crypto";
+
 import { sql } from "drizzle-orm";
 import {
   index,
@@ -26,9 +28,9 @@ export const users = createTable("user", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  name: text("name"),
-  email: text("email").notNull(),
-  password: text("password"),
+  username: text("username").unique().notNull(),
+  email: text("email").unique().notNull(),
+  password: text("password").notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
 });
@@ -91,7 +93,6 @@ export const posts = createTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("created_at"),
   },
   (post) => ({ idIndex: index("id_idx").on(post.id) }),
 );
@@ -108,7 +109,6 @@ export const images = createTable(
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updatedAt"),
   },
   (image) => ({
     nameIndex: index("name_idx").on(image.name),

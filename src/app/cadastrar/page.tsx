@@ -1,24 +1,39 @@
 "use client";
 
 import { yupResolver } from "@hookform/resolvers/yup";
+import WarningBox from "pixelarticons/svg/warning-box.svg";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { loginAction, registerAction } from "@/actions/authentication";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import useFormErrors from "@/hooks/useFormErrors";
 import cn from "@/utils/cn";
-import yup from "@/utils/yup";
 
 import styles from "./page.module.css";
+import { type RegisterInputs, registerSchema } from "./types";
 
 export default function Register() {
-  const { register, handleSubmit, control } = useForm<Inputs>({
-    resolver: yupResolver(schema),
+  const [serverError, setServerError] = useState("");
+  const { register, handleSubmit, control } = useForm<RegisterInputs>({
+    resolver: yupResolver(registerSchema),
   });
   const fieldError = useFormErrors(control);
 
-  const createAccount = (data: Inputs) => {
-    console.log(data);
+  const createAccount = async (data: RegisterInputs) => {
+    try {
+      await registerAction(data);
+    } catch (e) {
+      if (e instanceof Error) {
+        setServerError(e.message);
+        return;
+      }
+      setServerError("Algum erro estranho aconteceu");
+      return;
+    }
+
+    await loginAction({ email: data.email, password: data.password });
   };
 
   return (
@@ -57,19 +72,13 @@ export default function Register() {
             autoComplete="new-password"
           />
         </label>
+        {serverError && (
+          <p className="warning-text margin-bottom">
+            <WarningBox /> {serverError}
+          </p>
+        )}
         <Button>Criar conta</Button>
       </form>
     </main>
   );
 }
-
-const requiredMessage = "Campo obrigatório";
-const invalidEmailMessage = "E-mail invalido";
-
-const schema = yup.object({
-  username: yup.string().required(requiredMessage),
-  email: yup.string().email(invalidEmailMessage).required(requiredMessage),
-  password: yup.string().required(requiredMessage),
-});
-
-type Inputs = yup.InferType<typeof schema>;

@@ -129,3 +129,14 @@ input {
     padding: var(--padding);
     margin: auto;
 }
+
+.warning-text {
+    color: tomato;
+}
+
+.margin-top {
+    margin-top: 16px;
+}
+.margin-bottom {
+    margin-bottom: 16px;
+}

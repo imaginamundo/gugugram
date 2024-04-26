@@ -1,11 +1,11 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { db } from "@/database/postgres";
 import { users } from "@/database/schema";
+import { isPasswordValid } from "@/utils/password";
 
 import { loginSchema } from "./entrar/types";
 
@@ -27,16 +27,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         user = await db.query.users.findFirst({
           where: eq(users.email, email),
         });
+        if (!user) throw new Error("User not found");
 
-        if (!user || !(await bcrypt.compare(password, user.password!))) {
-          return null;
-        }
+        const validPassword = isPasswordValid(user.password, password);
+        if (!validPassword) throw new Error("Invalid password");
 
         return user;
       },
     }),
   ],
-  callbacks: {},
+  callbacks: {
+    redirect(params) {
+      return params.baseUrl;
+    },
+  },
   pages: {
     signIn: "/entrar",
   },
