@@ -201,12 +201,6 @@ function calculateCropCenter(
       y = delta;
     }
 
-    console.log({
-      delta,
-      imageSize,
-      smallestSize,
-    });
-
     return [x, y, smallestSize, smallestSize, 0, 0, imageSize, imageSize];
   }
 

@@ -1,4 +1,5 @@
 import { FriendsData } from "@/api/profile/[username]/friends/route";
+import { auth } from "@/app/auth";
 import ProfileFriends from "@/components/ProfileFriends";
 
 export const dynamic = "force-dynamic";
@@ -7,9 +8,19 @@ export default async function Friends({
 }: {
   params: { username: string };
 }) {
+  const session = await auth();
   const data: FriendsData = await getFriendsData(params.username);
 
-  return <ProfileFriends friends={data.friends} owner={data.owner} />;
+  let owner = false;
+  if (session?.user.username === params.username) owner = true;
+
+  return (
+    <ProfileFriends
+      friends={data.friends}
+      owner={owner}
+      authenticated={!!session}
+    />
+  );
 }
 
 async function getFriendsData(username: string) {

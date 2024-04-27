@@ -14,11 +14,13 @@ export default function ProfileHeader({
   username,
   friendsCount,
   messagesCount,
+  authenticated,
 }: {
   owner: boolean;
   username: string;
   friendsCount: number;
   messagesCount: number;
+  authenticated: boolean;
 }) {
   return (
     <div className={cn("border-radius", styles.profileHeader)}>
@@ -50,7 +52,7 @@ export default function ProfileHeader({
             </Link>{" "}
           </p>
         </div>
-        {!owner && (
+        {!owner && authenticated && (
           <Button className={styles.profileButtons}>
             <HumanHandsup />
             Adicionar amigo

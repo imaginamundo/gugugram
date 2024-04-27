@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Close from "pixelarticons/svg/close.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
@@ -13,9 +15,11 @@ import styles from "./ProfileWall.module.css";
 export default function ProfileWall({
   messages,
   owner,
+  authenticated,
 }: {
   messages: MessagesData["messages"];
-  owner?: boolean;
+  owner: boolean;
+  authenticated: boolean;
 }) {
   return (
     <div className={cn("border-radius", styles.profileWall)}>
@@ -57,7 +61,7 @@ export default function ProfileWall({
           );
         })}
       </div>
-      {!owner && <ProfileWallForm />}
+      {!owner && authenticated && <ProfileWallForm />}
     </div>
   );
 }

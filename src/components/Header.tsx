@@ -1,8 +1,13 @@
 import Link from "next/link";
 
+import { auth } from "@/app/auth";
+import HeaderUser from "@/components/HeaderUser";
+
 import styles from "./Header.module.css";
 
-export default function Header() {
+export default async function Header() {
+  const session = await auth();
+
   return (
     <header className={styles.header}>
       <h1 className={styles.logo}>
@@ -17,10 +22,7 @@ export default function Header() {
           <span>m</span>
         </Link>
       </h1>
-      <nav>
-        <Link href="/entrar">Entrar</Link> ou{" "}
-        <Link href="/cadastrar">Cadastrar</Link>
-      </nav>
+      <HeaderUser session={session} />
     </header>
   );
 }

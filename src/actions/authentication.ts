@@ -1,14 +1,22 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { ValidationError } from "yup";
 
-import { signIn } from "@/app/auth";
+import { signIn, signOut } from "@/app/auth";
 import { type RegisterInputs, registerSchema } from "@/app/cadastrar/types";
 import { type LoginInputs, loginSchema } from "@/app/entrar/types";
 import { db } from "@/database/postgres";
 import { users } from "@/database/schema";
 import { hashPassword } from "@/utils/password";
 import { getValidationErrors, type ValidationErrorsObject } from "@/utils/yup";
+
+export async function logoutAction() {
+  const data = await signOut({ redirect: false });
+  cookies().delete("authjs.session-token");
+  redirect(data.redirect);
+}
 
 export async function loginAction(data: LoginInputs) {
   let errors: ValidationErrorsObject = {};

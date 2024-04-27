@@ -37,6 +37,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.username = user.username;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      session.user.username = token.username;
+      return session;
+    },
     redirect(params) {
       return params.baseUrl;
     },

@@ -11,9 +11,11 @@ import styles from "./ProfileFriends.module.css";
 export default function ProfileFriends({
   owner,
   friends,
+  authenticated,
 }: {
   owner: boolean;
   friends: FriendsData["friends"];
+  authenticated: boolean;
 }) {
   return (
     <div className={cn("border-radius", styles.profileFriends)}>
@@ -33,13 +35,13 @@ export default function ProfileFriends({
               </Link>
               <div className={styles.friendInformation}>
                 <Link href={`/${friend.username}`}>{friend.username}</Link>
-                {owner && (
+                {owner && authenticated && (
                   <Button variant="destructive">
                     <Close />
                     Remover amizade
                   </Button>
                 )}
-                {!owner && (
+                {!owner && authenticated && (
                   <Button className={styles.profileButtons}>
                     <HumanHandsup />
                     Adicionar amigo

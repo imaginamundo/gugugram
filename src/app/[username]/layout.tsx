@@ -1,4 +1,5 @@
 import type { ProfileData } from "@/api/profile/[username]/route";
+import { auth } from "@/app/auth";
 import ProfileGrid from "@/components/ProfileGrid";
 import ProfileHeader from "@/components/ProfileHeader";
 import UploadImage from "@/components/UploadImage";
@@ -13,7 +14,11 @@ export default async function ProfileLayout({
   children: React.ReactNode;
   params: { username: string };
 }) {
+  const session = await auth();
   const data: ProfileData = await getProfileData(params.username);
+
+  let owner = false;
+  if (session?.user.username === params.username) owner = true;
 
   return (
     <main className={styles.layout}>
@@ -22,10 +27,11 @@ export default async function ProfileLayout({
           username={data.username}
           friendsCount={data.friendsCount}
           messagesCount={data.messagesCount}
-          owner={data.owner}
+          owner={owner}
+          authenticated={!!session}
         />
-        {data.owner && <UploadImage />}
-        <ProfileGrid images={data.images} owner={data.owner} />
+        {owner && <UploadImage />}
+        <ProfileGrid images={data.images} owner={owner} />
       </div>
       {children}
     </main>

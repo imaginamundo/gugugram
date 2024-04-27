@@ -1,4 +1,5 @@
 import type { MessagesData } from "@/api/profile/[username]/messages/route";
+import { auth } from "@/app/auth";
 import ProfileWall from "@/components/ProfileWall";
 
 export const dynamic = "force-dynamic";
@@ -7,9 +8,19 @@ export default async function Profile({
 }: {
   params: { username: string };
 }) {
+  const session = await auth();
   const data: MessagesData = await getMessagesData(params.username);
 
-  return <ProfileWall messages={data.messages} owner={data.owner} />;
+  let owner = false;
+  if (session?.user.username === params.username) owner = true;
+
+  return (
+    <ProfileWall
+      messages={data.messages}
+      owner={owner}
+      authenticated={!!session}
+    />
+  );
 }
 
 async function getMessagesData(username: string) {
