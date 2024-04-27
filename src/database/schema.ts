@@ -33,6 +33,7 @@ export const users = createTable("user", {
   password: text("password").notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
+  description: text("description"),
 });
 
 export const accounts = createTable(
