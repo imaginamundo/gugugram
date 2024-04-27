@@ -12,12 +12,14 @@ export const dynamic = "force-dynamic";
 export default function ProfileHeader({
   owner,
   username,
+  description,
   friendsCount,
   messagesCount,
   authenticated,
 }: {
   owner: boolean;
   username: string;
+  description: string | null;
   friendsCount: number;
   messagesCount: number;
   authenticated: boolean;
@@ -37,7 +39,7 @@ export default function ProfileHeader({
             </span>
             {username}
           </h2>
-          <p>Descrição do perfil</p>
+          {description && <p>Descrição do perfil</p>}
           <p className={styles.profileLinks}>
             <Link href={`/${username}#mural`} className={styles.profileLink}>
               <Mail className={styles.profileLinkIcon} />

@@ -2,7 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 import crypto from "node:crypto";
 
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   index,
   integer,
@@ -32,9 +32,14 @@ export const users = createTable("user", {
   email: text("email").unique().notNull(),
   password: text("password").notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
-  image: text("image"),
+  profilePicture: text("image"),
   description: text("description"),
 });
+
+export const userRelations = relations(users, ({ many }) => ({
+  images: many(images),
+  posts: many(posts),
+}));
 
 export const accounts = createTable(
   "account",
@@ -98,6 +103,13 @@ export const posts = createTable(
   (post) => ({ idIndex: index("id_idx").on(post.id) }),
 );
 
+export const postsRelations = relations(posts, ({ one }) => ({
+  user: one(users, {
+    fields: [posts.userId],
+    references: [users.id],
+  }),
+}));
+
 export const images = createTable(
   "image",
   {
@@ -105,13 +117,19 @@ export const images = createTable(
     userId: text("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    name: varchar("name", { length: 256 }).notNull(),
     url: varchar("url", { length: 1024 }).notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   },
   (image) => ({
-    nameIndex: index("name_idx").on(image.name),
+    url: index("url_idx").on(image.url),
   }),
 );
+
+export const imagesRelations = relations(images, ({ one }) => ({
+  user: one(users, {
+    fields: [images.userId],
+    references: [users.id],
+  }),
+}));
