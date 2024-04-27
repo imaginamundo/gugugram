@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import type { AuthError } from "next-auth";
 import { ValidationError } from "yup";
 
 import { signIn, signOut } from "@/app/auth";
@@ -13,9 +14,9 @@ import { hashPassword } from "@/utils/password";
 import { getValidationErrors, type ValidationErrorsObject } from "@/utils/yup";
 
 export async function logoutAction() {
-  const data = await signOut({ redirect: false });
+  await signOut({ redirect: false });
   cookies().delete("authjs.session-token");
-  redirect(data.redirect);
+  redirect("/");
 }
 
 export async function loginAction(data: LoginInputs) {
@@ -27,13 +28,15 @@ export async function loginAction(data: LoginInputs) {
 
   if (Object.keys(errors).length) throw new Error("Campos inválidos");
 
-  const formData = new FormData();
-  formData.append("email", data.email);
-  formData.append("password", data.password);
+  await signIn("credentials", { redirect: false, ...data }).catch(
+    (e: AuthError) => {
+      let message = e.message;
+      if (e.cause?.err?.message) message = e.cause.err.message;
+      throw new Error(message);
+    },
+  );
 
-  return await signIn("credentials", formData).catch((e) => {
-    throw e;
-  });
+  redirect("/");
 }
 
 export async function registerAction(data: RegisterInputs) {

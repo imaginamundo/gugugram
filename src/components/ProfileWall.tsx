@@ -6,18 +6,22 @@ import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 
 import Button from "@/components/Button";
 import ProfileWallForm from "@/components/ProfileWallForm";
-import { MessageType } from "@/database/schema";
+import { MessageType, UserType } from "@/database/schema";
 import cn from "@/utils/cn";
 import { parseDate } from "@/utils/date";
 
 import styles from "./ProfileWall.module.css";
+
+type MessagesWithAuthor = (MessageType & {
+  author: UserType;
+})[];
 
 export default function ProfileWall({
   messages,
   owner,
   authenticated,
 }: {
-  messages: MessageType[];
+  messages: MessagesWithAuthor;
   owner: boolean;
   authenticated: boolean;
 }) {
@@ -39,17 +43,17 @@ export default function ProfileWall({
                 </span>
                 <p>
                   <span>
-                    <Link href={`/${message.from}`}>
-                      <b>{message.from}</b>
+                    <Link href={`/${message.author.username}`}>
+                      <b>{message.author.username}</b>
                     </Link>
                   </span>
                   <br />
-                  <span>{parseDate(message.date)}</span>
+                  <span>{parseDate(message.createdAt)}</span>
                 </p>
               </div>
               <div className={styles.messageWrapper}>
                 <p className={cn("border-radius", styles.message)}>
-                  {message.message}
+                  {message.content}
                 </p>
                 {owner && (
                   <Button variant="destructive">

@@ -60,10 +60,36 @@ export async function profileMessages(username: string) {
           content: true,
           createdAt: true,
         },
+        with: {
+          author: {
+            columns: {
+              id: true,
+              username: true,
+            },
+          },
+        },
       },
     },
   });
 
   if (messages) return messages.messages;
+  return [];
+}
+
+export async function profileFriends(username: string) {
+  const friends = await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.username, username),
+    columns: {},
+    with: {
+      friends: {
+        columns: {
+          id: true,
+          username: true,
+        },
+      },
+    },
+  });
+
+  if (friends) return friends.friends;
   return [];
 }

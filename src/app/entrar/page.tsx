@@ -1,6 +1,8 @@
 "use client";
 
 import { yupResolver } from "@hookform/resolvers/yup";
+import WarningBox from "pixelarticons/svg/warning-box.svg";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { loginAction } from "@/actions/authentication";
@@ -13,13 +15,21 @@ import styles from "./page.module.css";
 import { type LoginInputs, loginSchema } from "./types";
 
 export default function Login() {
+  const [serverError, setServerError] = useState("");
   const { register, handleSubmit, control } = useForm<LoginInputs>({
     resolver: yupResolver(loginSchema),
   });
   const fieldError = useFormErrors(control);
 
   const authenticate = async (data: LoginInputs) => {
-    await loginAction(data);
+    try {
+      await loginAction(data);
+    } catch (e) {
+      if (e instanceof Error) {
+        return setServerError(e.message);
+      }
+      setServerError("Algum erro estranho aconteceu");
+    }
   };
 
   return (
@@ -49,6 +59,11 @@ export default function Login() {
             type="password"
           />
         </label>
+        {serverError && (
+          <p className="warning-text margin-bottom">
+            <WarningBox /> {serverError}
+          </p>
+        )}
         <Button>Entrar</Button>
       </form>
     </main>

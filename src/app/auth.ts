@@ -27,10 +27,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         user = await db.query.users.findFirst({
           where: eq(users.email, email),
         });
-        if (!user) throw new Error("User not found");
+        if (!user) throw new Error("Usuário não encontrado");
 
         const validPassword = isPasswordValid(user.password, password);
-        if (!validPassword) throw new Error("Invalid password");
+        if (!validPassword) throw new Error("Senha inválida");
 
         return user;
       },
@@ -48,9 +48,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.id = token.id;
       session.user.username = token.username;
       return session;
-    },
-    redirect(params) {
-      return params.baseUrl;
     },
   },
   pages: {
