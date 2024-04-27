@@ -1,5 +1,3 @@
-import type { ProfileData } from "@/api/profile/[username]/route";
-
 import styles from "./ProfileGrid.module.css";
 
 export default function ProfileGrid({
@@ -7,7 +5,7 @@ export default function ProfileGrid({
   images,
 }: {
   owner: boolean;
-  images: ProfileData["images"];
+  images: { id: number; url: string }[];
 }) {
   return (
     <div className={styles.grid}>
@@ -15,7 +13,7 @@ export default function ProfileGrid({
         <img
           key={`image-${image.id}`}
           src={image.url}
-          alt={image.description}
+          alt={`Image number ${image.id}`}
           width="105px"
           height="105px"
         />

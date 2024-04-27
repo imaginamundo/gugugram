@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={silkcreen.className}>
+    <html lang="pt" className={silkcreen.className}>
       <body>
         <Header />
         {children}

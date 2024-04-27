@@ -10,12 +10,13 @@ export const registerSchema = yup.object({
     .string()
     .matches(/^[a-zA-Z0-9]+$/, {
       message: "Apenas caracteres de A a z sem espaços",
+      excludeEmptyString: true,
     })
     .required(requiredMessage),
   email: yup.string().email(invalidEmailMessage).required(requiredMessage),
   password: yup
     .string()
-    .max(30, fieldLimitMessage(30))
+    .max(14, fieldLimitMessage(14))
     .required(requiredMessage),
 });
 

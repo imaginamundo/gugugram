@@ -9,7 +9,7 @@ export const loginSchema = yup.object({
   email: yup.string().email(invalidEmailMessage).required(requiredMessage),
   password: yup
     .string()
-    .max(30, fieldLimitMessage(30))
+    .max(14, fieldLimitMessage(14))
     .required(requiredMessage),
 });
 

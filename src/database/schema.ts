@@ -2,7 +2,12 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 import crypto from "node:crypto";
 
-import { relations, sql } from "drizzle-orm";
+import {
+  type InferInsertModel,
+  type InferSelectModel,
+  relations,
+  sql,
+} from "drizzle-orm";
 import {
   index,
   integer,
@@ -34,11 +39,27 @@ export const users = createTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   profilePicture: text("image"),
   description: text("description"),
+  friends: text("friends"),
 });
+export type UserType = InferSelectModel<typeof users>;
+export type NewUserType = InferInsertModel<typeof users>;
 
 export const userRelations = relations(users, ({ many }) => ({
   images: many(images),
-  posts: many(posts),
+  messagesWritten: many(messages, {
+    fields: [messages.authorId],
+    reference: [users.messagesWritten],
+    relationName: "messages_written",
+  }),
+  messages: many(messages, {
+    fields: [messages.receiverId],
+    reference: [users.messagesReceived],
+    relationName: "messages_to_user",
+  }),
+  friends: many(users, {
+    fields: [users.friends],
+    references: [users.id],
+  }),
 }));
 
 export const accounts = createTable(
@@ -88,48 +109,55 @@ export const verificationTokens = createTable(
 );
 
 // Content
-export const posts = createTable(
-  "post",
+export const messages = createTable(
+  "message",
   {
     id: serial("id").primaryKey(),
-    userId: text("userId")
+    authorId: text("authorId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    message: varchar("message", { length: 120 }),
+    receiverId: text("receiverId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    content: varchar("content", { length: 120 }),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   },
   (post) => ({ idIndex: index("id_idx").on(post.id) }),
 );
+export type MessageType = InferSelectModel<typeof messages>;
+export type NewMessageType = InferInsertModel<typeof messages>;
 
-export const postsRelations = relations(posts, ({ one }) => ({
-  user: one(users, {
-    fields: [posts.userId],
+export const messagesRelations = relations(messages, ({ one }) => ({
+  author: one(users, {
+    fields: [messages.authorId],
     references: [users.id],
+    relationName: "messages_written",
+  }),
+  receiver: one(users, {
+    fields: [messages.receiverId],
+    references: [users.id],
+    relationName: "messages_to_user",
   }),
 }));
 
-export const images = createTable(
-  "image",
-  {
-    id: serial("id").primaryKey(),
-    userId: text("userId")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    url: varchar("url", { length: 1024 }).notNull(),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  },
-  (image) => ({
-    url: index("url_idx").on(image.url),
-  }),
-);
+export const images = createTable("image", {
+  id: serial("id").primaryKey(),
+  authorId: text("authorId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  url: varchar("url", { length: 1024 }).notNull(),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+export type ImageType = InferSelectModel<typeof images>;
+export type NewImageType = InferInsertModel<typeof images>;
 
 export const imagesRelations = relations(images, ({ one }) => ({
-  user: one(users, {
-    fields: [images.userId],
+  author: one(users, {
+    fields: [images.authorId],
     references: [users.id],
   }),
 }));

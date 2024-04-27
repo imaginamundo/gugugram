@@ -28,27 +28,22 @@ const data = {
     {
       id: 0,
       url: "https://art.pixilart.com/50d9ba576541e17.png",
-      description: "Lorem ipsum",
     },
     {
       id: 1,
       url: "https://art.pixilart.com/50d9ba576541e17.png",
-      description: "Lorem ipsum",
     },
     {
       id: 2,
       url: "https://art.pixilart.com/50d9ba576541e17.png",
-      description: "Lorem ipsum",
     },
     {
       id: 3,
       url: "https://art.pixilart.com/50d9ba576541e17.png",
-      description: "Lorem ipsum",
     },
     {
       id: 4,
       url: "https://art.pixilart.com/50d9ba576541e17.png",
-      description: "Lorem ipsum",
     },
   ],
 };

@@ -1,5 +1,4 @@
 import { profileInformation } from "@/actions/user";
-import type { ProfileData } from "@/api/profile/[username]/route";
 import { auth } from "@/app/auth";
 import ProfileGrid from "@/components/ProfileGrid";
 import ProfileHeader from "@/components/ProfileHeader";
@@ -16,7 +15,6 @@ export default async function ProfileLayout({
   params: { username: string };
 }) {
   const session = await auth();
-  const data: ProfileData = await getProfileData(params.username);
   const profileData = await profileInformation(params.username);
 
   let owner = false;
@@ -28,30 +26,15 @@ export default async function ProfileLayout({
         <ProfileHeader
           username={profileData.username}
           description={profileData.description}
-          friendsCount={0}
-          messagesCount={0}
+          friendsCount={profileData.friendsCount}
+          messagesCount={profileData.messagesCount}
           owner={owner}
           authenticated={!!session}
         />
         {owner && <UploadImage />}
-        {/* <ProfileGrid images={data.images} owner={owner} /> */}
+        <ProfileGrid images={profileData.images} owner={owner} />
       </div>
       {children}
     </main>
   );
-}
-
-async function getProfileData(username?: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/profile/${username}`,
-    {
-      cache: "no-store",
-    },
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
 }
