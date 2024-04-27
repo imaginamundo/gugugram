@@ -1,13 +1,25 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import Chess from "pixelarticons/svg/chess.svg";
+import CoffeAlt from "pixelarticons/svg/coffee-alt.svg";
+
+import styles from "./not-found.module.css";
+
+export const metadata: Metadata = {
+  title: "Gugugram · Página não encontrada",
+  description: "Your 15x15 image repository",
+};
 
 export default function NotFound() {
   return (
-    <div>
-      <Chess width={24 * 5} height={24 * 5} />
-      <h2>Ops</h2>
-      <p>Página nem existe</p>
-      <Link href="/">Ir para tela inicial</Link>
+    <div className={styles.notFound}>
+      <div className={styles.content}>
+        <CoffeAlt width={24 * 5} height={24 * 5} />
+        <div>
+          <h2>Eta</h2>
+          <p>Essa página nem existe</p>
+          <Link href="/">Ir para tela inicial</Link>
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Close from "pixelarticons/svg/close.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
+import MoodSad from "pixelarticons/svg/mood-sad.svg";
 
 import Button from "@/components/Button";
 import ProfileWallForm from "@/components/ProfileWallForm";
@@ -25,6 +26,8 @@ export default function ProfileWall({
   owner: boolean;
   authenticated: boolean;
 }) {
+  const noMessages = messages.length === 0;
+
   return (
     <div className={cn("border-radius", styles.profileWall)}>
       <div className={styles.profileWallHeader}>
@@ -64,6 +67,11 @@ export default function ProfileWall({
             </div>
           );
         })}
+        {noMessages && (
+          <p>
+            Nenhuma mensagem <MoodSad />
+          </p>
+        )}
       </div>
       {!owner && authenticated && <ProfileWallForm />}
     </div>

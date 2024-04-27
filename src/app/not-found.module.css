@@ -1,0 +1,16 @@
+.notFound {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: var(--max-width);
+    padding: var(--padding);
+    margin: auto;
+}
+
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2em;
+    padding-top: 20dvh;
+    padding-bottom: 20dvh;
+}
