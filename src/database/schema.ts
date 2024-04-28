@@ -28,7 +28,9 @@ export type UserType = InferSelectModel<typeof users>;
 export type NewUserType = InferInsertModel<typeof users>;
 
 export const userProfiles = createTable("user_profiles", {
-  id: serial("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   userId: text("user_id"),
   description: text("description"),
   image: text("image"),
@@ -36,7 +38,9 @@ export const userProfiles = createTable("user_profiles", {
 export type UserProfileType = InferSelectModel<typeof userProfiles>;
 
 export const images = createTable("images", {
-  id: serial("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   image: text("image").notNull(),
   authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at")
@@ -47,7 +51,9 @@ export type ImageType = InferSelectModel<typeof images>;
 export type NewImageType = InferInsertModel<typeof images>;
 
 export const messages = createTable("messages", {
-  id: serial("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   body: text("body").notNull(),
   authorId: text("author_id").notNull(),
   receiverId: text("receiver_id").notNull(),
@@ -61,7 +67,9 @@ export type NewMessageType = InferInsertModel<typeof messages>;
 export const statusEnum = pgEnum("status", ["pending", "accepted", "canceled"]);
 
 export const userFriends = createTable("user_friends", {
-  id: serial("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   requestUserId: text("request_user_id").notNull(),
   targetUserId: text("target_user_id").notNull(),
   status: statusEnum("status").notNull(),

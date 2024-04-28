@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Close from "pixelarticons/svg/close.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
@@ -23,6 +25,11 @@ export default function ProfileWall({
   authenticated: boolean;
 }) {
   const noMessages = messages.length === 0;
+
+  const removeMessage = async (messageId: string) => {
+    await removeMessage(messageId);
+    location.reload();
+  };
 
   return (
     <div className={cn("border-radius", styles.profileWall)}>
