@@ -16,8 +16,9 @@ export default function ProfileWallForm({ userId }: { userId: string }) {
     resolver: yupResolver(schema),
   });
 
-  const sendMessage = (data: Inputs) => {
-    addMessage(userId, data.message);
+  const sendMessage = async (data: Inputs) => {
+    await addMessage(userId, data.message);
+    location.reload();
   };
 
   return (
