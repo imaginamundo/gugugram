@@ -24,6 +24,7 @@
   },
   "include": [
     "types/svgr.d.ts",
+    "types/auth.d.ts",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

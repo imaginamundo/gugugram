@@ -45,9 +45,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     session({ session, token }) {
-      session.user.id = token.id;
-      session.user.username = token.username;
-      return session;
+      return {
+        ...session,
+        user: { ...session.user, id: token.id, username: token.username },
+      };
     },
   },
   pages: {

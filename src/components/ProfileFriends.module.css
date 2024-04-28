@@ -20,8 +20,13 @@
     gap: 4px;
 }
 .friendImage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 60px;
     height: 60px;
+    background: rgb(var(--background));
+    color: rgb(var(--foreground-rgb));
 }
 .friendInformation {
     display: flex;

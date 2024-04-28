@@ -1,5 +1,3 @@
-// Example model schema from the Drizzle docs
-// https://orm.drizzle.team/docs/sql-schema-declaration
 import crypto from "node:crypto";
 
 import {
@@ -9,155 +7,109 @@ import {
   sql,
 } from "drizzle-orm";
 import {
-  index,
-  integer,
+  pgEnum,
   pgTableCreator,
-  primaryKey,
   serial,
   text,
   timestamp,
-  varchar,
 } from "drizzle-orm/pg-core";
-import type { AdapterAccount } from "next-auth/adapters";
 
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
 export const createTable = pgTableCreator((name) => `gugugram_${name}`);
 
-// User
-export const users = createTable("user", {
+export const users = createTable("users", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   username: text("username").unique().notNull(),
   email: text("email").unique().notNull(),
   password: text("password").notNull(),
-  emailVerified: timestamp("emailVerified", { mode: "date" }),
-  profilePicture: text("image"),
-  description: text("description"),
-  friends: text("friends"),
 });
 export type UserType = InferSelectModel<typeof users>;
 export type NewUserType = InferInsertModel<typeof users>;
 
-export const userRelations = relations(users, ({ many }) => ({
-  images: many(images),
-  messagesWritten: many(messages, {
-    fields: [messages.authorId],
-    reference: [users.messagesWritten],
-    relationName: "messages_written",
-  }),
-  messages: many(messages, {
-    fields: [messages.receiverId],
-    reference: [users.messagesReceived],
-    relationName: "messages_to_user",
-  }),
-  friends: many(users, {
-    fields: [users.friends],
-    references: [users.id],
-  }),
-}));
-
-export const accounts = createTable(
-  "account",
-  {
-    userId: text("userId")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<AdapterAccount["type"]>().notNull(),
-    provider: text("provider").notNull(),
-    providerAccountId: text("providerAccountId").notNull(),
-    refresh_token: text("refresh_token"),
-    access_token: text("access_token"),
-    expires_at: integer("expires_at"),
-    token_type: text("token_type"),
-    scope: text("scope"),
-    id_token: text("id_token"),
-    session_state: text("session_state"),
-  },
-  (account) => ({
-    compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId],
-    }),
-  }),
-);
-
-export const sessions = createTable("session", {
-  sessionToken: text("sessionToken").primaryKey(),
-  userId: text("userId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  expires: timestamp("expires", { mode: "date" }).notNull(),
-});
-
-export const verificationTokens = createTable(
-  "verificationToken",
-  {
-    identifier: text("identifier").notNull(),
-    token: text("token").notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
-  },
-  (verification) => ({
-    compoundKey: primaryKey({
-      columns: [verification.identifier, verification.token],
-    }),
-  }),
-);
-
-// Content
-export const messages = createTable(
-  "message",
-  {
-    id: serial("id").primaryKey(),
-    authorId: text("authorId")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    receiverId: text("receiverId")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    content: varchar("content", { length: 120 }),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  },
-  (post) => ({ idIndex: index("id_idx").on(post.id) }),
-);
-export type MessageType = InferSelectModel<typeof messages>;
-export type NewMessageType = InferInsertModel<typeof messages>;
-
-export const messagesRelations = relations(messages, ({ one }) => ({
-  author: one(users, {
-    fields: [messages.authorId],
-    references: [users.id],
-    relationName: "messages_written",
-  }),
-  receiver: one(users, {
-    fields: [messages.receiverId],
-    references: [users.id],
-    relationName: "messages_to_user",
-  }),
-}));
-
-export const images = createTable("image", {
+export const userProfiles = createTable("user_profiles", {
   id: serial("id").primaryKey(),
-  authorId: text("authorId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  url: varchar("url", { length: 1024 }).notNull(),
+  userId: text("user_id"),
+  description: text("description"),
+  image: text("image"),
+});
+export type UserProfileType = InferSelectModel<typeof userProfiles>;
+
+export const images = createTable("images", {
+  id: serial("id").primaryKey(),
+  image: text("image").notNull(),
+  authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
 });
 export type ImageType = InferSelectModel<typeof images>;
 export type NewImageType = InferInsertModel<typeof images>;
 
-export const imagesRelations = relations(images, ({ one }) => ({
+export const messages = createTable("messages", {
+  id: serial("id").primaryKey(),
+  body: text("body").notNull(),
+  authorId: text("author_id").notNull(),
+  receiverId: text("receiver_id").notNull(),
+  createdAt: timestamp("created_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+export type MessageType = InferSelectModel<typeof messages>;
+export type NewMessageType = InferInsertModel<typeof messages>;
+
+export const statusEnum = pgEnum("status", ["pending", "accepted", "canceled"]);
+
+export const userFriends = createTable("user_friends", {
+  id: serial("id").primaryKey(),
+  requestUserId: text("request_user_id").notNull(),
+  targetUserId: text("target_user_id").notNull(),
+  status: statusEnum("status").notNull(),
+  lastUpdate: timestamp("last_update")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+export type UserFriendsType = InferSelectModel<typeof userFriends>;
+export type NewUserFriendsType = InferInsertModel<typeof userFriends>;
+
+export const usersRelations = relations(users, ({ one, many }) => ({
+  profile: one(userProfiles, {
+    fields: [users.id],
+    references: [userProfiles.userId],
+  }),
+  images: many(images),
+  friends: many(userFriends),
+  messages: many(messages, {
+    relationName: "messages-received",
+  }),
+}));
+
+export const friendsUserRelations = relations(userFriends, ({ one }) => ({
+  requestUser: one(users, {
+    fields: [userFriends.requestUserId],
+    references: [users.id],
+  }),
+  targetUser: one(users, {
+    fields: [userFriends.targetUserId],
+    references: [users.id],
+  }),
+}));
+
+export const imagesUserAuthorRelations = relations(images, ({ one }) => ({
   author: one(users, {
     fields: [images.authorId],
     references: [users.id],
+  }),
+}));
+
+export const messagesUserAuthorRelations = relations(messages, ({ one }) => ({
+  author: one(users, {
+    fields: [messages.authorId],
+    references: [users.id],
+  }),
+  receiver: one(users, {
+    fields: [messages.receiverId],
+    references: [users.id],
+    relationName: "messages-received",
   }),
 }));

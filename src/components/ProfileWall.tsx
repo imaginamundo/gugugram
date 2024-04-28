@@ -5,24 +5,20 @@ import Close from "pixelarticons/svg/close.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 import MoodSad from "pixelarticons/svg/mood-sad.svg";
 
+import type { ProfileMessagesType } from "@/actions/user";
 import Button from "@/components/Button";
 import ProfileWallForm from "@/components/ProfileWallForm";
-import { MessageType, UserType } from "@/database/schema";
 import cn from "@/utils/cn";
 import { parseDate } from "@/utils/date";
 
 import styles from "./ProfileWall.module.css";
-
-type MessagesWithAuthor = (MessageType & {
-  author: UserType;
-})[];
 
 export default function ProfileWall({
   messages,
   owner,
   authenticated,
 }: {
-  messages: MessagesWithAuthor;
+  messages: ProfileMessagesType;
   owner: boolean;
   authenticated: boolean;
 }) {
@@ -56,7 +52,7 @@ export default function ProfileWall({
               </div>
               <div className={styles.messageWrapper}>
                 <p className={cn("border-radius", styles.message)}>
-                  {message.content}
+                  {message.body}
                 </p>
                 {owner && (
                   <Button variant="destructive">

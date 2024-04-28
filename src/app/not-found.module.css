@@ -10,6 +10,7 @@
 .content {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 2em;
     padding-top: 20dvh;
     padding-bottom: 20dvh;

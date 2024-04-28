@@ -6,7 +6,6 @@ import styles from "./not-found.module.css";
 
 export const metadata: Metadata = {
   title: "Gugugram · Página não encontrada",
-  description: "Your 15x15 image repository",
 };
 
 export default function NotFound() {

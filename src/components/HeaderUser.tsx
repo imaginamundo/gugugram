@@ -1,18 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { type Session } from "next-auth";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 
 import { logoutAction } from "@/actions/authentication";
 import Button from "@/components/Button";
 
 import styles from "./HeaderUser.module.css";
-
-type Session = {
-  user: {
-    username: string;
-  };
-};
 
 export default function HeaderUser({ session }: { session: Session }) {
   return (
