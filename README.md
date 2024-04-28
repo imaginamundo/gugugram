@@ -25,10 +25,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [ ] Remove profile picture;
 - [ ] Add description;
 - [x] Friends page;
-- [ ] Add friend;
-- [ ] Remove friend;
+- [x] Add friend;
+- [x] Remove friend;
 - [x] Messages page;
-- [ ] Add message;
-- [ ] Remove message;
+- [x] Add message;
+- [x] Remove message;
 - [ ] Error management ([Sentry](https://sentry.io/pricing/));
 - [ ] Analitycs ([Posthog](https://posthog.com))

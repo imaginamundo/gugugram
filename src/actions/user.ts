@@ -3,6 +3,7 @@
 import { and, count, eq, ne } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
+import { auth } from "@/app/auth";
 import { db } from "@/database/postgres";
 import type {
   ImageType,
@@ -11,9 +12,16 @@ import type {
   UserProfileType,
   UserType,
 } from "@/database/schema";
-import { messages, userFriends, users } from "@/database/schema";
+import {
+  friendshipPossibleStatus,
+  messages,
+  userFriends,
+  users,
+} from "@/database/schema";
 
 export async function userInformations(username: string) {
+  const session = await auth();
+
   const user = await db.query.users.findFirst({
     where: (user, { eq }) => eq(user.username, username),
     columns: {
@@ -37,6 +45,30 @@ export async function userInformations(username: string) {
   });
 
   if (!user) return notFound();
+
+  let friendshipStatus: {
+    status: (typeof friendshipPossibleStatus)[number] | null;
+    type: "target" | "request" | null;
+  } = {
+    status: null,
+    type: null,
+  };
+
+  if (session?.user.id !== user.id) {
+    const friendship = await db.query.userFriends.findFirst({
+      where: (userFriends, { eq, or }) =>
+        or(
+          eq(userFriends.targetUserId, user.id),
+          eq(userFriends.requestUserId, user.id),
+        ),
+    });
+
+    if (friendship) {
+      friendshipStatus.status = friendship.status;
+      friendshipStatus.type =
+        friendship.targetUserId === user.id ? "request" : "target";
+    }
+  }
 
   const [{ messagesCount }] = await db
     .select({
@@ -63,13 +95,17 @@ export async function userInformations(username: string) {
     .groupBy(userFriends.id)
     .limit(1);
 
-  return { messagesCount, friendsCount, ...user };
+  return { friendship: friendshipStatus, messagesCount, friendsCount, ...user };
 }
 export type UserInformationType = DisplayUserType & {
   profile: DisplayProfileType;
   images: DisplayImageType[];
   messagesCount: number;
   friendsCount: number;
+  friendship: {
+    status: (typeof friendshipPossibleStatus)[number] | null;
+    type: "target" | "request" | null;
+  };
 };
 
 export async function profileMessages(username: string) {

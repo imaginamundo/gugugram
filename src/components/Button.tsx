@@ -9,8 +9,11 @@ import styles from "./Button.module.css";
 const buttonVariants = cva(styles.button, {
   variants: {
     variant: {
-      default: [styles.buttonDefault, styles.pixelCorners],
-      destructive: [styles.buttonDestructive, styles.pixelCorners],
+      default: styles.buttonDefault,
+      destructive: styles.buttonDestructive,
+      outline: styles.buttonOutline,
+      disabled: styles.buttonDisabled,
+
       link: styles.buttonLink,
     },
   },

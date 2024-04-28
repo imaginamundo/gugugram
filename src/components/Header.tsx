@@ -10,7 +10,7 @@ export default async function Header() {
 
   return (
     <header className={styles.header}>
-      <h1 className={styles.logo}>
+      <h1>
         <Link href="/" className={styles.logo} title="Ir para página inicial">
           <span>g</span>
           <span>u</span>

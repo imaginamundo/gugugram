@@ -1,5 +1,7 @@
 .buttonDefault,
-.buttonDestructive {
+.buttonDestructive,
+.buttonOutline,
+.buttonDisabled {
     clip-path: polygon(
         0px calc(100% - 4px),
         2px calc(100% - 4px),
@@ -78,6 +80,8 @@
 .buttonBase,
 .buttonDefault,
 .buttonDestructive,
+.buttonOutline,
+.buttonDisabled,
 .buttonLink {
     display: inline-flex;
     align-items: center;
@@ -110,6 +114,27 @@
     }
     &:hover {
         background: red;
+    }
+}
+.buttonOutline {
+    color: var(--link);
+    background: transparent;
+    &:after {
+        background: var(--link);
+    }
+    &:hover {
+        color: var(--link-hover);
+        &:after {
+            background: var(--link-hover);
+        }
+    }
+}
+.buttonDisabled {
+    color: gray;
+    background: darkgray;
+    cursor: default;
+    &:after {
+        background: gray;
     }
 }
 .buttonLink {

@@ -9,9 +9,9 @@ import {
 import {
   pgEnum,
   pgTableCreator,
-  serial,
   text,
   timestamp,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 export const createTable = pgTableCreator((name) => `gugugram_${name}`);
@@ -64,19 +64,29 @@ export const messages = createTable("messages", {
 export type MessageType = InferSelectModel<typeof messages>;
 export type NewMessageType = InferInsertModel<typeof messages>;
 
-export const statusEnum = pgEnum("status", ["pending", "accepted", "canceled"]);
+export const friendshipPossibleStatus = ["pending", "accepted"] as const;
+export const statusEnum = pgEnum("status", friendshipPossibleStatus);
 
-export const userFriends = createTable("user_friends", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  requestUserId: text("request_user_id").notNull(),
-  targetUserId: text("target_user_id").notNull(),
-  status: statusEnum("status").notNull(),
-  lastUpdate: timestamp("last_update")
-    .notNull()
-    .default(sql`CURRENT_TIMESTAMP`),
-});
+export const userFriends = createTable(
+  "user_friends",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    requestUserId: text("request_user_id").notNull(),
+    targetUserId: text("target_user_id").notNull(),
+    status: statusEnum("status").notNull(),
+    lastUpdate: timestamp("last_update")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => ({
+    uniqueFriendsIndex: uniqueIndex("unique_friends_index").on(
+      table.requestUserId,
+      table.targetUserId,
+    ),
+  }),
+);
 export type UserFriendsType = InferSelectModel<typeof userFriends>;
 export type NewUserFriendsType = InferInsertModel<typeof userFriends>;
 

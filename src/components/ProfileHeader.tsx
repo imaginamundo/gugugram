@@ -1,8 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import Clock from "pixelarticons/svg/clock.svg";
+import Close from "pixelarticons/svg/close.svg";
+import Edit from "pixelarticons/svg/edit.svg";
 import HumanHandsup from "pixelarticons/svg/human-handsup.svg";
 import Mail from "pixelarticons/svg/mail.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 
+import { acceptFriend, addFriend, removeFriend } from "@/actions/friendship";
 import type { UserInformationType } from "@/actions/user";
 import Button from "@/components/Button";
 import cn from "@/utils/cn";
@@ -19,6 +25,80 @@ export default function ProfileHeader({
   owner: boolean;
   authenticated: boolean;
 }) {
+  const addNewFriend = async () => {
+    if (!user.friendship.status) {
+      await addFriend(user.id);
+      location.reload();
+    }
+  };
+
+  const acceptNewFriend = async () => {
+    if (user.friendship.status === "pending") {
+      await acceptFriend(user.id);
+      location.reload();
+    }
+  };
+
+  const removeNewFriend = async () => {
+    if (user.friendship.status === "accepted") {
+      await removeFriend(user.id);
+      location.reload();
+    }
+  };
+
+  let friendButton: {
+    text: string;
+    Icon: React.FC;
+    buttonProps: {
+      disabled?: boolean;
+      onClick?: () => void;
+      variant?: "destructive" | "disabled";
+    };
+  } = {
+    text: "Iniciar amizade",
+    Icon: HumanHandsup,
+    buttonProps: {
+      onClick() {
+        addNewFriend();
+      },
+    },
+  };
+
+  if (user.friendship.status) {
+    friendButton = {
+      pending: {
+        text: "Esperando resposta…",
+        Icon: Clock,
+        buttonProps: { disabled: true, variant: "disabled" },
+      },
+      accepted: {
+        text: "Remover amizade",
+        Icon: Close,
+        buttonProps: {
+          onClick() {
+            removeNewFriend();
+          },
+          variant: "destructive",
+        },
+      },
+    }[user.friendship.status];
+
+    if (
+      user.friendship.status === "pending" &&
+      user.friendship.type === "target"
+    ) {
+      friendButton = {
+        text: "Aceitar amizade",
+        Icon: HumanHandsup,
+        buttonProps: {
+          onClick() {
+            acceptNewFriend();
+          },
+        },
+      };
+    }
+  }
+
   return (
     <div className={cn("border-radius", styles.profileHeader)}>
       <div>
@@ -35,6 +115,12 @@ export default function ProfileHeader({
             {user.username}
           </h2>
           {user.profile?.description && <p>{user.profile.description}</p>}
+          {owner && (
+            <Button variant="outline">
+              <Edit />
+              Editar perfil
+            </Button>
+          )}
           <p className={styles.profileLinks}>
             <Link
               href={`/${user.username}#mural`}
@@ -53,9 +139,12 @@ export default function ProfileHeader({
           </p>
         </div>
         {!owner && authenticated && (
-          <Button className={styles.profileButtons}>
-            <HumanHandsup />
-            Adicionar amigo
+          <Button
+            className={styles.profileButtons}
+            {...friendButton.buttonProps}
+          >
+            <friendButton.Icon />
+            {friendButton.text}
           </Button>
         )}
       </div>
