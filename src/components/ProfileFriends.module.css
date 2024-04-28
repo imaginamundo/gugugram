@@ -6,6 +6,9 @@
     width: 100%;
     padding: 8px;
 }
+.profileFriendsHeader {
+    margin-bottom: 8px;
+}
 
 .friends {
     display: flex;

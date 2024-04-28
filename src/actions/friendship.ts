@@ -1,15 +1,16 @@
 "user server";
 
+import { auth } from "@/app/auth";
 import { db } from "@/database/postgres";
 import { userFriends } from "@/database/schema";
 
-export const addFriend = async (
-  requestUserId: string,
-  targetUserId: string,
-) => {
-  if (requestUserId === targetUserId) {
-    throw new Error("Você não pode se adicionar");
-  }
+export const addFriend = async (targetUserId: string) => {
+  const session = await auth();
+  if (!session) throw new Error("Não autenticado");
+
+  const requestUserId = session.user.id;
+  if (requestUserId === targetUserId) throw new Error("Não autorizado");
+
   await db
     .insert(userFriends)
     .values({ requestUserId, targetUserId, status: "pending" })
@@ -19,13 +20,13 @@ export const addFriend = async (
     });
 };
 
-export const removeFriend = async (
-  requestUserId: string,
-  targetUserId: string,
-) => {
-  if (requestUserId === targetUserId) {
-    throw new Error("Você não pode se remover");
-  }
+export const removeFriend = async (targetUserId: string) => {
+  const session = await auth();
+  if (!session) throw new Error("Não autenticado");
+
+  const requestUserId = session.user.id;
+  if (requestUserId === targetUserId) throw new Error("Não autorizado");
+
   await db
     .insert(userFriends)
     .values({ requestUserId, targetUserId, status: "canceled" })

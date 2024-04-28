@@ -23,7 +23,7 @@ export default function ProfileFriends({
 
   return (
     <div className={cn("border-radius", styles.profileFriends)}>
-      <div className={styles.profileWallHeader}>
+      <div className={styles.profileFriendsHeader}>
         <h3 id="amigos">Amigos</h3>
       </div>
       <div className={styles.friends}>

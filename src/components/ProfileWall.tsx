@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import Close from "pixelarticons/svg/close.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
@@ -14,10 +12,12 @@ import { parseDate } from "@/utils/date";
 import styles from "./ProfileWall.module.css";
 
 export default function ProfileWall({
+  userId,
   messages,
   owner,
   authenticated,
 }: {
+  userId: string;
   messages: ProfileMessagesType;
   owner: boolean;
   authenticated: boolean;
@@ -69,7 +69,7 @@ export default function ProfileWall({
           </p>
         )}
       </div>
-      {!owner && authenticated && <ProfileWallForm />}
+      {!owner && authenticated && <ProfileWallForm userId={userId} />}
     </div>
   );
 }
