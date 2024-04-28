@@ -10,7 +10,7 @@ export default async function Friends({
 }) {
   const session = await auth();
   const user = await userInformations(params.username);
-  const friends = await profileFriends(params.username, user.id);
+  const { friends } = await profileFriends(params.username, user.id);
 
   let owner = false;
   if (session?.user.username === params.username) owner = true;

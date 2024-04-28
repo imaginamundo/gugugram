@@ -103,63 +103,128 @@ export type ProfileMessagesType = (DisplayMessageType & {
 })[];
 
 export async function profileFriends(username: string, userId: string) {
-  try {
-    const friends = await db.query.users.findFirst({
-      where: (user, { eq }) => eq(user.username, username),
-      columns: {},
-      with: {
-        friends: {
-          where: and(
-            eq(userFriends.requestUserId, userId),
-            eq(userFriends.targetUserId, userId),
-            ne(userFriends.status, "canceled"),
-          ),
-          columns: {
-            id: true,
-            status: true,
-          },
-          with: {
-            targetUser: {
-              columns: {
-                id: true,
-                username: true,
-              },
-              with: {
-                profile: {
-                  columns: {
-                    image: true,
-                  },
+  const friends = await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.username, username),
+    columns: {},
+    with: {
+      targetedFriends: {
+        where: and(
+          eq(userFriends.requestUserId, userId),
+          eq(userFriends.targetUserId, userId),
+          ne(userFriends.status, "canceled"),
+        ),
+        columns: {
+          id: true,
+          status: true,
+        },
+        with: {
+          requestUser: {
+            columns: {
+              id: true,
+              username: true,
+            },
+            with: {
+              profile: {
+                columns: {
+                  image: true,
                 },
               },
             },
-            requestUser: {
-              columns: {
-                id: true,
-                username: true,
-              },
-              with: {
-                profile: {
-                  columns: {
-                    image: true,
-                  },
+          },
+          targetUser: {
+            columns: {
+              id: true,
+              username: true,
+            },
+            with: {
+              profile: {
+                columns: {
+                  image: true,
                 },
               },
             },
           },
         },
       },
-    });
+      requestedFriends: {
+        where: and(
+          eq(userFriends.requestUserId, userId),
+          eq(userFriends.targetUserId, userId),
+          ne(userFriends.status, "canceled"),
+        ),
+        columns: {
+          id: true,
+          status: true,
+        },
+        with: {
+          requestUser: {
+            columns: {
+              id: true,
+              username: true,
+            },
+            with: {
+              profile: {
+                columns: {
+                  image: true,
+                },
+              },
+            },
+          },
+          targetUser: {
+            columns: {
+              id: true,
+              username: true,
+            },
+            with: {
+              profile: {
+                columns: {
+                  image: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 
-    if (friends) return friends.friends;
-    return [];
-  } catch (e) {
-    console.log(e);
-    return [];
-  }
+  if (!friends) return { friends: [], friendRequests: [] };
+
+  const friendsMapped: ProfileFriendsType = {
+    friends: [],
+    friendRequests: [],
+  };
+
+  friends.targetedFriends.forEach(({ status, targetUser }) => {
+    if (status === "accepted") {
+      return friendsMapped.friends.push(buildFriendObject(targetUser));
+    }
+    if (status === "pending") {
+      return friendsMapped.friendRequests.push(buildFriendObject(targetUser));
+    }
+  });
+
+  friends.requestedFriends.forEach(({ status, requestUser }) => {
+    if (status === "accepted") {
+      friendsMapped.friends.push(buildFriendObject(requestUser));
+    }
+  });
+
+  return friendsMapped;
 }
-export type ProfileFriendsType = (DisplayFriendType & {
-  targetUser: DisplayUserType & { profile: DisplayProfileSubleType };
-})[];
+export type ProfileFriendsType = {
+  friends: FriendType[];
+  friendRequests: FriendType[];
+};
+export type FriendType = DisplayUserType & { profile: DisplayProfileSubleType };
+
+const buildFriendObject = (user: ProfileFriendsType["friends"][number]) => ({
+  id: user.id,
+  username: user.username,
+  profile: {
+    image: user.profile.image,
+  },
+});
 
 export type DisplayUserType = Pick<UserType, "id" | "username">;
 export type DisplayProfileType = Pick<UserProfileType, "description" | "image">;

@@ -4,7 +4,7 @@ import HumanHandsup from "pixelarticons/svg/human-handsup.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 import MoodSad from "pixelarticons/svg/mood-sad.svg";
 
-import type { ProfileFriendsType } from "@/actions/user";
+import type { FriendType } from "@/actions/user";
 import Button from "@/components/Button";
 import cn from "@/utils/cn";
 
@@ -16,7 +16,7 @@ export default function ProfileFriends({
   authenticated,
 }: {
   owner: boolean;
-  friends: ProfileFriendsType;
+  friends: FriendType[];
   authenticated: boolean;
 }) {
   const noFriends = friends.length === 0;
@@ -29,31 +29,26 @@ export default function ProfileFriends({
       <div className={styles.friends}>
         {friends.map((friend) => {
           return (
-            <div
-              key={`friend-${friend.targetUser.id}`}
-              className={styles.friend}
-            >
-              <Link href={`/${friend.targetUser.username}`}>
-                {friend.targetUser.profile.image && (
+            <div key={`friend-${friend.id}`} className={styles.friend}>
+              <Link href={`/${friend.username}`}>
+                {friend.profile.image && (
                   <img
-                    src={friend.targetUser.profile.image}
+                    src={friend.profile.image}
                     className={cn("border-radius", styles.friendImage)}
-                    alt={friend.targetUser.username}
+                    alt={friend.username}
                   />
                 )}
-                {!friend.targetUser.profile.image && (
+                {!friend.profile.image && (
                   <div
                     className={cn("border-radius", styles.friendImage)}
-                    title={friend.targetUser.username}
+                    title={friend.username}
                   >
                     <MoodHappy />
                   </div>
                 )}
               </Link>
               <div className={styles.friendInformation}>
-                <Link href={`/${friend.targetUser.username}`}>
-                  {friend.targetUser.username}
-                </Link>
+                <Link href={`/${friend.username}`}>{friend.username}</Link>
                 {owner && authenticated && (
                   <Button variant="destructive">
                     <Close />

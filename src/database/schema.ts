@@ -7,7 +7,6 @@ import {
   sql,
 } from "drizzle-orm";
 import {
-  index,
   pgEnum,
   pgTableCreator,
   serial,
@@ -61,21 +60,15 @@ export type NewMessageType = InferInsertModel<typeof messages>;
 
 export const statusEnum = pgEnum("status", ["pending", "accepted", "canceled"]);
 
-export const userFriends = createTable(
-  "user_friends",
-  {
-    id: serial("id").primaryKey(),
-    requestUserId: text("request_user_id").notNull(),
-    targetUserId: text("target_user_id").notNull(),
-    status: statusEnum("status").notNull(),
-    lastUpdate: timestamp("last_update")
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP`),
-  },
-  (table) => ({
-    friends: index("friends_index").on(table.requestUserId, table.targetUserId),
-  }),
-);
+export const userFriends = createTable("user_friends", {
+  id: serial("id").primaryKey(),
+  requestUserId: text("request_user_id").notNull(),
+  targetUserId: text("target_user_id").notNull(),
+  status: statusEnum("status").notNull(),
+  lastUpdate: timestamp("last_update")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
 export type UserFriendsType = InferSelectModel<typeof userFriends>;
 export type NewUserFriendsType = InferInsertModel<typeof userFriends>;
 
@@ -85,15 +78,18 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     references: [userProfiles.userId],
   }),
   images: many(images),
-  friends: many(userFriends, {
-    relationName: "user_friends",
+  requestedFriends: many(userFriends, {
+    relationName: "friendship_requester",
+  }),
+  targetedFriends: many(userFriends, {
+    relationName: "friendship_target",
   }),
   messages: many(messages, {
     relationName: "messages_received",
   }),
 }));
 
-export const friendsUserRelations = relations(userFriends, ({ one }) => ({
+export const userFriendsRelations = relations(userFriends, ({ one }) => ({
   requestUser: one(users, {
     fields: [userFriends.requestUserId],
     references: [users.id],
