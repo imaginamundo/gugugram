@@ -2,6 +2,7 @@ import Link from "next/link";
 import Close from "pixelarticons/svg/close.svg";
 import HumanHandsup from "pixelarticons/svg/human-handsup.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
+import MoodSad from "pixelarticons/svg/mood-sad.svg";
 
 import type { ProfileFriendsType } from "@/actions/user";
 import Button from "@/components/Button";
@@ -18,6 +19,8 @@ export default function ProfileFriends({
   friends: ProfileFriendsType;
   authenticated: boolean;
 }) {
+  const noFriends = friends.length === 0;
+
   return (
     <div className={cn("border-radius", styles.profileFriends)}>
       <div className={styles.profileWallHeader}>
@@ -67,6 +70,11 @@ export default function ProfileFriends({
             </div>
           );
         })}
+        {noFriends && (
+          <p>
+            Nenhuma amizade <MoodSad />
+          </p>
+        )}
       </div>
     </div>
   );

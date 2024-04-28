@@ -1,4 +1,4 @@
-import { profileFriends } from "@/actions/user";
+import { profileFriends, userInformations } from "@/actions/user";
 import { auth } from "@/app/auth";
 import ProfileFriends from "@/components/ProfileFriends";
 
@@ -9,7 +9,8 @@ export default async function Friends({
   params: { username: string };
 }) {
   const session = await auth();
-  const friends = await profileFriends(params.username);
+  const user = await userInformations(params.username);
+  const friends = await profileFriends(params.username, user.id);
 
   let owner = false;
   if (session?.user.username === params.username) owner = true;

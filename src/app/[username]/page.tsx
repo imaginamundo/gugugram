@@ -9,16 +9,12 @@ export default async function Profile({
   params: { username: string };
 }) {
   const session = await auth();
-  const messagesData = await profileMessages(params.username);
+  const messages = await profileMessages(params.username);
 
   let owner = false;
   if (session?.user.username === params.username) owner = true;
 
   return (
-    <ProfileWall
-      messages={messagesData}
-      owner={owner}
-      authenticated={!!session}
-    />
+    <ProfileWall messages={messages} owner={owner} authenticated={!!session} />
   );
 }

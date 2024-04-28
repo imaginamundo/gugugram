@@ -1,5 +1,7 @@
 import MoodSad from "pixelarticons/svg/mood-sad.svg";
 
+import type { DisplayImageType } from "@/actions/user";
+
 import styles from "./ProfileGrid.module.css";
 
 export default function ProfileGrid({
@@ -7,7 +9,7 @@ export default function ProfileGrid({
   images,
 }: {
   owner: boolean;
-  images: { id: number; url: string }[];
+  images: DisplayImageType[];
 }) {
   const noImages = images.length === 0;
   return (
@@ -15,7 +17,7 @@ export default function ProfileGrid({
       {images.map((image) => (
         <img
           key={`image-${image.id}`}
-          src={image.url}
+          src={image.image}
           alt={`Image number ${image.id}`}
           width="105px"
           height="105px"

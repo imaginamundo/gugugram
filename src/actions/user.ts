@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import { db } from "@/database/postgres";
 import type {
+  ImageType,
   MessageType,
   UserFriendsType,
   UserProfileType,
@@ -12,13 +13,7 @@ import type {
 } from "@/database/schema";
 import { messages, userFriends, users } from "@/database/schema";
 
-type DisplayUserType = Pick<UserType, "id" | "username">;
-type DisplayProfileType = Pick<UserProfileType, "description" | "image">;
-type DisplayProfileSubleType = Pick<UserProfileType, "image">;
-type DisplayFriendType = Pick<UserFriendsType, "id" | "status">;
-type DisplayMessageType = Pick<MessageType, "id" | "body" | "createdAt">;
-
-export async function profileInformation(username: string) {
+export async function userInformations(username: string) {
   const user = await db.query.users.findFirst({
     where: (user, { eq }) => eq(user.username, username),
     columns: {
@@ -70,8 +65,9 @@ export async function profileInformation(username: string) {
 
   return { messagesCount, friendsCount, ...user };
 }
-export type ProfileInformationType = DisplayUserType & {
+export type UserInformationType = DisplayUserType & {
   profile: DisplayProfileType;
+  images: DisplayImageType[];
   messagesCount: number;
   friendsCount: number;
 };
@@ -106,39 +102,68 @@ export type ProfileMessagesType = (DisplayMessageType & {
   author: DisplayUserType;
 })[];
 
-export async function profileFriends(username: string) {
-  const friends = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.username, username),
-    columns: {},
-    with: {
-      friends: {
-        where: ne(userFriends.status, "canceled"),
-        columns: {
-          id: true,
-          status: true,
-        },
-        with: {
-          targetUser: {
-            columns: {
-              id: true,
-              username: true,
+export async function profileFriends(username: string, userId: string) {
+  try {
+    const friends = await db.query.users.findFirst({
+      where: (user, { eq }) => eq(user.username, username),
+      columns: {},
+      with: {
+        friends: {
+          where: and(
+            eq(userFriends.requestUserId, userId),
+            eq(userFriends.targetUserId, userId),
+            ne(userFriends.status, "canceled"),
+          ),
+          columns: {
+            id: true,
+            status: true,
+          },
+          with: {
+            targetUser: {
+              columns: {
+                id: true,
+                username: true,
+              },
+              with: {
+                profile: {
+                  columns: {
+                    image: true,
+                  },
+                },
+              },
             },
-            with: {
-              profile: {
-                columns: {
-                  image: true,
+            requestUser: {
+              columns: {
+                id: true,
+                username: true,
+              },
+              with: {
+                profile: {
+                  columns: {
+                    image: true,
+                  },
                 },
               },
             },
           },
         },
       },
-    },
-  });
+    });
 
-  if (friends) return friends.friends;
-  return [];
+    if (friends) return friends.friends;
+    return [];
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
 }
 export type ProfileFriendsType = (DisplayFriendType & {
   targetUser: DisplayUserType & { profile: DisplayProfileSubleType };
 })[];
+
+export type DisplayUserType = Pick<UserType, "id" | "username">;
+export type DisplayProfileType = Pick<UserProfileType, "description" | "image">;
+export type DisplayProfileSubleType = Pick<UserProfileType, "image">;
+export type DisplayFriendType = Pick<UserFriendsType, "id" | "status">;
+export type DisplayImageType = Pick<ImageType, "id" | "image">;
+export type DisplayMessageType = Pick<MessageType, "id" | "body" | "createdAt">;

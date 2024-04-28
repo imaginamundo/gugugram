@@ -1,4 +1,4 @@
-import { profileInformation } from "@/actions/user";
+import { userInformations } from "@/actions/user";
 import { auth } from "@/app/auth";
 import ProfileGrid from "@/components/ProfileGrid";
 import ProfileHeader from "@/components/ProfileHeader";
@@ -15,7 +15,7 @@ export default async function ProfileLayout({
   params: { username: string };
 }) {
   const session = await auth();
-  const profileData = await profileInformation(params.username);
+  const user = await userInformations(params.username);
 
   let owner = false;
   if (session?.user.username === params.username) owner = true;
@@ -23,16 +23,9 @@ export default async function ProfileLayout({
   return (
     <main className={styles.layout}>
       <div className={styles.profileWrapper}>
-        <ProfileHeader
-          username={profileData.username}
-          description={profileData.description}
-          friendsCount={profileData.friendsCount}
-          messagesCount={profileData.messagesCount}
-          owner={owner}
-          authenticated={!!session}
-        />
+        <ProfileHeader user={user} owner={owner} authenticated={!!session} />
         {owner && <UploadImage />}
-        <ProfileGrid images={profileData.images} owner={owner} />
+        <ProfileGrid images={user.images} owner={owner} />
       </div>
       {children}
     </main>
