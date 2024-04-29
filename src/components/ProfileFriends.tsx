@@ -49,7 +49,8 @@ export default function ProfileFriends({
               </Link>
               <div className={styles.friendInformation}>
                 <Link href={`/${friend.username}`}>{friend.username}</Link>
-                {owner && authenticated && (
+                {/* TODO: Show remove button added, and add button when not added */}
+                {/* {owner && authenticated && (
                   <Button variant="destructive">
                     <Close />
                     Remover amizade
@@ -60,7 +61,7 @@ export default function ProfileFriends({
                     <HumanHandsup />
                     Adicionar amigo
                   </Button>
-                )}
+                )} */}
               </div>
             </div>
           );

@@ -20,7 +20,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [x] Database schemas;
 - [x] Auth setup;
 - [x] Authenticated user actions;
+- [ ] Authenticate with username or e-mail;
+- [ ] Redirect to user page after authentication;
 - [ ] Image upload;
+- [ ] Edit profile page;
 - [ ] Add profile picture;
 - [ ] Remove profile picture;
 - [ ] Add description;
@@ -28,6 +31,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [x] Add friend;
 - [x] Remove friend;
 - [x] Messages page;
+- [ ] Search users;
 - [x] Add message;
 - [x] Remove message;
 - [ ] Error management ([Sentry](https://sentry.io/pricing/));

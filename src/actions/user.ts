@@ -16,7 +16,6 @@ import {
   friendshipPossibleStatus,
   messages,
   userFriends,
-  users,
 } from "@/database/schema";
 
 export async function userInformations(username: string) {
