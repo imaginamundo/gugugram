@@ -5,6 +5,7 @@ import Close from "pixelarticons/svg/close.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 import MoodSad from "pixelarticons/svg/mood-sad.svg";
 
+import { removeMessage } from "@/actions/message";
 import type { ProfileMessagesType } from "@/actions/user";
 import Button from "@/components/Button";
 import ProfileWallForm from "@/components/ProfileWallForm";
@@ -26,7 +27,7 @@ export default function ProfileWall({
 }) {
   const noMessages = messages.length === 0;
 
-  const removeMessage = async (messageId: string) => {
+  const removeCurrentMessage = async (messageId: string) => {
     await removeMessage(messageId);
     location.reload();
   };
@@ -62,7 +63,10 @@ export default function ProfileWall({
                   {message.body}
                 </p>
                 {owner && (
-                  <Button variant="destructive">
+                  <Button
+                    variant="destructive"
+                    onClick={() => removeCurrentMessage(message.id)}
+                  >
                     <Close />
                   </Button>
                 )}
