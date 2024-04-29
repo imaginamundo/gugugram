@@ -1,0 +1,18 @@
+.form {
+    padding: var(--padding);
+}
+.label {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+.addImageInput {
+    display: none;
+}
+
+.profilePictureWrapper {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin-bottom: 1em;
+}

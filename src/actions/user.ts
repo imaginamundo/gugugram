@@ -90,7 +90,7 @@ export async function userInformations(username: string) {
   return { friendship: friendshipStatus, messagesCount, friendsCount, ...user };
 }
 export type UserInformationType = DisplayUserType & {
-  profile: DisplayProfileType;
+  profile?: DisplayProfileType;
   images: DisplayImageType[];
   messagesCount: number;
   friendsCount: number;
@@ -255,7 +255,10 @@ const buildFriendObject = (user: ProfileFriendsType["friends"][number]) => {
 };
 
 export type DisplayUserType = Pick<UserType, "id" | "username">;
-export type DisplayProfileType = Pick<UserProfileType, "description" | "image">;
+export type DisplayProfileType = Pick<
+  UserProfileType,
+  "id" | "description" | "image"
+>;
 export type DisplayProfileSubleType = Pick<UserProfileType, "image">;
 export type DisplayFriendType = Pick<UserFriendsType, "id" | "status">;
 export type DisplayImageType = Pick<ImageType, "id" | "image">;

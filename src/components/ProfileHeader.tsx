@@ -114,12 +114,18 @@ export default function ProfileHeader({
             </span>
             {user.username}
           </h2>
-          {user.profile?.description && <p>{user.profile.description}</p>}
+          {user.profile?.description && (
+            <p className={styles.profileDescription}>
+              {user.profile.description}
+            </p>
+          )}
           {owner && (
-            <Button variant="outline">
-              <Edit />
-              Editar perfil
-            </Button>
+            <Link href="/editar-perfil">
+              <Button variant="outline">
+                <Edit />
+                Editar perfil
+              </Button>
+            </Link>
           )}
           <p className={styles.profileLinks}>
             <Link

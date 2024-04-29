@@ -11,6 +11,9 @@
 .profilePicture {
     flex-shrink: 0;
 }
+.profileDescription {
+    margin-bottom: 8px;
+}
 .profileLinks {
     margin-top: 8px;
 }
