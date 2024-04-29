@@ -146,6 +146,7 @@ export default function UploadImage() {
                   <img
                     ref={imageRef}
                     src={imageSrc}
+                    alt="Image to be uploaded"
                     onLoad={drawCrop}
                     width={imageSize}
                     height={imageSize}

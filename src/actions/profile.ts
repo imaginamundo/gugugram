@@ -18,7 +18,7 @@ export async function updateDescription(userId: string, description: string) {
   });
 }
 
-export async function updateProfileImage(userId: string, image: any) {
+export async function updateProfileImage(userId: string) {
   const session = await auth();
   if (session?.user.id !== userId) throw new Error("Remoção não autorizada");
 }
