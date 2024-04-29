@@ -2,8 +2,9 @@
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 32px;
-    padding: var(--padding);
+    gap: 16px;
+    padding-right: var(--padding);
+    padding-left: var(--padding);
 }
 
 .profileWrapper {

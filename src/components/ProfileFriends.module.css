@@ -29,7 +29,7 @@
     width: 60px;
     height: 60px;
     background: rgb(var(--background));
-    color: rgb(var(--foreground-rgb));
+    color: rgb(var(--foreground));
 }
 .friendInformation {
     display: flex;

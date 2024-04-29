@@ -1,6 +1,6 @@
 "use server";
 
-import { and, count, eq, ne } from "drizzle-orm";
+import { and, count, eq, or } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
 import { auth } from "@/app/auth";
@@ -71,29 +71,22 @@ export async function userInformations(username: string) {
   }
 
   const [{ messagesCount }] = await db
-    .select({
-      messagesCount: count(messages.id),
-    })
-    .from(users)
-    .leftJoin(messages, eq(messages.receiverId, user.id))
-    .groupBy(messages.id)
-    .limit(1);
+    .select({ messagesCount: count() })
+    .from(messages)
+    .where(eq(messages.receiverId, user.id));
 
   const [{ friendsCount }] = await db
-    .select({
-      friendsCount: count(userFriends.id),
-    })
-    .from(users)
-    .leftJoin(
-      userFriends,
+    .select({ friendsCount: count() })
+    .from(userFriends)
+    .where(
       and(
-        eq(userFriends.requestUserId, user.id),
-        eq(userFriends.targetUserId, user.id),
         eq(userFriends.status, "accepted"),
+        or(
+          eq(userFriends.requestUserId, user.id),
+          eq(userFriends.targetUserId, user.id),
+        ),
       ),
-    )
-    .groupBy(userFriends.id)
-    .limit(1);
+    );
 
   return { friendship: friendshipStatus, messagesCount, friendsCount, ...user };
 }
@@ -144,10 +137,9 @@ export async function profileFriends(username: string, userId: string) {
     columns: {},
     with: {
       targetedFriends: {
-        where: and(
+        where: or(
           eq(userFriends.requestUserId, userId),
           eq(userFriends.targetUserId, userId),
-          ne(userFriends.status, "canceled"),
         ),
         columns: {
           id: true,
@@ -183,10 +175,9 @@ export async function profileFriends(username: string, userId: string) {
         },
       },
       requestedFriends: {
-        where: and(
+        where: or(
           eq(userFriends.requestUserId, userId),
           eq(userFriends.targetUserId, userId),
-          ne(userFriends.status, "canceled"),
         ),
         columns: {
           id: true,
@@ -231,18 +222,18 @@ export async function profileFriends(username: string, userId: string) {
     friendRequests: [],
   };
 
-  friends.targetedFriends.forEach(({ status, targetUser }) => {
+  friends.targetedFriends.forEach(({ status, requestUser }) => {
     if (status === "accepted") {
-      return friendsMapped.friends.push(buildFriendObject(targetUser));
+      return friendsMapped.friends.push(buildFriendObject(requestUser));
     }
     if (status === "pending") {
-      return friendsMapped.friendRequests.push(buildFriendObject(targetUser));
+      return friendsMapped.friendRequests.push(buildFriendObject(requestUser));
     }
   });
 
-  friends.requestedFriends.forEach(({ status, requestUser }) => {
+  friends.requestedFriends.forEach(({ status, targetUser }) => {
     if (status === "accepted") {
-      friendsMapped.friends.push(buildFriendObject(requestUser));
+      friendsMapped.friends.push(buildFriendObject(targetUser));
     }
   });
 
@@ -254,13 +245,15 @@ export type ProfileFriendsType = {
 };
 export type FriendType = DisplayUserType & { profile: DisplayProfileSubleType };
 
-const buildFriendObject = (user: ProfileFriendsType["friends"][number]) => ({
-  id: user.id,
-  username: user.username,
-  profile: {
-    image: user.profile.image,
-  },
-});
+const buildFriendObject = (user: ProfileFriendsType["friends"][number]) => {
+  let profile: DisplayProfileSubleType = { image: null };
+  if (user.profile) profile = user.profile;
+  return {
+    id: user.id,
+    username: user.username,
+    profile,
+  };
+};
 
 export type DisplayUserType = Pick<UserType, "id" | "username">;
 export type DisplayProfileType = Pick<UserProfileType, "description" | "image">;

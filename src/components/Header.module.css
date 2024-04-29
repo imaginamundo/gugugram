@@ -1,6 +1,7 @@
 .header {
     display: flex;
     justify-content: space-between;
+    gap: 16px;
     align-items: center;
     flex-wrap: wrap;
     max-width: var(--max-width);
