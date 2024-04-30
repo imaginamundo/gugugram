@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/app/auth";
 import { db } from "@/database/postgres";
 import { userProfiles } from "@/database/schema";
+import { utapi } from "@/image-upload/uploadthing";
 
 import type { DisplayProfileType, DisplayUserType } from "./user";
 
@@ -36,26 +37,35 @@ export type ProfileInformationType = DisplayUserType & {
   profile?: DisplayProfileType;
 };
 
-export async function updateProfile({
-  userId,
-  profileId,
-  image,
-  // username,
-  description,
-}: EditProfileInformationType) {
+export async function updateProfile(data: FormData) {
   const session = await auth();
-  if (!session) {
-    throw new Error("Não autenticado");
+  if (!session) throw new Error("Not allowed");
+
+  let image = (data.get("image") || "") as string;
+
+  const file = data.get("file") as Blob | undefined;
+  let upload;
+  if (file) {
+    try {
+      if (!file) throw new Error("No image selected");
+      if (file.size > 10000) throw new Error("Image too big");
+
+      upload = await utapi.uploadFiles(file);
+    } catch (e) {
+      throw e;
+    }
   }
 
-  if (userId !== session.user.id) throw new Error("Não autorizado");
+  if (upload?.data?.url) image = upload.data.url;
+
+  const description = (data.get("description") || "") as string;
 
   await db
     .insert(userProfiles)
-    .values({ id: profileId, userId, image: "", description })
+    .values({ userId: session.user.id, image, description })
     .onConflictDoUpdate({
       target: userProfiles.id,
-      set: { description },
+      set: { image, description },
     });
 }
 export type EditProfileInformationType = {
@@ -65,20 +75,3 @@ export type EditProfileInformationType = {
   // username: string;
   description: string;
 };
-
-export async function updateProfileImage(userId: string) {
-  const session = await auth();
-  if (session?.user.id !== userId) throw new Error("Remoção não autorizada");
-}
-
-export async function removeProfileImage(userId: string) {
-  const session = await auth();
-  if (session?.user.id !== userId) throw new Error("Alteração não autorizada");
-
-  db.insert(userProfiles)
-    .values({ userId, description: "" })
-    .onConflictDoUpdate({
-      target: userProfiles.id,
-      set: { image: "" },
-    });
-}

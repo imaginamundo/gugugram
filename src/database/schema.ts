@@ -27,14 +27,23 @@ export const users = createTable("users", {
 export type UserType = InferSelectModel<typeof users>;
 export type NewUserType = InferInsertModel<typeof users>;
 
-export const userProfiles = createTable("user_profiles", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  userId: text("user_id"),
-  description: text("description"),
-  image: text("image"),
-});
+export const userProfiles = createTable(
+  "user_profiles",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id"),
+    description: text("description"),
+    image: text("image"),
+  },
+  (table) => ({
+    uniqueProfileIndex: uniqueIndex("unique_profile_index").on(
+      table.id,
+      table.userId,
+    ),
+  }),
+);
 export type UserProfileType = InferSelectModel<typeof userProfiles>;
 
 export const images = createTable("images", {

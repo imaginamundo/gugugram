@@ -22,10 +22,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [x] Authenticated user actions;
 - [ ] Authenticate with username or e-mail;
 - [ ] Redirect to user page after authentication;
-- [ ] Image upload;
+- [x] Image upload;
 - [x] Edit profile page;
-- [ ] Add profile picture;
-- [ ] Remove profile picture;
+- [x] Add profile picture;
 - [x] Add description;
 - [x] Friends page;
 - [x] Add friend;

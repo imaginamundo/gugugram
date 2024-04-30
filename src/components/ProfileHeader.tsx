@@ -104,14 +104,26 @@ export default function ProfileHeader({
       <div>
         <div>
           <h2 className={styles.profileUser}>
-            <span
-              className={cn(
-                "border-radius profile-picture",
-                styles.profilePicture,
-              )}
-            >
-              <MoodHappy />
-            </span>
+            {user.profile?.image && (
+              <img
+                src={user.profile.image}
+                className="border-radius profile-picture"
+                width="30"
+                height="30"
+                alt={`Imagem de perfil do ${user.username}`}
+              />
+            )}
+
+            {!user.profile?.image && (
+              <span
+                className={cn(
+                  "border-radius profile-picture",
+                  styles.profilePicture,
+                )}
+              >
+                <MoodHappy />
+              </span>
+            )}
             {user.username}
           </h2>
           {user.profile?.description && (

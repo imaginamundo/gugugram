@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import ImagePlus from "pixelarticons/svg/image-plus.svg";
 import { useEffect, useRef, useState } from "react";
 
+import { uploadImage } from "@/actions/image";
 import Button from "@/components/Button";
 import buttonStyles from "@/components/Button.module.css";
 import {
@@ -20,6 +22,8 @@ import cn from "@/utils/cn";
 import styles from "./UploadImage.module.css";
 
 export default function UploadImage() {
+  const router = useRouter();
+
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const [imageSize, setImageSize] = useState(30);
@@ -66,11 +70,20 @@ export default function UploadImage() {
 
   const publish = () => {
     if (canvasRef.current) {
-      const link = document.createElement("a");
-      link.download = "cropped-image.png";
-      link.href = canvasRef.current.toDataURL("image/png");
-      link.click();
-      link.remove();
+      canvasRef.current.toBlob((blob) => {
+        if (!blob) return;
+
+        const data = new FormData();
+        data.append("image", blob);
+
+        uploadImage(data)
+          .then(() => {
+            router.refresh();
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }, "image/png");
     }
   };
 
@@ -180,7 +193,7 @@ export default function UploadImage() {
 
 const imageOptions = [5, 10, 15, 20, 30];
 
-function calculateCropCenter(
+export function calculateCropCenter(
   naturalWidth: number,
   naturalHeight: number,
   imageSize: number,
