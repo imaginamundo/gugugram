@@ -1,0 +1,31 @@
+.loader {
+    position: fixed;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+    pointer-events: none;
+    color: white;
+    &[hidden] {
+        display: none;
+    }
+}
+
+.spinner {
+    animation: spin 1s steps(2) infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(90deg);
+    }
+}

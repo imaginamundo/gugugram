@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/Dialog";
 import Input from "@/components/Input";
+import Loader from "@/components/Loader";
 import cn from "@/utils/cn";
 
 import styles from "./UploadImage.module.css";
@@ -25,6 +26,7 @@ export default function UploadImage() {
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const [imageSize, setImageSize] = useState(30);
   const [imageResize, setImageResize] = useState(false);
@@ -69,6 +71,7 @@ export default function UploadImage() {
   };
 
   const publish = () => {
+    setLoading(true);
     if (canvasRef.current) {
       canvasRef.current.toBlob((blob) => {
         if (!blob) return;
@@ -79,6 +82,8 @@ export default function UploadImage() {
         uploadImage(data)
           .then(() => {
             router.refresh();
+            setOpen(false);
+            setLoading(false);
           })
           .catch((e) => {
             console.log(e);
@@ -100,6 +105,7 @@ export default function UploadImage() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+      <Loader loading={loading} />
       <label className={cn(buttonStyles.buttonDefault, styles.addImageLabel)}>
         <ImagePlus />
         Adicionar nova foto

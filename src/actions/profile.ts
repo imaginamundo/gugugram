@@ -58,13 +58,14 @@ export async function updateProfile(data: FormData) {
 
   if (upload?.data?.url) image = upload.data.url;
 
+  const profileId = data.get("profileId") || undefined;
   const description = (data.get("description") || "") as string;
 
   await db
     .insert(userProfiles)
-    .values({ userId: session.user.id, image, description })
+    .values({ id: profileId, userId: session.user.id, image, description })
     .onConflictDoUpdate({
-      target: userProfiles.id,
+      target: [userProfiles.id, userProfiles.userId],
       set: { image, description },
     });
 }

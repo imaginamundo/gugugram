@@ -15,9 +15,18 @@ export default function HeaderUser({ session }: { session: Session }) {
       {session?.user && (
         <div className={styles.headerUser}>
           <Link href={`/${session.user.username}`} className={styles.user}>
-            <span className="border-radius profile-picture">
-              <MoodHappy />
-            </span>
+            {session.user.image && (
+              <img
+                className="border-radius profile-picture"
+                src={session.user.image}
+                alt="Imagem de perfil do usuário"
+              />
+            )}
+            {!session.user.image && (
+              <span className="border-radius profile-picture">
+                <MoodHappy />
+              </span>
+            )}
             {session.user.username}
           </Link>
           <Button variant="link" onClick={() => logoutAction()}>

@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import ArrowLeft from "pixelarticons/svg/arrow-left.svg";
 import ImagePlus from "pixelarticons/svg/image-plus.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
-import WarningBox from "pixelarticons/svg/warning-box.svg";
-import { RefObject, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { ProfileInformationType, updateProfile } from "@/actions/profile";
 import Button from "@/components/Button";
 import buttonStyles from "@/components/Button.module.css";
 import Input from "@/components/Input";
+import Loader from "@/components/Loader";
 import { calculateCropCenter } from "@/components/UploadImage";
 import useFormErrors from "@/hooks/useFormErrors";
 import cn from "@/utils/cn";
@@ -27,6 +27,7 @@ export default function EditProfile({
 }) {
   const route = useRouter();
 
+  const [loading, setLoading] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const { register, handleSubmit, control } = useForm<EditProfileInputs>({
     defaultValues: {
@@ -42,6 +43,7 @@ export default function EditProfile({
   const imageRef = useRef<HTMLImageElement>(null);
 
   const editProfile = async (data: EditProfileInputs) => {
+    setLoading(true);
     const formData = new FormData();
     if (data.image) formData.append("image", data.image);
     if (data.file && imageRef.current) {
@@ -63,6 +65,8 @@ export default function EditProfile({
     if (user.profile?.id) formData.append("profileId", user.profile.id);
 
     await updateProfile(formData);
+
+    setLoading(false);
     route.push(`/${user.username}`);
   };
 
@@ -77,41 +81,43 @@ export default function EditProfile({
   };
 
   return (
-    <div className="border-radius">
-      <form
-        className={cn("border-radius", styles.form)}
-        onSubmit={handleSubmit(editProfile)}
-      >
-        <p>Foto de perfil</p>
-        <div className={styles.profilePictureWrapper}>
-          <Input type="hidden" {...register("image")} />
-          <label className={buttonStyles.buttonDefault}>
-            <ImagePlus />
-            Alterar foto do perfil
-            <Input
-              {...register("file", { onChange: imageSelected })}
-              {...fieldError("file")}
-              className={styles.addImageInput}
-              type="file"
-              accept="image/*"
-            />
-          </label>
-          {imageSrc && (
-            <img
-              src={imageSrc}
-              ref={imageRef}
-              alt="Foto do perfil"
-              className="profile-picture border-radius"
-            />
-          )}
-          {!imageSrc && (
-            <div className="profile-picture border-radius">
-              <MoodHappy />
-            </div>
-          )}
-          <ArrowLeft />
-        </div>
-        {/* <label className={styles.label}>
+    <>
+      <Loader loading={loading} />
+      <div className="border-radius">
+        <form
+          className={cn("border-radius", styles.form)}
+          onSubmit={handleSubmit(editProfile)}
+        >
+          <p>Foto de perfil</p>
+          <div className={styles.profilePictureWrapper}>
+            <Input type="hidden" {...register("image")} />
+            <label className={buttonStyles.buttonDefault}>
+              <ImagePlus />
+              Alterar foto do perfil
+              <Input
+                {...register("file", { onChange: imageSelected })}
+                {...fieldError("file")}
+                className={styles.addImageInput}
+                type="file"
+                accept="image/*"
+              />
+            </label>
+            {(imageSrc || user.profile?.image) && (
+              <img
+                src={imageSrc || user.profile?.image}
+                ref={imageRef}
+                alt="Foto do perfil"
+                className="profile-picture border-radius"
+              />
+            )}
+            {!imageSrc && !user.profile?.image && (
+              <div className="profile-picture border-radius">
+                <MoodHappy />
+              </div>
+            )}
+            <ArrowLeft />
+          </div>
+          {/* <label className={styles.label}>
           Nome de usuário
           <Input
             {...register("username")}
@@ -119,17 +125,18 @@ export default function EditProfile({
             placeholder="Digite seu nome de usuário"
           />
         </label> */}
-        <label className={styles.label}>
-          Descrição
-          <Input
-            {...register("description")}
-            {...fieldError("description")}
-            placeholder="Digite sua descrição"
-          />
-        </label>
-        <Button>Atualizar dados</Button>
-      </form>
-    </div>
+          <label className={styles.label}>
+            Descrição
+            <Input
+              {...register("description")}
+              {...fieldError("description")}
+              placeholder="Digite sua descrição"
+            />
+          </label>
+          <Button>Atualizar dados</Button>
+        </form>
+      </div>
+    </>
   );
 }
 

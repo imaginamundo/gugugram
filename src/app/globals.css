@@ -142,3 +142,7 @@ input {
 .margin-bottom {
     margin-bottom: 16px;
 }
+
+.stop {
+    pointer-events: none;
+}
