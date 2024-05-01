@@ -1,6 +1,6 @@
 "use server";
 
-import { and, count, eq, or } from "drizzle-orm";
+import { and, count, desc, eq, or } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
 import { auth } from "@/app/auth";
@@ -14,7 +14,8 @@ import type {
 } from "@/database/schema";
 import {
   friendshipPossibleStatus,
-  messages,
+  images,
+  messages as messagesSchema,
   userFriends,
 } from "@/database/schema";
 
@@ -35,6 +36,7 @@ export async function userInformations(username: string) {
         },
       },
       images: {
+        orderBy: [desc(images.createdAt)],
         columns: {
           id: true,
           image: true,
@@ -71,8 +73,8 @@ export async function userInformations(username: string) {
 
   const [{ messagesCount }] = await db
     .select({ messagesCount: count() })
-    .from(messages)
-    .where(eq(messages.receiverId, user.id));
+    .from(messagesSchema)
+    .where(eq(messagesSchema.receiverId, user.id));
 
   const [{ friendsCount }] = await db
     .select({ friendsCount: count() })
@@ -106,6 +108,7 @@ export async function profileMessages(username: string) {
     columns: {},
     with: {
       messages: {
+        orderBy: [desc(messagesSchema.createdAt)],
         columns: {
           id: true,
           body: true,
