@@ -145,14 +145,14 @@ export default function ProfileHeader({
               className={styles.profileLink}
             >
               <Mail className={styles.profileLinkIcon} />
-              {user.messagesCount} recado
+              {user.messagesCount} recado{user.messagesCount > 1 && "s"}
             </Link>
             <Link
               href={`/${user.username}/amigos#amigos`}
               className={styles.profileLink}
             >
               <MoodHappy className={styles.profileLinkIcon} />
-              {user.friendsCount} amigos
+              {user.friendsCount} amigos{user.friendsCount > 1 && "s"}
             </Link>{" "}
           </p>
         </div>
