@@ -19,8 +19,7 @@ export default function ProfileGrid({
           key={`image-${image.id}`}
           src={image.image}
           alt={`Image number ${image.id}`}
-          width="105px"
-          height="105px"
+          className={styles.image}
         />
       ))}
       {noImages && (

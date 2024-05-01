@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+
+import LastPosts from "@/components/LastPosts";
+
+import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Gugugram · Página inicial",
@@ -9,31 +12,10 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <main className="container">
-      A sua rede social de compartilhar imagens feitas com 5px², 10px² e 15px².
-      <div className="border-radius padding">
-        <nav>
-          <ul>
-            <li>
-              <Link href="/dio">/dio (autenticado)</Link>
-            </li>
-            <li>
-              <Link href="/dio/amigos">/dio/amigos (autenticado)</Link>
-            </li>
-            <li>
-              <Link href="/nomedeusuario">/nomedeusuario</Link>
-            </li>
-            <li>
-              <Link href="/nomedeusuario/amigos">/nomedeusuario/amigos</Link>
-            </li>
-            <li>
-              <Link href="/entrar">/entrar</Link>
-            </li>
-            <li>
-              <Link href="/cadastrar">/cadastrar</Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
+      A sua rede social de compartilhar imagens feitas com 5px², 10px², 15px² e
+      20px².
+      <h1 className={styles.title}>Últimas imagens</h1>
+      <LastPosts />
     </main>
   );
 }

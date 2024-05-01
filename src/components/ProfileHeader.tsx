@@ -152,7 +152,7 @@ export default function ProfileHeader({
               className={styles.profileLink}
             >
               <MoodHappy className={styles.profileLinkIcon} />
-              {user.friendsCount} amigos{user.friendsCount > 1 && "s"}
+              {user.friendsCount} amigo{user.friendsCount > 1 && "s"}
             </Link>{" "}
           </p>
         </div>
