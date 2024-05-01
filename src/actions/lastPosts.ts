@@ -9,6 +9,6 @@ export async function lastPosts() {
   return db.query.images.findMany({
     with: { author: true },
     orderBy: desc(images.createdAt),
-    limit: 50,
+    limit: 120,
   });
 }
