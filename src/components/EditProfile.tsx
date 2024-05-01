@@ -104,7 +104,7 @@ export default function EditProfile({
             </label>
             {(imageSrc || user.profile?.image) && (
               <img
-                src={imageSrc || user.profile?.image}
+                src={imageSrc || user.profile?.image || ""}
                 ref={imageRef}
                 alt="Foto do perfil"
                 className="profile-picture border-radius"
