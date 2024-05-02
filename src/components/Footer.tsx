@@ -20,7 +20,7 @@ export default function Footer() {
       >
         <Image
           src="/moz_carcar3.gif"
-          width="80"
+          width="88"
           height="31"
           alt="Baixar o Firefox agora!"
           title="Baixar o Firefox agora!"
