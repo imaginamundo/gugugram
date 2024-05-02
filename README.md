@@ -30,7 +30,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [x] Add friend;
 - [x] Remove friend;
 - [x] Messages page;
-- [ ] Search users;
+- [x] Search users;
 - [x] Add message;
 - [x] Remove message;
 - [x] Error management ([Sentry](https://sentry.io/pricing/));
