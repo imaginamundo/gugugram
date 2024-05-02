@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { auth } from "@/app/auth";
+import HeaderSearch from "@/components/HeaderSearch";
 import HeaderUser from "@/components/HeaderUser";
 
 import styles from "./Header.module.css";
@@ -22,6 +23,7 @@ export default async function Header() {
           <span>m</span>
         </Link>
       </h1>
+      <HeaderSearch />
       <HeaderUser session={session} />
     </header>
   );

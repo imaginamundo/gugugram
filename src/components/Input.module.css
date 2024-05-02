@@ -8,10 +8,10 @@
     color: black;
     border-radius: 0;
     appearance: none;
-    border: 2px solid gray;
+    border: 2px solid darkgray;
     &:focus {
         outline: none;
-        border-color: black;
+        border-color: gray;
     }
 }
 .input[type="file"] {

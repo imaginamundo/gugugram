@@ -1,0 +1,12 @@
+.users {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}

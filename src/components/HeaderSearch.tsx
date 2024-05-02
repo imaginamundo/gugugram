@@ -7,6 +7,8 @@ import { FormEventHandler, useState } from "react";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 
+import styles from "./HeaderSearch.module.css";
+
 export default function HeaderSearch() {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -17,10 +19,14 @@ export default function HeaderSearch() {
   };
 
   return (
-    <form onSubmit={submitForm}>
-      <Input value={query} onChange={(e) => setQuery(e.target.value)} />
-      <Button>
-        <Search />
+    <form onSubmit={submitForm} className={styles.headerSearch}>
+      <Input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Buscar pessoa…"
+      />
+      <Button title="Buscar">
+        <Search aria-label="Lupa" />
       </Button>
     </form>
   );

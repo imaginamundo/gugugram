@@ -69,9 +69,16 @@ fieldset {
     }
 }
 button,
-input {
+input,
+textarea {
     font-family: inherit;
     font-size: inherit;
+    min-width: 10px;
+    max-width: 100%;
+}
+
+button svg {
+    flex-shrink: 0;
 }
 
 @media (prefers-color-scheme: dark) {

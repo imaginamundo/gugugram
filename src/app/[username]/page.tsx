@@ -1,6 +1,19 @@
+import type { Metadata, ResolvingMetadata } from "next";
+
 import { profileMessages, userInformations } from "@/actions/user";
 import { auth } from "@/app/auth";
 import ProfileWall from "@/components/ProfileWall";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { username: string };
+}): Promise<Metadata> {
+  return {
+    title: `Perfil de ${params.username}`,
+    description: "Bla bla bla, é o perfil desse usuário.",
+  };
+}
 
 export const dynamic = "force-dynamic";
 export default async function Profile({
