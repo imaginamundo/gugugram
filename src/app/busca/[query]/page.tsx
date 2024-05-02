@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 
 import { searchUsers } from "@/actions/search";
+import cn from "@/utils/cn";
 
 import styles from "./page.module.css";
-import cn from "@/utils/cn";
 
 export const metadata: Metadata = {
   title: "Busca",
@@ -25,11 +26,26 @@ export default async function Home({ params }: { params: { query: string } }) {
           return (
             <div key={`search-${user.id}`} className={styles.user}>
               <Link href={`/${user.username}`}>
-                <img
-                  className="border-radius profile-picture"
-                  src={user.profile.image || ""}
-                  alt={user.username}
-                />
+                {user.profile?.image && (
+                  <img
+                    src={user.profile.image}
+                    className="border-radius profile-picture"
+                    width="30"
+                    height="30"
+                    alt={`Imagem de perfil do ${user.username}`}
+                  />
+                )}
+
+                {!user.profile?.image && (
+                  <span
+                    className={cn(
+                      "border-radius profile-picture",
+                      styles.profilePicture,
+                    )}
+                  >
+                    <MoodHappy />
+                  </span>
+                )}
               </Link>
               <Link href={`/${user.username}`}>{user.username}</Link>
             </div>

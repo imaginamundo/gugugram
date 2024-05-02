@@ -55,12 +55,18 @@ export async function userInformations(username: string) {
     type: null,
   };
 
-  if (session?.user.id !== user.id) {
+  if (session && session.user.id !== user.id) {
     const friendship = await db.query.userFriends.findFirst({
-      where: (userFriends, { eq, or }) =>
+      where: (userFriends, { eq, or, and }) =>
         or(
-          eq(userFriends.targetUserId, user.id),
-          eq(userFriends.requestUserId, user.id),
+          and(
+            eq(userFriends.targetUserId, session.user.id),
+            eq(userFriends.requestUserId, user.id),
+          ),
+          and(
+            eq(userFriends.targetUserId, user.id),
+            eq(userFriends.requestUserId, session.user.id),
+          ),
         ),
     });
 

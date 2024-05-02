@@ -1,5 +1,6 @@
 "use server";
 
+import { sanitize } from "isomorphic-dompurify";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { AuthError } from "next-auth";
@@ -12,7 +13,6 @@ import { db } from "@/database/postgres";
 import { users } from "@/database/schema";
 import { hashPassword } from "@/utils/password";
 import { getValidationErrors, type ValidationErrorsObject } from "@/utils/yup";
-import { sanitize } from "isomorphic-dompurify";
 
 export async function logoutAction() {
   await signOut({ redirect: false });
