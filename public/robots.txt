@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /busca/*
+Disallow: /editar-perfil
+Disallow: /api/*Disallow: /busca

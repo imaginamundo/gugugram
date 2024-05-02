@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ArrowLeft from "pixelarticons/svg/arrow-left.svg";
 import ImagePlus from "pixelarticons/svg/image-plus.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
+import { usePostHog } from "posthog-js/react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -19,7 +20,6 @@ import cn from "@/utils/cn";
 import yup from "@/utils/yup";
 
 import styles from "./EditProfile.module.css";
-import { usePostHog } from "posthog-js/react";
 
 export default function EditProfile({
   user,
