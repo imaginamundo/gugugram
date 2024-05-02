@@ -57,7 +57,7 @@ export default function EditProfile({
           canvas.toBlob((blob) => {
             if (!blob) return;
             resolve(blob);
-          });
+          }, "image/png");
         });
 
       const blob = (await createBlob()) as Blob;
