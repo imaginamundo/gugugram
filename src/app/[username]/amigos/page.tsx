@@ -23,12 +23,20 @@ export default async function Friends({
 }) {
   const session = await auth();
   const user = await userInformations(params.username);
-  const { friends } = await profileFriends(params.username, user.id);
+  const { friends, friendRequests } = await profileFriends(
+    params.username,
+    user.id,
+  );
 
   let owner = false;
   if (session?.user.username === params.username) owner = true;
 
   return (
-    <ProfileFriends friends={friends} owner={owner} authenticated={!!session} />
+    <ProfileFriends
+      friends={friends}
+      friendRequests={owner ? friendRequests : []}
+      owner={owner}
+      authenticated={!!session}
+    />
   );
 }

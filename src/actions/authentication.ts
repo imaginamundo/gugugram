@@ -29,8 +29,8 @@ export async function loginAction(data: LoginInputs) {
 
   if (Object.keys(errors).length) throw new Error("Campos inválidos");
 
-  const sanitizedEmail = sanitize(data.email);
-  const sanitizedPassword = sanitize(data.password);
+  const sanitizedEmail = sanitize(data.email).toLowerCase();
+  const sanitizedPassword = sanitize(data.password).toLowerCase();
 
   await signIn("credentials", {
     redirect: false,
@@ -54,9 +54,9 @@ export async function registerAction(data: RegisterInputs) {
 
   if (Object.keys(errors).length) throw new Error("Campos inválidos");
 
-  const sanitizedUsername = sanitize(data.username);
-  const sanitizedEmail = sanitize(data.email);
-  const sanitizedPassword = sanitize(data.password);
+  const sanitizedUsername = sanitize(data.username).toLowerCase();
+  const sanitizedEmail = sanitize(data.email).toLowerCase();
+  const sanitizedPassword = sanitize(data.password).toLowerCase();
 
   const password = hashPassword(sanitizedPassword);
 

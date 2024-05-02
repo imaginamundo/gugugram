@@ -7,7 +7,7 @@ import { db } from "@/database/postgres";
 import type { DisplayUserType } from "./user";
 
 export async function searchUsers(query: string) {
-  const sanitizedQuery = sanitize(query);
+  const sanitizedQuery = sanitize(query).toLowerCase();
   return await db.query.users.findMany({
     where: (user, { ilike }) => ilike(user.username, `%${sanitizedQuery}%`),
     columns: {
