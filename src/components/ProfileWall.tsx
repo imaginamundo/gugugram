@@ -4,6 +4,7 @@ import Link from "next/link";
 import Close from "pixelarticons/svg/close.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 import MoodSad from "pixelarticons/svg/mood-sad.svg";
+import { usePostHog } from "posthog-js/react";
 
 import { removeMessage } from "@/actions/message";
 import type { ProfileMessagesType } from "@/actions/user";
@@ -25,9 +26,11 @@ export default function ProfileWall({
   owner: boolean;
   authenticated: boolean;
 }) {
+  const posthog = usePostHog();
   const noMessages = messages.length === 0;
 
   const removeCurrentMessage = async (messageId: string) => {
+    posthog.capture("remove_message");
     await removeMessage(messageId);
     location.reload();
   };

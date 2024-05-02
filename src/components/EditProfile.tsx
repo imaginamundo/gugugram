@@ -19,6 +19,7 @@ import cn from "@/utils/cn";
 import yup from "@/utils/yup";
 
 import styles from "./EditProfile.module.css";
+import { usePostHog } from "posthog-js/react";
 
 export default function EditProfile({
   user,
@@ -26,6 +27,7 @@ export default function EditProfile({
   user: ProfileInformationType;
 }) {
   const route = useRouter();
+  const posthog = usePostHog();
 
   const [loading, setLoading] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
@@ -43,6 +45,7 @@ export default function EditProfile({
   const imageRef = useRef<HTMLImageElement>(null);
 
   const editProfile = async (data: EditProfileInputs) => {
+    posthog.capture("edit_profile");
     setLoading(true);
     const formData = new FormData();
     if (data.image) formData.append("image", data.image);
@@ -67,6 +70,7 @@ export default function EditProfile({
     await updateProfile(formData);
 
     setLoading(false);
+
     route.push(`/${user.username}`);
   };
 

@@ -7,6 +7,7 @@ import Edit from "pixelarticons/svg/edit.svg";
 import HumanHandsup from "pixelarticons/svg/human-handsup.svg";
 import Mail from "pixelarticons/svg/mail.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
+import { usePostHog } from "posthog-js/react";
 
 import { acceptFriend, addFriend, removeFriend } from "@/actions/friendship";
 import type { UserInformationType } from "@/actions/user";
@@ -25,15 +26,19 @@ export default function ProfileHeader({
   owner: boolean;
   authenticated: boolean;
 }) {
+  const posthog = usePostHog();
+
   const addNewFriend = async () => {
     if (!user.friendship.status) {
       await addFriend(user.id);
+      posthog.capture("add_friend", { from: "profile_header" });
       location.reload();
     }
   };
 
   const acceptNewFriend = async () => {
     if (user.friendship.status === "pending") {
+      posthog.capture("accept_friend", { from: "profile_header" });
       await acceptFriend(user.id);
       location.reload();
     }
@@ -41,6 +46,7 @@ export default function ProfileHeader({
 
   const removeNewFriend = async () => {
     if (user.friendship.status === "accepted") {
+      posthog.capture("remove_friend", { from: "profile_header" });
       await removeFriend(user.id);
       location.reload();
     }

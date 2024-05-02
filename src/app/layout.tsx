@@ -3,6 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Silkscreen } from "next/font/google";
 
+import CSPostHogProvider from "@/analytics/providers";
+import AuthJsProvider from "@/components/AuthProvider";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 
@@ -23,12 +25,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt" className={silkcreen.className}>
-      <body>
-        <Header />
-        {children}
-        <Footer />
-      </body>
-    </html>
+    <AuthJsProvider>
+      <CSPostHogProvider>
+        <html lang="pt" className={silkcreen.className}>
+          <body>
+            <Header />
+            {children}
+            <Footer />
+          </body>
+        </html>
+      </CSPostHogProvider>
+    </AuthJsProvider>
   );
 }

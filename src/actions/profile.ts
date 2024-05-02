@@ -61,13 +61,14 @@ export async function updateProfile(data: FormData) {
   const profileId = data.get("profileId") || undefined;
   const description = (data.get("description") || "") as string;
 
-  await db
+  return await db
     .insert(userProfiles)
     .values({ id: profileId, userId: session.user.id, image, description })
     .onConflictDoUpdate({
       target: [userProfiles.id, userProfiles.userId],
       set: { image, description },
-    });
+    })
+    .returning({ image: userProfiles.image });
 }
 export type EditProfileInformationType = {
   userId: string;

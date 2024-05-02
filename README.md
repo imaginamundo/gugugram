@@ -33,5 +33,5 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [ ] Search users;
 - [x] Add message;
 - [x] Remove message;
-- [ ] Error management ([Sentry](https://sentry.io/pricing/));
-- [ ] Analitycs ([Posthog](https://posthog.com))
+- [x] Error management ([Sentry](https://sentry.io/pricing/));
+- [x] Analitycs ([Posthog](https://posthog.com))

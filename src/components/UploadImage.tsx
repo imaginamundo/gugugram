@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import ImagePlus from "pixelarticons/svg/image-plus.svg";
+import { usePostHog } from "posthog-js/react";
 import { useEffect, useRef, useState } from "react";
 
 import { uploadImage } from "@/actions/image";
@@ -25,6 +26,8 @@ import styles from "./UploadImage.module.css";
 export default function UploadImage() {
   const router = useRouter();
 
+  const posthog = usePostHog();
+
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
@@ -36,6 +39,8 @@ export default function UploadImage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const imageSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    posthog.capture("image_selected");
+
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
       reader.addEventListener("load", () => {
@@ -71,6 +76,7 @@ export default function UploadImage() {
   };
 
   const publish = () => {
+    posthog.capture("publish_image");
     setLoading(true);
     if (canvasRef.current) {
       canvasRef.current.toBlob((blob) => {

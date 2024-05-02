@@ -2,6 +2,7 @@
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import MailArrowRight from "pixelarticons/svg/mail-arrow-right.svg";
+import { usePostHog } from "posthog-js/react";
 import { useForm } from "react-hook-form";
 
 import { addMessage } from "@/actions/message";
@@ -12,11 +13,13 @@ import yup from "@/utils/yup";
 import styles from "./ProfileWallForm.module.css";
 
 export default function ProfileWallForm({ userId }: { userId: string }) {
+  const posthog = usePostHog();
   const { register, handleSubmit } = useForm<Inputs>({
     resolver: yupResolver(schema),
   });
 
   const sendMessage = async (data: Inputs) => {
+    posthog.capture("send_message");
     await addMessage(userId, data.message);
     location.reload();
   };
