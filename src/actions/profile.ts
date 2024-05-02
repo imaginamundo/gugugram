@@ -1,5 +1,6 @@
 "use server";
 
+import { sanitize } from "isomorphic-dompurify";
 import { notFound } from "next/navigation";
 
 import { auth } from "@/app/auth";
@@ -42,6 +43,7 @@ export async function updateProfile(data: FormData) {
   if (!session) throw new Error("Not allowed");
 
   let image = (data.get("image") || "") as string;
+  image = sanitize(image);
 
   const file = data.get("file") as Blob | undefined;
   let upload;
@@ -59,7 +61,8 @@ export async function updateProfile(data: FormData) {
   if (upload?.data?.url) image = upload.data.url;
 
   const profileId = data.get("profileId") || undefined;
-  const description = (data.get("description") || "") as string;
+  let description = (data.get("description") || "") as string;
+  description = sanitize(description);
 
   return await db
     .insert(userProfiles)

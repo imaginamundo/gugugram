@@ -12,6 +12,7 @@ import { db } from "@/database/postgres";
 import { users } from "@/database/schema";
 import { hashPassword } from "@/utils/password";
 import { getValidationErrors, type ValidationErrorsObject } from "@/utils/yup";
+import { sanitize } from "isomorphic-dompurify";
 
 export async function logoutAction() {
   await signOut({ redirect: false });
@@ -28,13 +29,18 @@ export async function loginAction(data: LoginInputs) {
 
   if (Object.keys(errors).length) throw new Error("Campos inválidos");
 
-  await signIn("credentials", { redirect: false, ...data }).catch(
-    (e: AuthError) => {
-      let message = e.message;
-      if (e.cause?.err?.message) message = e.cause.err.message;
-      throw new Error(message);
-    },
-  );
+  const sanitizedEmail = sanitize(data.email);
+  const sanitizedPassword = sanitize(data.password);
+
+  await signIn("credentials", {
+    redirect: false,
+    email: sanitizedEmail,
+    password: sanitizedPassword,
+  }).catch((e: AuthError) => {
+    let message = e.message;
+    if (e.cause?.err?.message) message = e.cause.err.message;
+    throw new Error(message);
+  });
 
   redirect("/");
 }
@@ -48,12 +54,16 @@ export async function registerAction(data: RegisterInputs) {
 
   if (Object.keys(errors).length) throw new Error("Campos inválidos");
 
-  const password = hashPassword(data.password);
+  const sanitizedUsername = sanitize(data.username);
+  const sanitizedEmail = sanitize(data.email);
+  const sanitizedPassword = sanitize(data.password);
+
+  const password = hashPassword(sanitizedPassword);
 
   try {
     await db.insert(users).values({
-      username: data.username,
-      email: data.email,
+      username: sanitizedUsername,
+      email: sanitizedEmail,
       password,
     });
   } catch (e) {

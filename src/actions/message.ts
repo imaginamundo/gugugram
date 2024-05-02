@@ -1,12 +1,15 @@
 "use server";
 
 import { and, eq } from "drizzle-orm";
+import { sanitize } from "isomorphic-dompurify";
 
 import { auth } from "@/app/auth";
 import { db } from "@/database/postgres";
 import { messages } from "@/database/schema";
 
 export async function addMessage(receiverId: string, body: string) {
+  let sanitizedBody = sanitize(body);
+
   const session = await auth();
   if (!session) throw new Error("Não autenticado");
 
@@ -15,7 +18,9 @@ export async function addMessage(receiverId: string, body: string) {
     throw new Error("Não pode mandar mensagem para si");
   }
 
-  await db.insert(messages).values({ authorId, receiverId, body });
+  await db
+    .insert(messages)
+    .values({ authorId, receiverId, body: sanitizedBody });
 }
 
 export async function removeMessage(messageId: string) {

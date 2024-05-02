@@ -1,12 +1,15 @@
 "use server";
 
+import { sanitize } from "isomorphic-dompurify";
+
 import { db } from "@/database/postgres";
 
 import type { DisplayUserType } from "./user";
 
 export async function searchUsers(query: string) {
+  const sanitizedQuery = sanitize(query);
   return await db.query.users.findMany({
-    where: (user, { eq }) => eq(user.username, query),
+    where: (user, { ilike }) => ilike(user.username, `%${sanitizedQuery}%`),
     columns: {
       id: true,
       username: true,
