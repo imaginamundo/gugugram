@@ -12,6 +12,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
+  deleteAccount as deleteAccoutAction,
   deleteProfileImage,
   type ProfileInformationType,
   updateProfile,
@@ -106,6 +107,11 @@ export default function EditProfile({
     location.reload();
   };
 
+  const deleteAccount = async () => {
+    await deleteAccoutAction();
+    location.reload();
+  };
+
   return (
     <>
       <Loader loading={loading} />
@@ -146,7 +152,12 @@ export default function EditProfile({
           {user.profile?.image && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive">Remover imagem de perfil</Button>
+                <Button
+                  variant="destructive"
+                  className={styles.removeProfilePicture}
+                >
+                  Remover imagem de perfil
+                </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -186,6 +197,30 @@ export default function EditProfile({
           <Button>Atualizar dados</Button>
         </form>
       </div>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="link" className={styles.removeAccount}>
+            Excluir conta
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Vai deletar sua conta mesmo?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Não tem volta <EyeClosed />
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button variant="destructive" onClick={() => deleteAccount()}>
+                <Trash />
+                Deletar
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

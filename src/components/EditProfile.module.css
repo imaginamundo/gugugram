@@ -16,3 +16,11 @@
     gap: 1em;
     margin-bottom: 1em;
 }
+
+.removeProfilePicture {
+    margin-bottom: 16px;
+}
+
+.removeAccount {
+    margin-top: 16px;
+}

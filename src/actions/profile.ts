@@ -1,14 +1,21 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { sanitize } from "isomorphic-dompurify";
 import { notFound } from "next/navigation";
 
 import { auth } from "@/app/auth";
 import { db } from "@/database/postgres";
-import { userProfiles } from "@/database/schema";
+import {
+  images,
+  messages,
+  userFriends,
+  userProfiles,
+  users,
+} from "@/database/schema";
 import { utapi } from "@/image-upload/uploadthing";
 
+import { logoutAction } from "./authentication";
 import type { DisplayProfileType, DisplayUserType } from "./user";
 
 export async function profileInformations() {
@@ -96,4 +103,49 @@ export async function deleteProfileImage() {
     .update(userProfiles)
     .set({ image: "" })
     .where(eq(userProfiles.userId, session.user.id));
+}
+
+export async function deleteAccount() {
+  const session = await auth();
+
+  if (!session) throw new Error("Not allowed");
+  if (!session.user.image) throw new Error("No image");
+
+  let imageId = session.user.image.split("/").pop();
+
+  await db.delete(users).where(eq(users.id, session.user.id));
+
+  await db
+    .delete(userFriends)
+    .where(
+      or(
+        eq(userFriends.requestUserId, session.user.id),
+        eq(userFriends.targetUserId, session.user.id),
+      ),
+    );
+
+  await db
+    .delete(messages)
+    .where(
+      or(
+        eq(messages.authorId, session.user.id),
+        eq(messages.receiverId, session.user.id),
+      ),
+    );
+
+  const deletedImages = await db
+    .delete(images)
+    .where(eq(images.authorId, session.user.id))
+    .returning({ image: images.image });
+
+  const imagesToDelete = deletedImages.map(
+    ({ image }) => image.split("/").pop() as string,
+  );
+  imagesToDelete.push(imageId!);
+
+  await db.delete(userProfiles).where(eq(userProfiles.userId, session.user.id));
+
+  await utapi.deleteFiles(imagesToDelete);
+
+  await logoutAction();
 }
