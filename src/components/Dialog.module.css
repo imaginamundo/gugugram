@@ -31,6 +31,9 @@
     padding: 8px;
 }
 .dialogFooter {
+    display: flex;
+    gap: 8px;
+    justify-content: end;
     padding: 8px;
 }
 

@@ -13,8 +13,7 @@ const buttonVariants = cva(styles.button, {
       destructive: styles.buttonDestructive,
       outline: styles.buttonOutline,
       disabled: styles.buttonDisabled,
-
-      link: styles.buttonLink,
+      link: cn(styles.buttonLink, "border-radius"),
     },
   },
   defaultVariants: {
@@ -44,3 +43,4 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 export default Button;
+export { buttonVariants };

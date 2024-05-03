@@ -1,0 +1,4 @@
+.alertDialogHeader {
+    display: flex;
+    flex-direction: column;
+}

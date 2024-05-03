@@ -1,5 +1,7 @@
 "use server";
 
+import { and, eq } from "drizzle-orm";
+
 import { auth } from "@/app/auth";
 import { db } from "@/database/postgres";
 import { images } from "@/database/schema";
@@ -28,4 +30,14 @@ export async function uploadImage(data: FormData) {
   await db.insert(images).values({ authorId, image: upload.data.url });
 
   return;
+}
+
+export async function deleteImage(id: string) {
+  const session = await auth();
+
+  if (!session) throw new Error("Not allowed");
+
+  await db
+    .delete(images)
+    .where(and(eq(images.id, id), eq(images.authorId, session.user.id)));
 }
