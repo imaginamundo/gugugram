@@ -5,6 +5,7 @@ import MoodSad from "pixelarticons/svg/mood-sad.svg";
 import Trash from "pixelarticons/svg/trash.svg";
 
 import { deleteImage as deleteImageAction } from "@/actions/image";
+import { UserInformationType } from "@/actions/search";
 import type { DisplayImageType } from "@/actions/user";
 import {
   AlertDialog,
@@ -18,23 +19,24 @@ import {
   AlertDialogTrigger,
 } from "@/components/AlertDialog";
 import Button from "@/components/Button";
+import ImageZoom from "@/components/ImageZoom";
 
 import styles from "./ProfileGrid.module.css";
 
 export default function ProfileGrid({
   owner,
-  userId,
+  user,
   images,
 }: {
   owner: boolean;
-  userId?: string;
+  user: UserInformationType;
   images: DisplayImageType[];
 }) {
   const noImages = images.length === 0;
 
   const deleteImage = async (id: string, imageUrl: string) => {
-    if (userId) {
-      await deleteImageAction({ id, userId, imageUrl });
+    if (user.id) {
+      await deleteImageAction({ id, userId: user.id, imageUrl });
       location.reload();
     }
   };
@@ -71,11 +73,13 @@ export default function ProfileGrid({
               </AlertDialogContent>
             </AlertDialog>
           )}
-          <img
-            src={image.image}
-            alt={`Image number ${image.id}`}
-            className={styles.image}
-          />
+          <ImageZoom username={user.username} image={image.image}>
+            <img
+              src={image.image}
+              alt={`Image number ${image.id}`}
+              className={styles.image}
+            />
+          </ImageZoom>
         </div>
       ))}
       {noImages && (

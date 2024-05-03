@@ -25,11 +25,7 @@ export default async function ProfileLayout({
       <div className={styles.profileWrapper}>
         <ProfileHeader user={user} owner={owner} authenticated={!!session} />
         {owner && <UploadImage />}
-        <ProfileGrid
-          userId={session?.user.id}
-          images={user.images}
-          owner={owner}
-        />
+        <ProfileGrid user={user} images={user.images} owner={owner} />
       </div>
       {children}
     </main>

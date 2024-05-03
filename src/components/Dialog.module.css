@@ -9,10 +9,13 @@
     position: fixed;
     width: calc(100% - 32px);
     max-width: 700px;
-    top: 50%;
-    left: 50%;
+    max-height: calc(100dvh - 64px);
+    top: 32px;
+    left: 0;
+    right: 0;
+    margin: auto;
     z-index: 50;
-    transform: translate(-50%, -50%);
+    overflow: auto;
     background: #fff;
     color: black;
 }
@@ -33,7 +36,7 @@
 .dialogFooter {
     display: flex;
     gap: 8px;
-    justify-content: end;
+    justify-content: flex-end;
     padding: 8px;
 }
 
