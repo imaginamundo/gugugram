@@ -9,8 +9,8 @@
     position: fixed;
     width: calc(100% - 32px);
     max-width: 700px;
-    max-height: calc(100dvh - 64px);
-    top: 32px;
+    max-height: calc(100dvh - 32px);
+    bottom: 16px;
     left: 0;
     right: 0;
     margin: auto;
