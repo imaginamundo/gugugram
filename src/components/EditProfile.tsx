@@ -3,13 +3,30 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
 import ArrowLeft from "pixelarticons/svg/arrow-left.svg";
+import EyeClosed from "pixelarticons/svg/eye-closed.svg";
 import ImagePlus from "pixelarticons/svg/image-plus.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
+import Trash from "pixelarticons/svg/trash.svg";
 import { usePostHog } from "posthog-js/react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { ProfileInformationType, updateProfile } from "@/actions/profile";
+import {
+  deleteProfileImage,
+  type ProfileInformationType,
+  updateProfile,
+} from "@/actions/profile";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/AlertDialog";
 import Button from "@/components/Button";
 import buttonStyles from "@/components/Button.module.css";
 import Input from "@/components/Input";
@@ -84,6 +101,11 @@ export default function EditProfile({
     }
   };
 
+  const deleteImage = async () => {
+    await deleteProfileImage();
+    location.reload();
+  };
+
   return (
     <>
       <Loader loading={loading} />
@@ -121,6 +143,30 @@ export default function EditProfile({
             )}
             <ArrowLeft />
           </div>
+          {user.profile?.image && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">Remover imagem de perfil</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Vai remover mesmo?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Não tem volta <EyeClosed />
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction asChild>
+                    <Button variant="destructive" onClick={() => deleteImage()}>
+                      <Trash />
+                      Deletar
+                    </Button>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
           {/* <label className={styles.label}>
           Nome de usuário
           <Input

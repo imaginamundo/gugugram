@@ -120,7 +120,7 @@ export async function userInformations(username: string) {
   };
 }
 export type UserInformationType = DisplayUserType & {
-  profile?: DisplayProfileType;
+  profile?: DisplayProfileSubleType;
   images: DisplayImageType[];
   pendingFriendRequest: boolean;
   messagesCount: number;
@@ -274,10 +274,10 @@ export type ProfileFriendsType = {
   friends: FriendType[];
   friendRequests: FriendType[];
 };
-export type FriendType = DisplayUserType & { profile: DisplayProfileSubleType };
+export type FriendType = DisplayUserType & { profile: DisplayProfileImage };
 
 const buildFriendObject = (user: ProfileFriendsType["friends"][number]) => {
-  let profile: DisplayProfileSubleType = { image: null };
+  let profile: DisplayProfileImage = { image: null };
   if (user.profile) profile = user.profile;
   return {
     id: user.id,
@@ -291,7 +291,11 @@ export type DisplayProfileType = Pick<
   UserProfileType,
   "id" | "description" | "image"
 >;
-export type DisplayProfileSubleType = Pick<UserProfileType, "image">;
+export type DisplayProfileSubleType = Pick<
+  UserProfileType,
+  "description" | "image"
+>;
+export type DisplayProfileImage = Pick<UserProfileType, "image">;
 export type DisplayFriendType = Pick<UserFriendsType, "id" | "status">;
 export type DisplayImageType = Pick<ImageType, "id" | "image">;
 export type DisplayMessageType = Pick<MessageType, "id" | "body" | "createdAt">;

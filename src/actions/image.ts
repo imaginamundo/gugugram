@@ -32,10 +32,24 @@ export async function uploadImage(data: FormData) {
   return;
 }
 
-export async function deleteImage(id: string) {
+export async function deleteImage({
+  id,
+  userId,
+  imageUrl,
+}: {
+  id: string;
+  userId: string;
+  imageUrl: string;
+}) {
   const session = await auth();
 
   if (!session) throw new Error("Not allowed");
+  if (userId !== session.user.id) throw new Error("Not allowed");
+  if (!session.user.image) throw new Error("No image");
+
+  let imageId = imageUrl.split("/").pop();
+
+  await utapi.deleteFiles(imageId!);
 
   await db
     .delete(images)

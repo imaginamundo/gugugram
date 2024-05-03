@@ -1,5 +1,6 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { sanitize } from "isomorphic-dompurify";
 import { notFound } from "next/navigation";
 
@@ -61,17 +62,17 @@ export async function updateProfile(data: FormData) {
   if (upload?.data?.url) image = upload.data.url;
 
   const profileId = data.get("profileId") || undefined;
+
   let description = (data.get("description") || "") as string;
   description = sanitize(description);
 
-  return await db
+  await db
     .insert(userProfiles)
     .values({ id: profileId, userId: session.user.id, image, description })
     .onConflictDoUpdate({
       target: [userProfiles.id, userProfiles.userId],
       set: { image, description },
-    })
-    .returning({ image: userProfiles.image });
+    });
 }
 export type EditProfileInformationType = {
   userId: string;
@@ -80,3 +81,19 @@ export type EditProfileInformationType = {
   // username: string;
   description: string;
 };
+
+export async function deleteProfileImage() {
+  const session = await auth();
+
+  if (!session) throw new Error("Not allowed");
+  if (!session.user.image) throw new Error("No image");
+
+  let imageId = session.user.image.split("/").pop();
+
+  await utapi.deleteFiles(imageId!);
+
+  await db
+    .update(userProfiles)
+    .set({ image: "" })
+    .where(eq(userProfiles.userId, session.user.id));
+}

@@ -23,16 +23,20 @@ import styles from "./ProfileGrid.module.css";
 
 export default function ProfileGrid({
   owner,
+  userId,
   images,
 }: {
   owner: boolean;
+  userId?: string;
   images: DisplayImageType[];
 }) {
   const noImages = images.length === 0;
 
-  const deleteImage = async (id: string) => {
-    await deleteImageAction(id);
-    location.reload();
+  const deleteImage = async (id: string, imageUrl: string) => {
+    if (userId) {
+      await deleteImageAction({ id, userId, imageUrl });
+      location.reload();
+    }
   };
   return (
     <div className={styles.grid}>
@@ -57,7 +61,7 @@ export default function ProfileGrid({
                   <AlertDialogAction asChild>
                     <Button
                       variant="destructive"
-                      onClick={() => deleteImage(image.id)}
+                      onClick={() => deleteImage(image.id, image.image)}
                     >
                       <Trash />
                       Deletar

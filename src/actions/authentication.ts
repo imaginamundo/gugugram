@@ -76,9 +76,9 @@ export async function registerAction(data: RegisterInputs) {
 
 const translateDatabaseError = (message: string) => {
   switch (message) {
-    case 'duplicate key value violates unique constraint "gugugram_user_username_unique"':
+    case 'duplicate key value violates unique constraint "gugugram_users_username_unique"':
       return "Nome de usuário já cadastrado";
-    case 'duplicate key value violates unique constraint "gugugram_user_email_unique"':
+    case 'duplicate key value violates unique constraint "gugugram_users_email_unique"':
       return "E-mail já cadastrado";
     default:
       message;
