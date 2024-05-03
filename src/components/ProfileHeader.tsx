@@ -105,6 +105,10 @@ export default function ProfileHeader({
     }
   }
 
+  const friendClasses = [styles.profileLink];
+  if (user.pendingFriendRequest)
+    friendClasses.push(styles.pendingFriendRequest);
+
   return (
     <div className={cn("border-radius", styles.profileHeader)}>
       <div>
@@ -155,10 +159,11 @@ export default function ProfileHeader({
             </Link>
             <Link
               href={`/${user.username}/amigos#amigos`}
-              className={styles.profileLink}
+              className={cn(...friendClasses)}
             >
               <MoodHappy className={styles.profileLinkIcon} />
-              {user.friendsCount} amigo{user.friendsCount > 1 && "s"}
+              {user.friendsCount} amigo{user.friendsCount > 1 && "s"}{" "}
+              {user.pendingFriendRequest && "*"}
             </Link>{" "}
           </p>
         </div>

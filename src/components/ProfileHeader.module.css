@@ -26,6 +26,9 @@
         }
     }
 }
+.pendingFriendRequest {
+    color: tomato;
+}
 .profileLinkIcon {
     margin-right: 4px;
 }

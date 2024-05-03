@@ -95,11 +95,34 @@ export async function userInformations(username: string) {
       ),
     );
 
-  return { friendship: friendshipStatus, messagesCount, friendsCount, ...user };
+  let pendingFriendRequest = false;
+
+  if (session && session.user.id === user.id) {
+    const friendRequest = await db
+      .select()
+      .from(userFriends)
+      .where(
+        and(
+          eq(userFriends.status, "pending"),
+          eq(userFriends.targetUserId, user.id),
+        ),
+      )
+      .limit(1);
+    pendingFriendRequest = !!friendRequest.length;
+  }
+
+  return {
+    friendship: friendshipStatus,
+    pendingFriendRequest,
+    messagesCount,
+    friendsCount,
+    ...user,
+  };
 }
 export type UserInformationType = DisplayUserType & {
   profile?: DisplayProfileType;
   images: DisplayImageType[];
+  pendingFriendRequest: boolean;
   messagesCount: number;
   friendsCount: number;
   friendship: {
