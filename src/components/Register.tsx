@@ -36,7 +36,7 @@ export default function Register() {
       return;
     }
 
-    await loginAction({ email: data.email, password: data.password });
+    await loginAction({ identity: data.email, password: data.password });
   };
 
   return (
@@ -51,6 +51,8 @@ export default function Register() {
           <Input
             {...register("username")}
             {...fieldError("username")}
+            maxLength={14}
+            pattern="[A-Za-z0-9]"
             placeholder="Digite seu nome de usuário"
           />
         </label>
@@ -73,6 +75,7 @@ export default function Register() {
             type="password"
             placeholder="******"
             autoComplete="new-password"
+            maxLength={40}
           />
         </label>
         {serverError && (

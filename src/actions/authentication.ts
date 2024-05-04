@@ -29,12 +29,12 @@ export async function loginAction(data: LoginInputs) {
 
   if (Object.keys(errors).length) throw new Error("Campos inválidos");
 
-  const sanitizedEmail = sanitize(data.email).toLowerCase();
+  const sanitizedIdentity = sanitize(data.identity).toLowerCase();
   const sanitizedPassword = sanitize(data.password).toLowerCase();
 
   await signIn("credentials", {
     redirect: false,
-    email: sanitizedEmail,
+    identity: sanitizedIdentity,
     password: sanitizedPassword,
   }).catch((e: AuthError) => {
     let message = e.message;

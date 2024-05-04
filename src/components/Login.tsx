@@ -53,14 +53,14 @@ export default function Login() {
         onSubmit={handleSubmit(authenticate)}
       >
         <label className={styles.label}>
-          E-mail
+          Nome de usuário ou e-mail
           <Input
-            {...register("email")}
-            {...fieldError("email")}
-            placeholder="email@provedor.com.br"
-            type="email"
-            autoComplete="email"
+            {...register("identity")}
+            {...fieldError("identity")}
+            placeholder="Seu nome de usuário ou email"
+            autoComplete="username"
           />
+          14 caracteres de tamanho máximo, sem caracteres especiais
         </label>
         <label className={styles.label}>
           Senha
@@ -70,6 +70,7 @@ export default function Login() {
             placeholder="******"
             autoComplete="current-password"
             type="password"
+            maxLength={40}
           />
         </label>
         {serverError && (

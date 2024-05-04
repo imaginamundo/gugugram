@@ -1,5 +1,5 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -16,16 +16,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     CredentialsProvider({
       id: "credentials",
       credentials: {
-        email: {},
+        identity: {},
         password: {},
       },
       authorize: async (credentials) => {
         let user = null;
 
-        const { email, password } = await loginSchema.validate(credentials);
+        let { identity, password } = await loginSchema.validate(credentials);
+
+        identity = identity.toLowerCase();
+        password = password.toLowerCase();
 
         user = await db.query.users.findFirst({
-          where: eq(users.email, email),
+          where: or(eq(users.email, identity), eq(users.username, identity)),
           with: {
             profile: {
               columns: {
