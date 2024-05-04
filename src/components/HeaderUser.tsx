@@ -14,7 +14,11 @@ export default function HeaderUser({ session }: { session: Session }) {
     <>
       {session?.user && (
         <div className={styles.headerUser}>
-          <Link href={`/${session.user.username}`} className={styles.user}>
+          <Link
+            href={`/${session.user.username}`}
+            className={styles.user}
+            scroll
+          >
             {session.user.image && (
               <img
                 className="border-radius profile-picture"

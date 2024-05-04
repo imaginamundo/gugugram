@@ -53,7 +53,7 @@ export default function ProfileWall({
                 </span>
                 <p>
                   <span>
-                    <Link href={`/${message.author.username}`}>
+                    <Link href={`/${message.author.username}`} scroll>
                       <b>{message.author.username}</b>
                     </Link>
                   </span>

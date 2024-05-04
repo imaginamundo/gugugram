@@ -25,7 +25,7 @@ export default async function Home({ params }: { params: { query: string } }) {
         {users.map((user) => {
           return (
             <div key={`search-${user.id}`} className={styles.user}>
-              <Link href={`/${user.username}`}>
+              <Link href={`/${user.username}`} scroll>
                 {user.profile?.image && (
                   <img
                     src={user.profile.image}
@@ -47,7 +47,9 @@ export default async function Home({ params }: { params: { query: string } }) {
                   </span>
                 )}
               </Link>
-              <Link href={`/${user.username}`}>{user.username}</Link>
+              <Link href={`/${user.username}`} scroll>
+                {user.username}
+              </Link>
             </div>
           );
         })}

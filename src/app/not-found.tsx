@@ -16,7 +16,9 @@ export default function NotFound() {
         <div>
           <h2>Eta</h2>
           <p>Essa página nem existe</p>
-          <Link href="/">Ir para tela inicial</Link>
+          <Link href="/" scroll>
+            Ir para tela inicial
+          </Link>
         </div>
       </div>
     </div>

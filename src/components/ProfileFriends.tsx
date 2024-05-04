@@ -45,7 +45,7 @@ export default function ProfileFriends({
                   key={`friend-request-${friend.id}`}
                   className={styles.friend}
                 >
-                  <Link href={`/${friend.username}`}>
+                  <Link href={`/${friend.username}`} scroll>
                     {friend.profile.image && (
                       <img
                         src={friend.profile.image}
@@ -63,7 +63,9 @@ export default function ProfileFriends({
                     )}
                   </Link>
                   <div className={styles.friendInformation}>
-                    <Link href={`/${friend.username}`}>{friend.username}</Link>
+                    <Link href={`/${friend.username}`} scroll>
+                      {friend.username}
+                    </Link>
                     <Button
                       className={styles.profileButtons}
                       onClick={() => acceptFriendship(friend.id)}
@@ -90,7 +92,7 @@ export default function ProfileFriends({
         {friends.map((friend) => {
           return (
             <div key={`friend-${friend.id}`} className={styles.friend}>
-              <Link href={`/${friend.username}`}>
+              <Link href={`/${friend.username}`} scroll>
                 {friend.profile.image && (
                   <img
                     src={friend.profile.image}
@@ -108,7 +110,9 @@ export default function ProfileFriends({
                 )}
               </Link>
               <div className={styles.friendInformation}>
-                <Link href={`/${friend.username}`}>{friend.username}</Link>
+                <Link href={`/${friend.username}`} scroll>
+                  {friend.username}
+                </Link>
                 {/* TODO: Show remove button added, and add button when not added */}
                 {/* {owner && authenticated && (
                   <Button variant="destructive">

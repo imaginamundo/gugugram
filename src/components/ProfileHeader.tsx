@@ -142,7 +142,7 @@ export default function ProfileHeader({
             </p>
           )}
           {owner && (
-            <Link href="/editar-perfil">
+            <Link href="/editar-perfil" scroll>
               <Button variant="outline">
                 <Edit />
                 Editar perfil
