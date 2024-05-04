@@ -2,7 +2,7 @@
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
-import ArrowLeft from "pixelarticons/svg/arrow-left.svg";
+import ContactDelete from "pixelarticons/svg/contact-delete.svg";
 import EyeClosed from "pixelarticons/svg/eye-closed.svg";
 import ImagePlus from "pixelarticons/svg/image-plus.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
@@ -147,7 +147,6 @@ export default function EditProfile({
                 <MoodHappy />
               </div>
             )}
-            <ArrowLeft />
           </div>
           {user.profile?.image && (
             <AlertDialog>
@@ -197,9 +196,22 @@ export default function EditProfile({
           <Button>Atualizar dados</Button>
         </form>
       </div>
+      <h2 className="margin-top">Remoção de conta</h2>
+      <p className="margin-top">
+        A remoção de conta é permanente. Deletando sua conta você perderá todas
+        as suas imagens, mensagens enviadas, amizades e tudo que guardamos no
+        site.
+      </p>
+      <p className="margin-top">
+        Todas as informações serão deletadas sem chance de recuperação.
+      </p>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="link" className={styles.removeAccount}>
+          <Button
+            className={cn(styles.removeAccount, "margin-top")}
+            variant="destructive"
+          >
+            <ContactDelete />
             Excluir conta
           </Button>
         </AlertDialogTrigger>

@@ -109,10 +109,10 @@
     color: #fff;
     background: tomato;
     &:after {
-        background: red;
+        background: #f05236;
     }
     &:hover {
-        background: red;
+        background: #f05236;
     }
 }
 .buttonOutline {
