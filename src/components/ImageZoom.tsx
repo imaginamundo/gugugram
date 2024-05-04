@@ -3,10 +3,10 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogMain,
   DialogTitle,
   DialogTrigger,
 } from "@/components/Dialog";
@@ -42,7 +42,9 @@ export default function ImageZoom({
           className={styles.image}
         />
         <DialogFooter>
-          <Button variant="destructive">Fechar</Button>
+          <DialogClose asChild>
+            <Button variant="destructive">Fechar</Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
