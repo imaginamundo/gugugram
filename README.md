@@ -20,7 +20,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [x] Database schemas;
 - [x] Auth setup;
 - [x] Authenticated user actions;
-- [ ] Authenticate with username or e-mail;
+- [x] Authenticate with username or e-mail;
 - [ ] Redirect to user page after authentication;
 - [x] Image upload;
 - [x] Edit profile page;
