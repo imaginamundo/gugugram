@@ -7,6 +7,16 @@
   "description": "É uma rede social",
   "icons": [
     {
+      "src": "/favicon.ico",
+      "sizes": "16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon-32.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    },
+    {
       "src": "/seo/icon-32.png",
       "sizes": "32x32",
       "type": "image/png"

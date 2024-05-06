@@ -83,6 +83,9 @@ export default function RootLayout({
       <CSPostHogProvider>
         <html lang="pt" className={silkcreen.className}>
           <body>
+            <head>
+              <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+            </head>
             <Header />
             {children}
             <Footer />
