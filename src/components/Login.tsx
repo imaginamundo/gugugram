@@ -60,7 +60,9 @@ export default function Login() {
             placeholder="Seu nome de usuário ou email"
             autoComplete="username"
           />
-          14 caracteres de tamanho máximo, sem caracteres especiais
+          <span className="hint">
+            Máximo de 14 caracteres, sem caracteres especiais
+          </span>
         </label>
         <label className={styles.label}>
           Senha

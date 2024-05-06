@@ -13,14 +13,48 @@ export const metadata: Metadata = {
   applicationName: "Gugugram",
   title: {
     template: "%s · Gugugram",
-    default: "Gugugram", // a default is required when creating a template
+    default: "Gugugram",
   },
   description: "É uma rede social",
   category: "social network",
   icons: {
-    icon: "/seo/icon.png",
-    shortcut: "/seo/icon.png",
-    apple: "/seo/icon-180.png",
+    icon: [
+      {
+        url: "/favicon.ico",
+        sizes: "16x16",
+        type: "image/png",
+      },
+      {
+        url: "/seo/icon-16.png",
+        sizes: "16x16",
+        type: "image/png",
+      },
+      {
+        url: "/seo/icon-32.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
+      {
+        url: "/seo/icon-180.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+      {
+        url: "/seo/icon-192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        url: "/seo/icon.png",
+        sizes: "500x500",
+        type: "image/png",
+      },
+      {
+        url: "/seo/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
   },
   appleWebApp: {
     title: "Gugugram",
@@ -83,9 +117,6 @@ export default function RootLayout({
       <CSPostHogProvider>
         <html lang="pt" className={silkcreen.className}>
           <body>
-            <head>
-              <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-            </head>
             <Header />
             {children}
             <Footer />

@@ -52,7 +52,7 @@ export default function Register() {
             {...register("username")}
             {...fieldError("username")}
             maxLength={14}
-            pattern="[A-Za-z0-9]"
+            pattern="[A-Za-z0-9]+"
             placeholder="Digite seu nome de usuário"
           />
         </label>

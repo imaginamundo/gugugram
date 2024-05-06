@@ -153,3 +153,6 @@ button svg {
 .stop {
     pointer-events: none;
 }
+.hint {
+    color: darkgray;
+}
