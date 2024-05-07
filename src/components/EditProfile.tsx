@@ -1,7 +1,7 @@
 "use client";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import ContactDelete from "pixelarticons/svg/contact-delete.svg";
 import EyeClosed from "pixelarticons/svg/eye-closed.svg";
 import ImagePlus from "pixelarticons/svg/image-plus.svg";
@@ -45,9 +45,9 @@ export default function EditProfile({
 }: {
   user: ProfileInformationType;
 }) {
-  const route = useRouter();
   const posthog = usePostHog();
   const { toast } = useToast();
+  const { data: session, update } = useSession();
 
   const [loading, setLoading] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
@@ -65,6 +65,8 @@ export default function EditProfile({
   const imageRef = useRef<HTMLImageElement>(null);
 
   const editProfile = async (data: EditProfileInputs) => {
+    if (!session) return;
+
     posthog.capture("edit_profile");
     setLoading(true);
     const formData = new FormData();
@@ -83,7 +85,7 @@ export default function EditProfile({
       const blob = (await createBlob()) as Blob;
       formData.append("file", blob);
     }
-    formData.append("description", data.description);
+    formData.append("description", data.description ?? "");
 
     if (user.profile?.id) formData.append("profileId", user.profile.id);
 
@@ -98,7 +100,9 @@ export default function EditProfile({
 
     setLoading(false);
 
-    route.push(`/${user.username}`);
+    update({ ...session, user: { ...session.user, image: response.image } });
+
+    location.href = `/${user.username}`;
   };
 
   const imageSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,6 +116,8 @@ export default function EditProfile({
   };
 
   const deleteImage = async () => {
+    if (!session) return;
+
     const response = await deleteProfileImage();
     if (response?.message) {
       return toast({
@@ -120,10 +126,15 @@ export default function EditProfile({
         variant: "destructive",
       });
     }
+
+    update({ ...session, user: { ...session.user, image: "" } });
+
     location.reload();
   };
 
   const deleteAccount = async () => {
+    if (!session) return;
+
     const response = await deleteAccoutAction();
     if (response?.message) {
       return toast({
@@ -132,6 +143,7 @@ export default function EditProfile({
         variant: "destructive",
       });
     }
+
     location.reload();
   };
 
@@ -278,17 +290,13 @@ const drawCanvas = (image: HTMLImageElement) => {
   return canvas;
 };
 
-const requiredMessage = "Campo obrigatório";
 const fieldLimitMessage = (n: number) =>
   `Campo pode ter até ${n.toString()} caracteres`;
 
 export const editProfileSchema = yup.object({
   image: yup.string(),
   file: yup.string(),
-  description: yup
-    .string()
-    .max(160, fieldLimitMessage(160))
-    .required(requiredMessage),
+  description: yup.string().max(160, fieldLimitMessage(160)),
 });
 
 export type EditProfileInputs = yup.InferType<typeof editProfileSchema>;

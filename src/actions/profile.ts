@@ -80,6 +80,8 @@ export async function updateProfile(data: FormData) {
       target: [userProfiles.id, userProfiles.userId],
       set: { image, description },
     });
+
+  return { image };
 }
 export type EditProfileInformationType = {
   userId: string;

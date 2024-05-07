@@ -30,10 +30,7 @@ export default function ImageZoom({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
-            Imagem de{" "}
-            <Link href={`/${username}`} scroll>
-              {username}
-            </Link>
+            Imagem de <Link href={`/${username}`}>{username}</Link>
           </DialogTitle>
         </DialogHeader>
         <img

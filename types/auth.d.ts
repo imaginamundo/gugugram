@@ -1,10 +1,11 @@
 import NextAuth, {
   type DefaultSession,
+  type JWT as DefaultJWT,
   type User as DefaultUser,
 } from "next-auth";
 
 declare module "next-auth" {
-  interface User {
+  interface User extends DefaultUser {
     id: string;
     username: string;
     profile: {
@@ -12,24 +13,11 @@ declare module "next-auth" {
     };
   }
 
-  interface Session {
+  interface Session extends DefaultSession {
     user: {
       id: string;
       username: string;
       image: string;
-    } & DefaultSession["user"];
+    };
   }
 }
-// import NextAuth, { type DefaultSession } from "next-auth";
-
-// declare module "next-auth" {
-//   interface Session {
-//     user: {
-//       id: string;
-//       username: string;
-//       profile: {
-//         image: string;
-//       };
-//     } & DefaultSession["user"];
-//   }
-// }

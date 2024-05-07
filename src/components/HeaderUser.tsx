@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type Session } from "next-auth";
+import type { Session } from "next-auth";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 
 import { logoutAction } from "@/actions/authentication";
@@ -9,16 +9,12 @@ import Button from "@/components/Button";
 
 import styles from "./HeaderUser.module.css";
 
-export default function HeaderUser({ session }: { session: Session }) {
+export default function HeaderUser({ session }: { session?: Session }) {
   return (
     <>
       {session?.user && (
         <div className={styles.headerUser}>
-          <Link
-            href={`/${session.user.username}`}
-            className={styles.user}
-            scroll
-          >
+          <Link href={`/${session.user.username}`} className={styles.user}>
             {session.user.image && (
               <img
                 className="border-radius profile-picture"
