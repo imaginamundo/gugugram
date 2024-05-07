@@ -43,9 +43,10 @@ export async function deleteImage({
 
   if (!session) return { message: "Não permitido" };
   if (userId !== session.user.id) return { message: "Não permitido" };
-  if (!session.user.image) return { message: "Sem nenhuma imagem" };
 
   let imageId = imageUrl.split("/").pop();
+
+  console.log({ imageId });
 
   await utapi.deleteFiles(imageId!);
 

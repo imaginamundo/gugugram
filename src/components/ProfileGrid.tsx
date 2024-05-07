@@ -20,6 +20,7 @@ import {
 } from "@/components/AlertDialog";
 import Button from "@/components/Button";
 import ImageZoom from "@/components/ImageZoom";
+import { useToast } from "@/hooks/useToast";
 
 import styles from "./ProfileGrid.module.css";
 
@@ -32,11 +33,25 @@ export default function ProfileGrid({
   user: UserInformationType;
   images: DisplayImageType[];
 }) {
+  const { toast } = useToast();
   const noImages = images.length === 0;
 
   const deleteImage = async (id: string, imageUrl: string) => {
     if (user.id) {
-      await deleteImageAction({ id, userId: user.id, imageUrl });
+      const response = await deleteImageAction({
+        id,
+        userId: user.id,
+        imageUrl,
+      });
+
+      if (response?.message) {
+        return toast({
+          title: "Ops",
+          description: response.message,
+          variant: "destructive",
+        });
+      }
+
       location.reload();
     }
   };
