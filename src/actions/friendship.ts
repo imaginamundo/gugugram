@@ -8,12 +8,12 @@ import { userFriends } from "@/database/schema";
 
 export const addFriend = async (targetUserId: string) => {
   const session = await auth();
-  if (!session) throw new Error("Não autenticado");
+  if (!session) return { message: "Não autenticado" };
 
   // Todo: If user already has send a friend request and other user do it at the same time
 
   const requestUserId = session.user.id;
-  if (requestUserId === targetUserId) throw new Error("Não autorizado");
+  if (requestUserId === targetUserId) return { message: "Não autorizado" };
 
   await db
     .insert(userFriends)
@@ -26,10 +26,10 @@ export const addFriend = async (targetUserId: string) => {
 
 export const acceptFriend = async (requestUserId: string) => {
   const session = await auth();
-  if (!session) throw new Error("Não autenticado");
+  if (!session) return { message: "Não autenticado" };
 
   const targetUserId = session.user.id;
-  if (requestUserId === targetUserId) throw new Error("Não autorizado");
+  if (requestUserId === targetUserId) return { message: "Não autorizado" };
 
   await db
     .insert(userFriends)
@@ -45,7 +45,7 @@ export const removeFriend = async (targetUserId: string) => {
   if (!session) throw new Error("Não autenticado");
 
   const requestUserId = session.user.id;
-  if (requestUserId === targetUserId) throw new Error("Não autorizado");
+  if (requestUserId === targetUserId) return { message: "Não autorizado" };
 
   await db
     .delete(userFriends)

@@ -48,7 +48,7 @@ export type ProfileInformationType = DisplayUserType & {
 
 export async function updateProfile(data: FormData) {
   const session = await auth();
-  if (!session) throw new Error("Not allowed");
+  if (!session) return { message: "Não permitido" };
 
   let image = (data.get("image") || "") as string;
   image = sanitize(image);
@@ -57,8 +57,8 @@ export async function updateProfile(data: FormData) {
   let upload;
   if (file) {
     try {
-      if (!file) throw new Error("No image selected");
-      if (file.size > 10000) throw new Error("Image too big");
+      if (!file) return { message: "Nenhuma imagem selecionada" };
+      if (file.size > 10000) return { message: "Imagem muito grande" };
 
       upload = await utapi.uploadFiles(file);
     } catch (e) {
@@ -92,8 +92,8 @@ export type EditProfileInformationType = {
 export async function deleteProfileImage() {
   const session = await auth();
 
-  if (!session) throw new Error("Not allowed");
-  if (!session.user.image) throw new Error("No image");
+  if (!session) return { message: "Não permitido" };
+  if (!session.user.image) return { message: "Nenhuma imagem" };
 
   let imageId = session.user.image.split("/").pop();
 
@@ -108,10 +108,12 @@ export async function deleteProfileImage() {
 export async function deleteAccount() {
   const session = await auth();
 
-  if (!session) throw new Error("Not allowed");
-  if (!session.user.image) throw new Error("No image");
+  if (!session) return { message: "Não permitido" };
 
-  let imageId = session.user.image.split("/").pop();
+  let imageId;
+  if (session.user.image) {
+    imageId = session.user.image.split("/").pop();
+  }
 
   await db.delete(users).where(eq(users.id, session.user.id));
 
@@ -141,7 +143,7 @@ export async function deleteAccount() {
   const imagesToDelete = deletedImages.map(
     ({ image }) => image.split("/").pop() as string,
   );
-  imagesToDelete.push(imageId!);
+  if (imageId) imagesToDelete.push(imageId!);
 
   await db.delete(userProfiles).where(eq(userProfiles.userId, session.user.id));
 

@@ -10,6 +10,7 @@ import { removeMessage } from "@/actions/message";
 import type { ProfileMessagesType } from "@/actions/user";
 import Button from "@/components/Button";
 import ProfileWallForm from "@/components/ProfileWallForm";
+import { useToast } from "@/hooks/useToast";
 import cn from "@/utils/cn";
 import { parseDate } from "@/utils/date";
 
@@ -27,11 +28,19 @@ export default function ProfileWall({
   authenticated: boolean;
 }) {
   const posthog = usePostHog();
+  const { toast } = useToast();
   const noMessages = messages.length === 0;
 
   const removeCurrentMessage = async (messageId: string) => {
     posthog.capture("remove_message");
-    await removeMessage(messageId);
+    const response = await removeMessage(messageId);
+    if (response?.message) {
+      return toast({
+        title: "Ops",
+        description: response.message,
+        variant: "destructive",
+      });
+    }
     location.reload();
   };
 

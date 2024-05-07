@@ -12,6 +12,7 @@ import { usePostHog } from "posthog-js/react";
 import { acceptFriend, addFriend, removeFriend } from "@/actions/friendship";
 import type { UserInformationType } from "@/actions/user";
 import Button from "@/components/Button";
+import { useToast } from "@/hooks/useToast";
 import cn from "@/utils/cn";
 
 import styles from "./ProfileHeader.module.css";
@@ -27,10 +28,20 @@ export default function ProfileHeader({
   authenticated: boolean;
 }) {
   const posthog = usePostHog();
+  const { toast } = useToast();
 
   const addNewFriend = async () => {
     if (!user.friendship.status) {
-      await addFriend(user.id);
+      const response = await addFriend(user.id);
+
+      if (response?.message) {
+        return toast({
+          title: "Ops",
+          description: response.message,
+          variant: "destructive",
+        });
+      }
+
       posthog.capture("add_friend", { from: "profile_header" });
       location.reload();
     }
@@ -39,7 +50,14 @@ export default function ProfileHeader({
   const acceptNewFriend = async () => {
     if (user.friendship.status === "pending") {
       posthog.capture("accept_friend", { from: "profile_header" });
-      await acceptFriend(user.id);
+      const response = await acceptFriend(user.id);
+      if (response?.message) {
+        return toast({
+          title: "Ops",
+          description: response.message,
+          variant: "destructive",
+        });
+      }
       location.reload();
     }
   };
@@ -47,7 +65,14 @@ export default function ProfileHeader({
   const removeNewFriend = async () => {
     if (user.friendship.status === "accepted") {
       posthog.capture("remove_friend", { from: "profile_header" });
-      await removeFriend(user.id);
+      const response = await removeFriend(user.id);
+      if (response?.message) {
+        return toast({
+          title: "Ops",
+          description: response.message,
+          variant: "destructive",
+        });
+      }
       location.reload();
     }
   };

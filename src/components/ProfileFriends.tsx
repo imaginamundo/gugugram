@@ -9,6 +9,7 @@ import MoodSad from "pixelarticons/svg/mood-sad.svg";
 import { acceptFriend } from "@/actions/friendship";
 import type { FriendType } from "@/actions/user";
 import Button from "@/components/Button";
+import { useToast } from "@/hooks/useToast";
 import cn from "@/utils/cn";
 
 import styles from "./ProfileFriends.module.css";
@@ -24,10 +25,19 @@ export default function ProfileFriends({
   friends: FriendType[];
   authenticated: boolean;
 }) {
+  const { toast } = useToast();
+
   const noFriends = friends.length === 0;
 
   const acceptFriendship = async (id: string) => {
-    await acceptFriend(id);
+    const response = await acceptFriend(id);
+    if (response?.message) {
+      return toast({
+        title: "Ops",
+        description: response.message,
+        variant: "destructive",
+      });
+    }
     location.reload();
   };
 

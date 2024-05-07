@@ -11,11 +11,11 @@ export async function addMessage(receiverId: string, body: string) {
   let sanitizedBody = sanitize(body);
 
   const session = await auth();
-  if (!session) throw new Error("Não autenticado");
+  if (!session) return { message: "Não autenticado" };
 
   const authorId = session.user.id;
   if (authorId === receiverId) {
-    throw new Error("Não pode mandar mensagem para si");
+    return { message: "Não pode enviar mensagem proce mesmo" };
   }
 
   await db
@@ -25,7 +25,7 @@ export async function addMessage(receiverId: string, body: string) {
 
 export async function removeMessage(messageId: string) {
   const session = await auth();
-  if (!session) throw new Error("Não autenticado");
+  if (!session) return { message: "Não autenticado" };
 
   const authorId = session.user.id;
 

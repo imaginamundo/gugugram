@@ -27,7 +27,9 @@ export async function loginAction(data: LoginInputs) {
     errors = getValidationErrors(err);
   });
 
-  if (Object.keys(errors).length) throw new Error("Campos inválidos");
+  if (Object.keys(errors).length) {
+    return { message: "Campos inválidos", errors };
+  }
 
   const sanitizedIdentity = sanitize(data.identity).toLowerCase();
   const sanitizedPassword = sanitize(data.password).toLowerCase();
@@ -39,7 +41,7 @@ export async function loginAction(data: LoginInputs) {
   }).catch((e: AuthError) => {
     let message = e.message;
     if (e.cause?.err?.message) message = e.cause.err.message;
-    throw new Error(message);
+    return { message };
   });
 
   redirect("/");
@@ -52,7 +54,8 @@ export async function registerAction(data: RegisterInputs) {
     errors = getValidationErrors(err);
   });
 
-  if (Object.keys(errors).length) throw new Error("Campos inválidos");
+  if (Object.keys(errors).length)
+    return { message: "Campos inválidos", errors };
 
   const sanitizedUsername = sanitize(data.username).toLowerCase();
   const sanitizedEmail = sanitize(data.email).toLowerCase();
@@ -68,7 +71,7 @@ export async function registerAction(data: RegisterInputs) {
     });
   } catch (e) {
     if (e instanceof Error) {
-      throw new Error(translateDatabaseError(e.message));
+      return { message: translateDatabaseError(e.message) };
     }
     throw e;
   }

@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { lastPosts as lastPostsQuery } from "@/actions/lastPosts";
 import ImageZoom from "@/components/ImageZoom";
 

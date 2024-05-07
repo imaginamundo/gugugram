@@ -34,6 +34,7 @@ import Input from "@/components/Input";
 import Loader from "@/components/Loader";
 import { calculateCropCenter } from "@/components/UploadImage";
 import useFormErrors from "@/hooks/useFormErrors";
+import { useToast } from "@/hooks/useToast";
 import cn from "@/utils/cn";
 import yup from "@/utils/yup";
 
@@ -46,6 +47,7 @@ export default function EditProfile({
 }) {
   const route = useRouter();
   const posthog = usePostHog();
+  const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
@@ -85,7 +87,14 @@ export default function EditProfile({
 
     if (user.profile?.id) formData.append("profileId", user.profile.id);
 
-    await updateProfile(formData);
+    const response = await updateProfile(formData);
+    if (response?.message) {
+      toast({
+        title: "Ops",
+        description: response.message,
+        variant: "destructive",
+      });
+    }
 
     setLoading(false);
 
@@ -103,12 +112,26 @@ export default function EditProfile({
   };
 
   const deleteImage = async () => {
-    await deleteProfileImage();
+    const response = await deleteProfileImage();
+    if (response?.message) {
+      return toast({
+        title: "Ops",
+        description: response.message,
+        variant: "destructive",
+      });
+    }
     location.reload();
   };
 
   const deleteAccount = async () => {
-    await deleteAccoutAction();
+    const response = await deleteAccoutAction();
+    if (response?.message) {
+      return toast({
+        title: "Ops",
+        description: response.message,
+        variant: "destructive",
+      });
+    }
     location.reload();
   };
 

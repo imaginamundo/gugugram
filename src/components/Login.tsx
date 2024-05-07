@@ -36,7 +36,8 @@ export default function Login() {
   const authenticate = async (data: LoginInputs) => {
     try {
       posthog.capture("login");
-      await loginAction(data);
+      const response = await loginAction(data);
+      if (response.message) setServerError(response.message);
     } catch (e) {
       if (e instanceof Error) {
         return setServerError(e.message);

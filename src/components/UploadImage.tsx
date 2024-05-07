@@ -19,14 +19,15 @@ import {
 } from "@/components/Dialog";
 import Input from "@/components/Input";
 import Loader from "@/components/Loader";
+import { useToast } from "@/hooks/useToast";
 import cn from "@/utils/cn";
 
 import styles from "./UploadImage.module.css";
 
 export default function UploadImage() {
   const router = useRouter();
-
   const posthog = usePostHog();
+  const { toast } = useToast();
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -85,15 +86,22 @@ export default function UploadImage() {
         const data = new FormData();
         data.append("image", blob);
 
-        uploadImage(data)
-          .then(() => {
+        try {
+          uploadImage(data).then((response) => {
+            if (response?.message) {
+              return toast({
+                title: "Ops",
+                description: response.message,
+                variant: "destructive",
+              });
+            }
             router.refresh();
             setOpen(false);
             setLoading(false);
-          })
-          .catch((e) => {
-            console.log(e);
           });
+        } catch (e) {
+          console.log(e);
+        }
       }, "image/png");
     }
   };

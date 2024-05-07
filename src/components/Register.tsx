@@ -26,7 +26,8 @@ export default function Register() {
   const createAccount = async (data: RegisterInputs) => {
     try {
       posthog.capture("register");
-      await registerAction(data);
+      const response = await registerAction(data);
+      if (response?.message) setServerError(response.message);
     } catch (e) {
       if (e instanceof Error) {
         setServerError(e.message);

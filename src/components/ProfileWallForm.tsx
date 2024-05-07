@@ -8,11 +8,13 @@ import { useForm } from "react-hook-form";
 import { addMessage } from "@/actions/message";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import { useToast } from "@/hooks/useToast";
 import yup from "@/utils/yup";
 
 import styles from "./ProfileWallForm.module.css";
 
 export default function ProfileWallForm({ userId }: { userId: string }) {
+  const { toast } = useToast();
   const posthog = usePostHog();
   const { register, handleSubmit } = useForm<Inputs>({
     resolver: yupResolver(schema),
@@ -20,7 +22,14 @@ export default function ProfileWallForm({ userId }: { userId: string }) {
 
   const sendMessage = async (data: Inputs) => {
     posthog.capture("send_message");
-    await addMessage(userId, data.message);
+    const response = await addMessage(userId, data.message);
+    if (response?.message) {
+      return toast({
+        title: "Ops",
+        description: response.message,
+        variant: "destructive",
+      });
+    }
     location.reload();
   };
 

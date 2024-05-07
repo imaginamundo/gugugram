@@ -15,8 +15,8 @@ export async function uploadImage(data: FormData) {
   try {
     const file = data.get("image") as Blob | undefined;
 
-    if (!file) throw new Error("No image selected");
-    if (file.size > 10000) throw new Error("Image too big");
+    if (!file) return { message: "Nenhuma imagem selecionada" };
+    if (file.size > 10000) return { message: "Imagem muito grande" };
 
     upload = await utapi.uploadFiles(file);
   } catch (e) {
@@ -25,11 +25,9 @@ export async function uploadImage(data: FormData) {
 
   const authorId = session.user.id;
 
-  if (!upload.data?.url) throw new Error("Unexpected error");
+  if (!upload.data?.url) return { message: "Erro ao subir a imagem :(" };
 
   await db.insert(images).values({ authorId, image: upload.data.url });
-
-  return;
 }
 
 export async function deleteImage({
@@ -43,9 +41,9 @@ export async function deleteImage({
 }) {
   const session = await auth();
 
-  if (!session) throw new Error("Not allowed");
-  if (userId !== session.user.id) throw new Error("Not allowed");
-  if (!session.user.image) throw new Error("No image");
+  if (!session) return { message: "Não permitido" };
+  if (userId !== session.user.id) return { message: "Não permitido" };
+  if (!session.user.image) return { message: "Sem nenhuma imagem" };
 
   let imageId = imageUrl.split("/").pop();
 
