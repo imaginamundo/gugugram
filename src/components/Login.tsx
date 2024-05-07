@@ -37,7 +37,7 @@ export default function Login() {
     try {
       posthog.capture("login");
       const response = await loginAction(data);
-      if (response.message) setServerError(response.message);
+      if (response?.message) setServerError(response.message);
     } catch (e) {
       if (e instanceof Error) {
         return setServerError(e.message);
