@@ -66,7 +66,13 @@ export async function updateProfile(data: FormData) {
     }
   }
 
-  if (upload?.data?.url) image = upload.data.url;
+  if (upload?.data?.url) {
+    if (image) {
+      const oldImageId = image.split("/").pop();
+      if (oldImageId) await utapi.deleteFiles(oldImageId!);
+    }
+    image = upload.data.url;
+  }
 
   const profileId = data.get("profileId") || undefined;
 
