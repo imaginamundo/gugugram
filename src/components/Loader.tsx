@@ -1,3 +1,5 @@
+"use client";
+
 import LoaderIcon from "pixelarticons/svg/loader.svg";
 import { useEffect } from "react";
 

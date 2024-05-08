@@ -55,6 +55,7 @@ export default function ProfileGrid({
       location.reload();
     }
   };
+
   return (
     <div className={styles.grid}>
       {images.map((image) => (
