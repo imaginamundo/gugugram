@@ -37,7 +37,11 @@ export default function Login() {
     try {
       posthog.capture("login");
       const response = await loginAction(data);
-      if (response?.message) setServerError(response.message);
+      if (response?.message) {
+        setServerError(response.message);
+      } else {
+        location.href = "/";
+      }
     } catch (e) {
       if (e instanceof Error) {
         return setServerError(e.message);
@@ -61,9 +65,6 @@ export default function Login() {
             placeholder="Seu nome de usuário ou email"
             autoComplete="username"
           />
-          <span className="hint">
-            Máximo de 14 caracteres, sem caracteres especiais
-          </span>
         </label>
         <label className={styles.label}>
           Senha

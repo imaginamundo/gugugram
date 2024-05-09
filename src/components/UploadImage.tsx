@@ -100,7 +100,13 @@ export default function UploadImage() {
             setLoading(false);
           });
         } catch (e) {
-          console.log(e);
+          if (e instanceof Error && e?.message) {
+            return toast({
+              title: "Ops",
+              description: e.message,
+              variant: "destructive",
+            });
+          }
         }
       }, "image/png");
     }

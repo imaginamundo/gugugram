@@ -10,6 +10,11 @@ import Button from "@/components/Button";
 import styles from "./HeaderUser.module.css";
 
 export default function HeaderUser({ session }: { session?: Session }) {
+  const logout = async () => {
+    await logoutAction();
+    location.reload();
+  };
+
   return (
     <>
       {session?.user && (
@@ -29,7 +34,7 @@ export default function HeaderUser({ session }: { session?: Session }) {
             )}
             {session.user.username}
           </Link>
-          <Button variant="link" onClick={() => logoutAction()}>
+          <Button variant="link" onClick={() => logout()}>
             Sair
           </Button>
         </div>

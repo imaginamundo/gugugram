@@ -27,7 +27,11 @@ export default function Register() {
     try {
       posthog.capture("register");
       const response = await registerAction(data);
-      if (response?.message) setServerError(response.message);
+      if (response?.message) {
+        setServerError(response.message);
+      } else {
+        location.href = `/${data.username}`;
+      }
     } catch (e) {
       if (e instanceof Error) {
         setServerError(e.message);
@@ -56,6 +60,9 @@ export default function Register() {
             pattern="[A-Za-z0-9]+"
             placeholder="Digite seu nome de usuário"
           />
+          <span className="hint">
+            Máximo de 14 caracteres, sem caracteres especiais
+          </span>
         </label>
         <label className={styles.label}>
           E-mail

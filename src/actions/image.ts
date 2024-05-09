@@ -46,8 +46,6 @@ export async function deleteImage({
 
   let imageId = imageUrl.split("/").pop();
 
-  console.log({ imageId });
-
   await utapi.deleteFiles(imageId!);
 
   await db

@@ -17,7 +17,6 @@ import { getValidationErrors, type ValidationErrorsObject } from "@/utils/yup";
 export async function logoutAction() {
   await signOut({ redirect: false });
   cookies().delete("authjs.session-token");
-  redirect("/");
 }
 
 export async function loginAction(data: LoginInputs) {
@@ -43,8 +42,6 @@ export async function loginAction(data: LoginInputs) {
     if (e.cause?.err?.message) message = e.cause.err.message;
     return { message };
   });
-
-  redirect("/");
 }
 
 export async function registerAction(data: RegisterInputs) {

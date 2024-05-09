@@ -24,6 +24,7 @@ export default function HeaderSearch() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Buscar pessoa…"
+        minLength={1}
       />
       <Button title="Buscar">
         <Search aria-label="Lupa" />
