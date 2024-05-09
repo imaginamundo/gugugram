@@ -144,7 +144,7 @@ export default function EditProfile({
       });
     }
 
-    location.reload();
+    location.href = "/";
   };
 
   return (
