@@ -17,9 +17,10 @@ export const metadata: Metadata = {
 
 export default async function EditProfilePage() {
   const session = await auth();
-  const user = await profileInformations();
+  if (!session) redirect("/entrar");
 
-  if (!session || !user) return redirect("/entrar");
+  const user = await profileInformations();
+  if (!user) redirect("/entrar");
 
   return (
     <main className="container">
