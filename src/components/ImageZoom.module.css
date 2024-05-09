@@ -1,6 +1,9 @@
 .triggerWrapper {
     cursor: pointer;
 }
+.dialog {
+    max-width: 500px;
+}
 .image {
     width: 100%;
     aspect-ratio: 1;

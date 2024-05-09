@@ -29,7 +29,7 @@ export default function ImageZoom({
       <DialogTrigger asChild>
         <span className={styles.triggerWrapper}>{children}</span>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className={styles.dialog}>
         <DialogHeader>
           <DialogTitle>
             Imagem de <Link href={`/${username}`}>{username}</Link>
