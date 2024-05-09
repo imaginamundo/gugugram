@@ -33,12 +33,13 @@ export async function loginAction(data: LoginInputs) {
   const sanitizedIdentity = sanitize(data.identity).toLowerCase();
   const sanitizedPassword = sanitize(data.password).toLowerCase();
 
-  await signIn("credentials", {
+  return await signIn("credentials", {
     redirect: false,
     identity: sanitizedIdentity,
     password: sanitizedPassword,
   }).catch((e: AuthError) => {
     let message = e.message;
+
     if (e.cause?.err?.message) message = e.cause.err.message;
     return { message };
   });
