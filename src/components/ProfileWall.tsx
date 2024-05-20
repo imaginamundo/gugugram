@@ -57,9 +57,21 @@ export default function ProfileWall({
               className={styles.completeMessage}
             >
               <div className={styles.profile}>
-                <span className="border-radius profile-picture">
-                  <MoodHappy />
-                </span>
+                {message.author?.profile?.image && (
+                  <img
+                    src={message.author.profile.image}
+                    className="border-radius profile-picture"
+                    width="30"
+                    height="30"
+                    alt={`Imagem de perfil do ${message.author.username}`}
+                  />
+                )}
+                {!message.author?.profile?.image && (
+                  <span className="border-radius profile-picture">
+                    <MoodHappy />
+                  </span>
+                )}
+
                 <p>
                   <span>
                     <Link href={`/${message.author.username}`}>

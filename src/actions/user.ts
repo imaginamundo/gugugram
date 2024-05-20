@@ -149,6 +149,13 @@ export async function profileMessages(username: string) {
               id: true,
               username: true,
             },
+            with: {
+              profile: {
+                columns: {
+                  image: true,
+                },
+              },
+            },
           },
         },
       },
@@ -159,7 +166,7 @@ export async function profileMessages(username: string) {
   return [];
 }
 export type ProfileMessagesType = (DisplayMessageType & {
-  author: DisplayUserType;
+  author: { profile: DisplayProfileImage } & DisplayUserType;
 })[];
 
 export async function profileFriends(username: string, userId: string) {
