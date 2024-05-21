@@ -12,6 +12,9 @@ export default function Footer() {
         Isso é um site. Início do desenvolvimento dia 15 de abril de 2024.
         Alguns direitos reservados
       </p>
+      <p>
+        <Link href="/sobre">Sobre o gugugram</Link>
+      </p>
       <Link
         href="https://www.mozilla.org/firefox"
         target="_blank"
