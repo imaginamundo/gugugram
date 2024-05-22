@@ -6,9 +6,9 @@ if (!process.env.POSTGRES_URL) {
 
 export default {
   schema: "./src/database/schema.ts",
-  driver: "pg",
+  dialect: "postgresql",
   dbCredentials: {
-    connectionString: process.env.POSTGRES_URL,
+    url: process.env.POSTGRES_URL,
   },
   tablesFilter: ["gugugram_*"],
 } satisfies Config;

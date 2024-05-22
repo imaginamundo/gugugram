@@ -35,8 +35,12 @@
     padding: 8px;
     display: inline-flex;
     align-items: center;
+    overflow-wrap: break-word;
 }
 
 .grow {
     width: 100%;
+}
+.notShrink {
+    flex-shrink: 0;
 }

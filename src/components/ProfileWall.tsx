@@ -90,6 +90,7 @@ export default function ProfileWall({
                   <Button
                     variant="destructive"
                     onClick={() => removeCurrentMessage(message.id)}
+                    className={styles.notShrink}
                   >
                     <Close />
                   </Button>
