@@ -51,7 +51,7 @@ export default function ProfileWall({
       </div>
       <div className={styles.messages}>
         {messages.map((message) => {
-          if (!message.body) return;
+          if (!message.body) return null;
           if (message.body.length > 1000) {
             message.body = message.body.substring(0, 1000);
           }
