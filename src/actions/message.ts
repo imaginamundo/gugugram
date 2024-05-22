@@ -10,6 +10,10 @@ import { messages } from "@/database/schema";
 export async function addMessage(receiverId: string, body: string) {
   let sanitizedBody = sanitize(body);
 
+  if (!sanitizedBody || sanitizedBody.length > 1000) {
+    return { message: "Mensagem com um tamanho inesperado" };
+  }
+
   const session = await auth();
   if (!session) return { message: "Não autenticado" };
 
