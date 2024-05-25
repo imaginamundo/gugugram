@@ -30,7 +30,7 @@ export default function Register() {
       if (response?.message) {
         setServerError(response.message);
       } else {
-        location.href = `/${data.username}`;
+        location.href = `/`;
       }
     } catch (e) {
       if (e instanceof Error) {
