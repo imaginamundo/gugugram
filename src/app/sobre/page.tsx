@@ -7,7 +7,7 @@ export default function AboutPage() {
       <p>Uma rede social.</p>
       <h2>Como foi feito?</h2>
       <p>Com código.</p>
-      <h2>Para que foi feito?</h2>
+      <h2>Porque feito?</h2>
       <p>
         Porque{" "}
         <Link href="https://www.instagram.com/fotografolixo/" target="_blank">

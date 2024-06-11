@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   description: "Your 15x15 image repository",
 };
 
+export const dynamic = "force-dynamic";
 export default function Home() {
   return (
     <main className="container">
