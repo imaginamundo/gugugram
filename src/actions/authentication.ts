@@ -1,14 +1,24 @@
 "use server";
 
+import crypto from "node:crypto";
+
+import { kv } from "@vercel/kv";
 import { sanitize } from "isomorphic-dompurify";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import type { AuthError } from "next-auth";
 import { ValidationError } from "yup";
 
 import { signIn, signOut } from "@/app/auth";
 import { type RegisterInputs, registerSchema } from "@/app/cadastrar/types";
 import { type LoginInputs, loginSchema } from "@/app/entrar/types";
+import {
+  type ForgotPasswordInputs,
+  forgotPasswordSchema,
+} from "@/app/esqueci-minha-senha/types";
+import {
+  type NewPasswordInputs,
+  newPasswordSchema,
+} from "@/app/nova-senha/types";
 import { db } from "@/database/postgres";
 import { users } from "@/database/schema";
 import { hashPassword } from "@/utils/password";
@@ -73,6 +83,22 @@ export async function registerAction(data: RegisterInputs) {
     }
     throw e;
   }
+}
+
+export async function forgotPasswordAction(data: ForgotPasswordInputs) {
+  const id = crypto.randomUUID();
+  try {
+    const sanitizedEmail = sanitize(data.email).toLowerCase();
+    await kv.set(id, sanitizedEmail, { ex: 60 * 30 }); // 30 min
+  } catch (err) {
+    return { message: "Algo de errado não deu certo" };
+  }
+
+  return { success: true };
+}
+
+export async function newPasswordAction(data: NewPasswordInputs) {
+  return { message: "Não implementado" };
 }
 
 const translateDatabaseError = (message: string) => {

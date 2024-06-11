@@ -6,8 +6,11 @@ import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { loginAction, registerAction } from "@/actions/authentication";
-import { type RegisterInputs, registerSchema } from "@/app/cadastrar/types";
+import { newPasswordAction } from "@/actions/authentication";
+import {
+  type NewPasswordInputs,
+  newPasswordSchema,
+} from "@/app/nova-senha/types";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import useFormErrors from "@/hooks/useFormErrors";
@@ -15,18 +18,18 @@ import cn from "@/utils/cn";
 
 import styles from "./Login.module.css";
 
-export default function Register() {
+export default function NewPassword() {
   const posthog = usePostHog();
   const [serverError, setServerError] = useState("");
-  const { register, handleSubmit, control } = useForm<RegisterInputs>({
-    resolver: yupResolver(registerSchema),
+  const { register, handleSubmit, control } = useForm<NewPasswordInputs>({
+    resolver: yupResolver(newPasswordSchema),
   });
   const fieldError = useFormErrors(control);
 
-  const createAccount = async (data: RegisterInputs) => {
+  const createAccount = async (data: NewPasswordInputs) => {
     try {
       posthog.capture("register");
-      const response = await registerAction(data);
+      const response = await newPasswordAction(data);
       if (response?.message) {
         setServerError(response.message);
       }
@@ -39,46 +42,25 @@ export default function Register() {
       return;
     }
 
-    await loginAction({ identity: data.email, password: data.password });
-
-    location.href = `/`;
+    location.href = "/entrar?updated-password";
   };
 
   return (
     <>
-      <h1>Cadastrar</h1>
+      <h1>Cadastrar nova senha</h1>
+      <p className="margin-bottom">
+        Após o cadastro de nova senha você será redirecionado para a página de
+        autenticação.
+      </p>
       <form
         onSubmit={handleSubmit(createAccount)}
         className={cn("border-radius", styles.form)}
       >
         <label className={styles.label}>
-          Nome de usuário
-          <Input
-            {...register("username")}
-            {...fieldError("username")}
-            maxLength={14}
-            pattern="[A-Za-z0-9]+"
-            placeholder="Digite seu nome de usuário"
-          />
-          <span className="hint">
-            Máximo de 14 caracteres, sem caracteres especiais
-          </span>
-        </label>
-        <label className={styles.label}>
-          E-mail
-          <Input
-            {...register("email")}
-            {...fieldError("email")}
-            placeholder="email@provedor.com.br"
-            type="email"
-            autoComplete="email"
-          />
-        </label>
-        <label className={styles.label}>
           Senha
           <Input
-            {...register("password")}
-            {...fieldError("password")}
+            {...register("newPassword")}
+            {...fieldError("newPassword")}
             id="new-password"
             type="password"
             placeholder="******"

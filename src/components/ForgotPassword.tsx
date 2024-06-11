@@ -2,14 +2,16 @@
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import type { Metadata } from "next";
-import Link from "next/link";
 import WarningBox from "pixelarticons/svg/warning-box.svg";
 import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { loginAction } from "@/actions/authentication";
-import { type LoginInputs, loginSchema } from "@/app/entrar/types";
+import { forgotPasswordAction } from "@/actions/authentication";
+import {
+  type ForgotPasswordInputs,
+  forgotPasswordSchema,
+} from "@/app/esqueci-minha-senha/types";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import useFormErrors from "@/hooks/useFormErrors";
@@ -26,22 +28,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Login() {
+export default function ForgotPassword() {
   const posthog = usePostHog();
   const [serverError, setServerError] = useState("");
-  const { register, handleSubmit, control } = useForm<LoginInputs>({
-    resolver: yupResolver(loginSchema),
+  const { register, handleSubmit, control } = useForm<ForgotPasswordInputs>({
+    resolver: yupResolver(forgotPasswordSchema),
   });
   const fieldError = useFormErrors(control);
 
-  const authenticate = async (data: LoginInputs) => {
+  const sendEmail = async (data: ForgotPasswordInputs) => {
     try {
-      posthog.capture("login");
-      const response = await loginAction(data);
+      posthog.capture("forgot-password");
+      const response = await forgotPasswordAction(data);
       if (response?.message) {
         setServerError(response.message);
-      } else {
-        location.href = "/";
       }
     } catch (e) {
       if (e instanceof Error) {
@@ -49,33 +49,28 @@ export default function Login() {
       }
       setServerError("Algum erro estranho aconteceu");
     }
+
+    console.log("E-mail enviado com sucesso");
   };
 
   return (
     <>
-      <h1>Entrar</h1>
+      <h1>Esqueci minha senha</h1>
+      <p className="margin-bottom">
+        Será enviado um e-mail para você cadastrar uma nova senha.
+      </p>
       <form
         className={cn("border-radius", styles.form)}
-        onSubmit={handleSubmit(authenticate)}
+        onSubmit={handleSubmit(sendEmail)}
       >
         <label className={styles.label}>
-          Nome de usuário ou e-mail
+          E-mail
           <Input
-            {...register("identity")}
-            {...fieldError("identity")}
-            placeholder="Seu nome de usuário ou email"
-            autoComplete="username"
-          />
-        </label>
-        <label className={styles.label}>
-          Senha
-          <Input
-            {...register("password")}
-            {...fieldError("password")}
-            placeholder="******"
-            autoComplete="current-password"
-            type="password"
-            maxLength={40}
+            {...register("email")}
+            {...fieldError("email")}
+            placeholder="email@provedor.com.br"
+            type="email"
+            autoComplete="email"
           />
         </label>
         {serverError && (
@@ -83,11 +78,7 @@ export default function Login() {
             <WarningBox /> {serverError}
           </p>
         )}
-        <Button>Entrar</Button>
-
-        {/* <p className="margin-top">
-          <Link href="/esqueci-minha-senha">Esqueci minha senha</Link>
-        </p> */}
+        <Button>Enviar e-mail</Button>
       </form>
     </>
   );
