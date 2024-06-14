@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import LastPosts from "@/components/LastPosts";
 
 import styles from "./page.module.css";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Gugugram · Página inicial",
