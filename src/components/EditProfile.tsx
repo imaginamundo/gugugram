@@ -8,7 +8,7 @@ import ImagePlus from "pixelarticons/svg/image-plus.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 import Trash from "pixelarticons/svg/trash.svg";
 import { usePostHog } from "posthog-js/react";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -31,10 +31,10 @@ import {
 import Button from "@/components/Button";
 import buttonStyles from "@/components/Button.module.css";
 import Input from "@/components/Input";
-import Loader from "@/components/Loader";
 import { calculateCropCenter } from "@/components/UploadImage";
 import useFormErrors from "@/hooks/useFormErrors";
 import { useToast } from "@/hooks/useToast";
+import { LoaderContext } from "@/providers/Loader";
 import cn from "@/utils/cn";
 import yup from "@/utils/yup";
 
@@ -45,11 +45,11 @@ export default function EditProfile({
 }: {
   user: ProfileInformationType;
 }) {
+  const loaderContext = useContext(LoaderContext);
   const posthog = usePostHog();
   const { toast } = useToast();
   const { data: session, update } = useSession();
 
-  const [loading, setLoading] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const { register, handleSubmit, control } = useForm<EditProfileInputs>({
     defaultValues: {
@@ -68,7 +68,7 @@ export default function EditProfile({
     if (!session) return;
 
     posthog.capture("edit_profile");
-    setLoading(true);
+    loaderContext?.setLoading(true);
     const formData = new FormData();
     if (data.image) formData.append("image", data.image);
     if (data.file && imageRef.current) {
@@ -98,7 +98,7 @@ export default function EditProfile({
       });
     }
 
-    setLoading(false);
+    loaderContext?.setLoading(false);
 
     update({ ...session, user: { ...session.user, image: response.image } });
 
@@ -149,7 +149,6 @@ export default function EditProfile({
 
   return (
     <>
-      <Loader loading={loading} />
       <div className="border-radius">
         <form
           className={cn("border-radius", styles.form)}

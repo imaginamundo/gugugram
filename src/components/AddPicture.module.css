@@ -1,5 +1,5 @@
 .floatingButton {
     position: fixed;
-    bottom: 1em;
+    bottom: 0;
     right: 1em;
 }

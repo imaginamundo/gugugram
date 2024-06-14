@@ -28,6 +28,8 @@ export async function uploadImage(data: FormData) {
   if (!upload.data?.url) return { message: "Erro ao subir a imagem :(" };
 
   await db.insert(images).values({ authorId, image: upload.data.url });
+
+  return { username: session.user.username };
 }
 
 export async function deleteImage({

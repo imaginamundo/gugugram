@@ -1,10 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import CameraAdd from "pixelarticons/svg/camera-add.svg";
 import ImagePlus from "pixelarticons/svg/image-plus.svg";
 import { usePostHog } from "posthog-js/react";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import { uploadImage } from "@/actions/image";
 import Button from "@/components/Button";
@@ -19,19 +18,18 @@ import {
   DialogTitle,
 } from "@/components/Dialog";
 import Input from "@/components/Input";
-import Loader from "@/components/Loader";
 import { useToast } from "@/hooks/useToast";
+import { LoaderContext } from "@/providers/Loader";
 import cn from "@/utils/cn";
 
 import styles from "./UploadImage.module.css";
 
 export default function UploadImage({ tiny = false }) {
-  const router = useRouter();
+  const loaderContext = useContext(LoaderContext);
   const posthog = usePostHog();
   const { toast } = useToast();
 
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const [imageSize, setImageSize] = useState(30);
   const [imageResize, setImageResize] = useState(false);
@@ -79,7 +77,7 @@ export default function UploadImage({ tiny = false }) {
 
   const publish = () => {
     posthog.capture("publish_image");
-    setLoading(true);
+    loaderContext?.setLoading(true);
     if (canvasRef.current) {
       canvasRef.current.toBlob((blob) => {
         if (!blob) return;
@@ -96,9 +94,9 @@ export default function UploadImage({ tiny = false }) {
                 variant: "destructive",
               });
             }
-            router.refresh();
-            setOpen(false);
-            setLoading(false);
+            if (response?.username) {
+              return (location.href = `/${response.username}`);
+            }
           });
         } catch (e) {
           if (e instanceof Error && e?.message) {
@@ -126,7 +124,6 @@ export default function UploadImage({ tiny = false }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Loader loading={loading} />
       <label className={cn(buttonStyles.buttonDefault, styles.addImageLabel)}>
         {!tiny && (
           <>

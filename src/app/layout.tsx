@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import CSPostHogProvider from "@/providers/Analytics";
 import AuthJsProvider from "@/providers/AuthProvider";
+import { LoaderProvider } from "@/providers/Loader";
 import Toaster from "@/providers/Toaster";
 
 const silkcreen = Silkscreen({
@@ -26,11 +27,13 @@ export default function RootLayout({
       <CSPostHogProvider>
         <html lang="pt" className={silkcreen.className}>
           <body>
-            <Header />
-            {children}
-            <Footer />
-            <AddPicture />
-            <Toaster />
+            <LoaderProvider>
+              <Header />
+              {children}
+              <Footer />
+              <AddPicture />
+              <Toaster />
+            </LoaderProvider>
           </body>
         </html>
       </CSPostHogProvider>
