@@ -12,6 +12,7 @@ const cspHeader = `
 `;
 
 import { withSentryConfig } from "@sentry/nextjs";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -85,6 +86,7 @@ export default withSentryConfig(
     silent: true,
     org: "gugugram",
     project: "gugugram",
+    authToken: process.env.SENTRY_AUTH_TOKEN,
   },
   {
     // For all available options, see:

@@ -3,6 +3,7 @@
 import crypto from "node:crypto";
 
 import { kv } from "@vercel/kv";
+import { eq } from "drizzle-orm";
 import { sanitize } from "isomorphic-dompurify";
 import { cookies } from "next/headers";
 import type { AuthError } from "next-auth";
@@ -11,16 +12,11 @@ import { ValidationError } from "yup";
 import { signIn, signOut } from "@/app/auth";
 import { type RegisterInputs, registerSchema } from "@/app/cadastrar/types";
 import { type LoginInputs, loginSchema } from "@/app/entrar/types";
-import {
-  type ForgotPasswordInputs,
-  forgotPasswordSchema,
-} from "@/app/esqueci-minha-senha/types";
-import {
-  type NewPasswordInputs,
-  newPasswordSchema,
-} from "@/app/nova-senha/types";
+import { type ForgotPasswordInputs } from "@/app/esqueci-minha-senha/types";
+import { type NewPasswordInputs } from "@/app/nova-senha/types";
 import { db } from "@/database/postgres";
 import { users } from "@/database/schema";
+import { sendEmail } from "@/utils/mailer";
 import { hashPassword } from "@/utils/password";
 import { getValidationErrors, type ValidationErrorsObject } from "@/utils/yup";
 
@@ -87,18 +83,61 @@ export async function registerAction(data: RegisterInputs) {
 
 export async function forgotPasswordAction(data: ForgotPasswordInputs) {
   const id = crypto.randomUUID();
+  const sanitizedEmail = sanitize(data.email).toLowerCase();
+
   try {
-    const sanitizedEmail = sanitize(data.email).toLowerCase();
     await kv.set(id, sanitizedEmail, { ex: 60 * 30 }); // 30 min
   } catch (err) {
     return { message: "Algo de errado não deu certo" };
   }
 
-  return { success: true };
+  try {
+    await sendEmail(sanitizedEmail, id);
+  } catch (e) {
+    console.log(e);
+    return { message: "Falha ao enviar e-mail" };
+  }
 }
 
-export async function newPasswordAction(data: NewPasswordInputs) {
-  return { message: "Não implementado" };
+export async function newPasswordInformation(token: string) {
+  if (!token) return { message: "Token inválido" };
+
+  let data = "";
+
+  try {
+    let redisData = await kv.get<string>(token);
+    if (redisData) data = redisData;
+  } catch (e) {
+    return { message: "Algo de errado não deu certo" };
+  }
+
+  if (!data) return { message: "Token inválido" };
+}
+
+export async function newPasswordAction(
+  data: NewPasswordInputs,
+  token: string,
+) {
+  let email = "";
+
+  try {
+    let redisData = await kv.get<string>(token);
+    if (redisData) email = redisData;
+  } catch (e) {
+    return { message: "Algo de errado não deu certo" };
+  }
+
+  if (!email) return { message: "Tempo expirado" };
+
+  const sanitizedPassword = sanitize(data.newPassword).toLowerCase();
+  const password = hashPassword(sanitizedPassword);
+
+  await db
+    .update(users)
+    .set({
+      password,
+    })
+    .where(eq(users.email, email));
 }
 
 const translateDatabaseError = (message: string) => {

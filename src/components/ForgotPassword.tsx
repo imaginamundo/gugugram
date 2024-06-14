@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 
 export default function ForgotPassword() {
   const posthog = usePostHog();
+  const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState("");
   const { register, handleSubmit, control } = useForm<ForgotPasswordInputs>({
     resolver: yupResolver(forgotPasswordSchema),
@@ -41,7 +42,7 @@ export default function ForgotPassword() {
       posthog.capture("forgot-password");
       const response = await forgotPasswordAction(data);
       if (response?.message) {
-        setServerError(response.message);
+        return setServerError(response.message);
       }
     } catch (e) {
       if (e instanceof Error) {
@@ -50,8 +51,19 @@ export default function ForgotPassword() {
       setServerError("Algum erro estranho aconteceu");
     }
 
-    console.log("E-mail enviado com sucesso");
+    setSuccess(true);
   };
+
+  if (success) {
+    return (
+      <>
+        <h1>E-mail enviado com sucesso!</h1>
+        <p className="margin-bottom">
+          Verifique seu e-mail para cadastrar uma nova senha.
+        </p>
+      </>
+    );
+  }
 
   return (
     <>

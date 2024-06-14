@@ -18,7 +18,7 @@ import cn from "@/utils/cn";
 
 import styles from "./Login.module.css";
 
-export default function NewPassword() {
+export default function NewPassword({ token }: { token?: string }) {
   const posthog = usePostHog();
   const [serverError, setServerError] = useState("");
   const { register, handleSubmit, control } = useForm<NewPasswordInputs>({
@@ -27,9 +27,11 @@ export default function NewPassword() {
   const fieldError = useFormErrors(control);
 
   const createAccount = async (data: NewPasswordInputs) => {
+    if (!token) return setServerError("Token inválido");
+
     try {
-      posthog.capture("register");
-      const response = await newPasswordAction(data);
+      posthog.capture("new-password");
+      const response = await newPasswordAction(data, token);
       if (response?.message) {
         setServerError(response.message);
       }

@@ -147,14 +147,3 @@ export const messagesUserAuthorRelations = relations(messages, ({ one }) => ({
     relationName: "messages_received",
   }),
 }));
-
-export const forgottenPassword = createTable("forgottenPasswords", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  email: text("email").unique().notNull(),
-  createdAt: timestamp("created_at")
-    .notNull()
-    .default(sql`CURRENT_TIMESTAMP`),
-});
-export type ForgottenPasswordType = InferSelectModel<typeof forgottenPassword>;

@@ -85,9 +85,9 @@ export default function Login() {
         )}
         <Button>Entrar</Button>
 
-        {/* <p className="margin-top">
+        <p className="margin-top">
           <Link href="/esqueci-minha-senha">Esqueci minha senha</Link>
-        </p> */}
+        </p>
       </form>
     </>
   );
