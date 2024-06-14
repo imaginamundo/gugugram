@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import CameraAdd from "pixelarticons/svg/camera-add.svg";
 import ImagePlus from "pixelarticons/svg/image-plus.svg";
 import { usePostHog } from "posthog-js/react";
 import { useEffect, useRef, useState } from "react";
@@ -24,7 +25,7 @@ import cn from "@/utils/cn";
 
 import styles from "./UploadImage.module.css";
 
-export default function UploadImage() {
+export default function UploadImage({ tiny = false }) {
   const router = useRouter();
   const posthog = usePostHog();
   const { toast } = useToast();
@@ -127,8 +128,13 @@ export default function UploadImage() {
     <Dialog open={open} onOpenChange={setOpen}>
       <Loader loading={loading} />
       <label className={cn(buttonStyles.buttonDefault, styles.addImageLabel)}>
-        <ImagePlus />
-        Adicionar nova foto
+        {!tiny && (
+          <>
+            <ImagePlus />
+            Adicionar nova foto
+          </>
+        )}
+        {tiny && <CameraAdd />}
         <Input
           ref={inputFileRef}
           type="file"

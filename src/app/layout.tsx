@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Silkscreen } from "next/font/google";
 
+import AddPicture from "@/components/AddPicture";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import CSPostHogProvider from "@/providers/Analytics";
@@ -28,6 +29,7 @@ export default function RootLayout({
             <Header />
             {children}
             <Footer />
+            <AddPicture />
             <Toaster />
           </body>
         </html>
