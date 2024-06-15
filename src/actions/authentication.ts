@@ -150,6 +150,8 @@ export async function newPasswordAction(
       password,
     })
     .where(eq(users.email, email));
+
+  await kv.del(token);
 }
 
 const translateDatabaseError = (message: string) => {
