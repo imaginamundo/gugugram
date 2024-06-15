@@ -75,7 +75,7 @@ export default function NewPassword({ token }: { token?: string }) {
             <WarningBox /> {serverError}
           </p>
         )}
-        <Button>Criar conta</Button>
+        <Button>Cadastrar nova senha</Button>
       </form>
     </>
   );
