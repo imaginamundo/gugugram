@@ -13,7 +13,10 @@ import { signIn, signOut } from "@/app/auth";
 import { type RegisterInputs, registerSchema } from "@/app/cadastrar/types";
 import { type LoginInputs, loginSchema } from "@/app/entrar/types";
 import { type ForgotPasswordInputs } from "@/app/esqueci-minha-senha/types";
-import { type NewPasswordInputs } from "@/app/nova-senha/types";
+import {
+  type NewPasswordInputs,
+  newPasswordSchema,
+} from "@/app/nova-senha/types";
 import { db } from "@/database/postgres";
 import { users } from "@/database/schema";
 import { sendEmail } from "@/utils/mailer";
@@ -118,7 +121,16 @@ export async function newPasswordAction(
   data: NewPasswordInputs,
   token: string,
 ) {
+  let errors: ValidationErrorsObject = {};
   let email = "";
+
+  await newPasswordSchema.validate(data).catch((err: ValidationError) => {
+    errors = getValidationErrors(err);
+  });
+
+  if (Object.keys(errors).length) {
+    return { message: "Campos inválidos", errors };
+  }
 
   try {
     let redisData = await kv.get<string>(token);
