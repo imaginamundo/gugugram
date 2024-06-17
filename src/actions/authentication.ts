@@ -88,6 +88,14 @@ export async function forgotPasswordAction(data: ForgotPasswordInputs) {
   const id = crypto.randomUUID();
   const sanitizedEmail = sanitize(data.email).toLowerCase();
 
+  const user = await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.email, sanitizedEmail),
+  });
+
+  console.log(user);
+
+  if (!user) return { message: "E-mail não cadastrado" };
+
   try {
     await kv.set(id, sanitizedEmail, { ex: 60 * 30 }); // 30 min
   } catch (err) {

@@ -14,6 +14,10 @@ export async function addMessage(receiverId: string, body: string) {
     return { message: "Mensagem com um tamanho inesperado" };
   }
 
+  if (!sanitizedBody) {
+    return { message: "A mensagem precisa existir, dã" };
+  }
+
   const session = await auth();
   if (!session) return { message: "Não autenticado" };
 
