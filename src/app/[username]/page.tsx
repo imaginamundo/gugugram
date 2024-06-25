@@ -30,6 +30,7 @@ export default async function Profile({
 
   return (
     <ProfileWall
+      session={session}
       userId={user.id}
       messages={messages}
       owner={owner}

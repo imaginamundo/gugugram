@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { sanitize } from "isomorphic-dompurify";
 
 import { auth } from "@/app/auth";
@@ -33,11 +33,17 @@ export async function addMessage(receiverId: string, body: string) {
 
 export async function removeMessage(messageId: string) {
   const session = await auth();
+
   if (!session) return { message: "Não autenticado" };
 
   const authorId = session.user.id;
 
   await db
     .delete(messages)
-    .where(and(eq(messages.receiverId, authorId), eq(messages.id, messageId)));
+    .where(
+      and(
+        or(eq(messages.receiverId, authorId), eq(messages.authorId, authorId)),
+        eq(messages.id, messageId),
+      ),
+    );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Session } from "next-auth";
 import Close from "pixelarticons/svg/close.svg";
 import MoodHappy from "pixelarticons/svg/mood-happy.svg";
 import MoodSad from "pixelarticons/svg/mood-sad.svg";
@@ -19,11 +20,13 @@ import styles from "./ProfileWall.module.css";
 export default function ProfileWall({
   userId,
   messages,
+  session,
   owner,
   authenticated,
 }: {
   userId: string;
   messages: ProfileMessagesType;
+  session: Session | null;
   owner: boolean;
   authenticated: boolean;
 }) {
@@ -55,6 +58,8 @@ export default function ProfileWall({
           if (message.body.length > 1000) {
             message.body = message.body.substring(0, 1000);
           }
+
+          const messageOwner = message.author.id === session?.user.id;
 
           return (
             <div
@@ -91,7 +96,7 @@ export default function ProfileWall({
                 <p className={cn("border-radius", styles.message)}>
                   {message.body}
                 </p>
-                {owner && (
+                {(messageOwner || owner) && (
                   <Button
                     variant="destructive"
                     onClick={() => removeCurrentMessage(message.id)}

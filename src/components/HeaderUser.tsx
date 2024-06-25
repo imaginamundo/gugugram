@@ -9,7 +9,7 @@ import Button from "@/components/Button";
 
 import styles from "./HeaderUser.module.css";
 
-export default function HeaderUser({ session }: { session?: Session }) {
+export default function HeaderUser({ session }: { session: Session | null }) {
   const logout = async () => {
     await logoutAction();
     location.reload();
