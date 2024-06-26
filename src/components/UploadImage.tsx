@@ -38,6 +38,15 @@ export default function UploadImage({ tiny = false }) {
   const imageRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const downloadImage = () => {
+    const link = document.createElement("a");
+    link.href = imageSrc;
+    link.download = "original.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const imageSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     posthog.capture("image_selected");
 
@@ -210,10 +219,9 @@ export default function UploadImage({ tiny = false }) {
             </div>
           )}
         </DialogMain>
-        <DialogFooter>
-          <div>
-            <Button onClick={publish}>Publicar</Button>
-          </div>
+        <DialogFooter className={styles.dialogFooter}>
+          <Button onClick={downloadImage}>Baixar original</Button>
+          <Button onClick={publish}>Publicar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

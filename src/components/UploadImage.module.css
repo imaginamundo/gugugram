@@ -43,3 +43,7 @@
 .imageZoom {
     position: absolute;
 }
+
+.dialogFooter {
+    justify-content: space-between;
+}
