@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Heart from "pixelarticons/svg/heart.svg";
 
 import Button from "@/components/Button";
 import {
@@ -40,7 +41,15 @@ export default function ImageZoom({
           alt={`Imagem de ${username}`}
           className={styles.image}
         />
-        <DialogFooter>
+        {/* <p className={styles.description}>Descrição</p>
+        <hr /> */}
+        <DialogFooter className={styles.dialogFooter}>
+          {/* <span className={styles.likes}>
+            <Button>
+              <Heart />
+            </Button>
+            0 curtidas
+          </span> */}
           <DialogClose asChild>
             <Button variant="destructive">Fechar</Button>
           </DialogClose>

@@ -47,6 +47,14 @@ export default function UploadImage({ tiny = false }) {
     document.body.removeChild(link);
   };
 
+  const toggleOpen = () => {
+    if (open) {
+      clearSelectedImage();
+    }
+
+    setOpen(!open);
+  };
+
   const imageSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     posthog.capture("image_selected");
 
@@ -56,7 +64,36 @@ export default function UploadImage({ tiny = false }) {
         setImageSrc(reader.result?.toString() || "");
       });
       reader.readAsDataURL(e.target.files[0]);
-      setOpen(true);
+      toggleOpen();
+    }
+  };
+
+  const changeImageSettings = ({
+    size,
+    resize,
+  }: {
+    size?: number;
+    resize?: boolean;
+  }) => {
+    if (size) {
+      drawCrop({
+        image: imageRef.current!,
+        canvas: canvasRef.current!,
+        size,
+        resize: imageResize,
+      });
+
+      return setImageSize(size);
+    }
+    if (typeof resize === "boolean") {
+      drawCrop({
+        image: imageRef.current!,
+        canvas: canvasRef.current!,
+        size: imageSize,
+        resize,
+      });
+
+      return setImageResize(resize);
     }
   };
 
@@ -64,24 +101,6 @@ export default function UploadImage({ tiny = false }) {
     if (inputFileRef.current) inputFileRef.current.value = "";
     setImageSrc("");
     setImageResize(false);
-  };
-
-  const drawCrop = () => {
-    if (imageRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
-      canvas.width = imageSize;
-      canvas.height = imageSize;
-
-      const options = calculateCropCenter(
-        imageRef.current.naturalWidth,
-        imageRef.current.naturalHeight,
-        imageSize,
-        imageResize,
-      );
-
-      ctx!.drawImage(imageRef.current, ...options);
-    }
   };
 
   const publish = () => {
@@ -119,14 +138,6 @@ export default function UploadImage({ tiny = false }) {
       }, "image/png");
     }
   };
-
-  useEffect(() => {
-    if (!open && imageSrc) clearSelectedImage();
-  }, [open]);
-
-  useEffect(() => {
-    drawCrop();
-  }, [imageSize, imageResize]);
 
   const imageClasses = [styles.image];
   if (imageResize) imageClasses.push(styles.imageResized);
@@ -172,7 +183,9 @@ export default function UploadImage({ tiny = false }) {
                         type="radio"
                         name="image-size"
                         value={imageOption}
-                        onChange={() => setImageSize(imageOption)}
+                        onChange={() =>
+                          changeImageSettings({ size: imageOption })
+                        }
                         checked={imageOption === imageSize}
                       />
                       {imageOption}px²
@@ -184,7 +197,9 @@ export default function UploadImage({ tiny = false }) {
                       type="checkbox"
                       name="image-resize"
                       value={imageResize.toString()}
-                      onChange={() => setImageResize(!imageResize)}
+                      onChange={() =>
+                        changeImageSettings({ resize: !imageResize })
+                      }
                       checked={imageResize}
                     />
                     Redimensionar
@@ -198,7 +213,14 @@ export default function UploadImage({ tiny = false }) {
                     ref={imageRef}
                     src={imageSrc}
                     alt="Image to be uploaded"
-                    onLoad={drawCrop}
+                    onLoad={() =>
+                      drawCrop({
+                        image: imageRef.current!,
+                        canvas: canvasRef.current!,
+                        size: imageSize,
+                        resize: imageResize,
+                      })
+                    }
                     width={imageSize}
                     height={imageSize}
                     className={cn(imageClasses)}
@@ -230,12 +252,24 @@ export default function UploadImage({ tiny = false }) {
 
 const imageOptions = [5, 10, 15, 20, 30];
 
+// https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+type CanvasOptions = [
+  sourceX: number,
+  sourceY: number,
+  sourceWidth: number,
+  sourceHeight: number,
+  destinationX: number,
+  destinationY: number,
+  destinationWidth: number,
+  destinationHeight: number,
+];
+
 export function calculateCropCenter(
   naturalWidth: number,
   naturalHeight: number,
   imageSize: number,
   imageResize: boolean,
-) {
+): CanvasOptions {
   let x = 0;
   let y = 0;
 
@@ -274,3 +308,30 @@ export function calculateCropCenter(
 
   return [x, y, imageSize, imageSize, canvasX, canvasY, imageSize, imageSize];
 }
+
+const drawCrop = ({
+  image,
+  canvas,
+  size,
+  resize,
+}: {
+  image: HTMLImageElement;
+  canvas: HTMLCanvasElement;
+  size: number;
+  resize: boolean;
+}) => {
+  if (image && canvas) {
+    const ctx = canvas.getContext("2d");
+    canvas.width = size;
+    canvas.height = size;
+
+    const options = calculateCropCenter(
+      image.naturalWidth,
+      image.naturalHeight,
+      size,
+      resize,
+    );
+
+    ctx!.drawImage(image, ...options);
+  }
+};
