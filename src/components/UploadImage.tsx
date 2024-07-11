@@ -47,7 +47,7 @@ export default function UploadImage({ tiny = false }) {
     document.body.removeChild(link);
   };
 
-  const toggleOpen = () => {
+  const toggleOpen = (open: boolean) => {
     if (open) {
       clearSelectedImage();
     }
@@ -64,7 +64,7 @@ export default function UploadImage({ tiny = false }) {
         setImageSrc(reader.result?.toString() || "");
       });
       reader.readAsDataURL(e.target.files[0]);
-      toggleOpen();
+      toggleOpen(true);
     }
   };
 
@@ -100,7 +100,6 @@ export default function UploadImage({ tiny = false }) {
   const clearSelectedImage = () => {
     if (inputFileRef.current) inputFileRef.current.value = "";
     setImageSrc("");
-    setImageResize(false);
   };
 
   const publish = () => {
@@ -143,7 +142,7 @@ export default function UploadImage({ tiny = false }) {
   if (imageResize) imageClasses.push(styles.imageResized);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={toggleOpen}>
       <label className={cn(buttonStyles.buttonDefault, styles.addImageLabel)}>
         {!tiny && (
           <>
