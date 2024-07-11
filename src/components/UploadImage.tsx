@@ -49,7 +49,9 @@ export default function UploadImage({ tiny = false }) {
 
   const toggleOpen = (open: boolean) => {
     if (!open) {
-      clearSelectedImage();
+      // Close image upload
+      if (inputFileRef.current) inputFileRef.current.value = "";
+      setImageSrc("");
     }
 
     setOpen(open);
@@ -95,11 +97,6 @@ export default function UploadImage({ tiny = false }) {
 
       return setImageResize(resize);
     }
-  };
-
-  const clearSelectedImage = () => {
-    if (inputFileRef.current) inputFileRef.current.value = "";
-    setImageSrc("");
   };
 
   const publish = () => {
