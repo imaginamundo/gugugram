@@ -48,11 +48,11 @@ export default function UploadImage({ tiny = false }) {
   };
 
   const toggleOpen = (open: boolean) => {
-    if (open) {
+    if (!open) {
       clearSelectedImage();
     }
 
-    setOpen(!open);
+    setOpen(open);
   };
 
   const imageSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
