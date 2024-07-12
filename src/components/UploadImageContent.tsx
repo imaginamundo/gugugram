@@ -273,13 +273,5 @@ const drawCrop = ({
     );
 
     ctx!.drawImage(image, ...options);
-
-    console.log({
-      image,
-      canvas,
-      size,
-      resize,
-      data: canvas.toDataURL(),
-    });
   }
 };
