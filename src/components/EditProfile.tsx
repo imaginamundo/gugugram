@@ -31,7 +31,7 @@ import {
 import Button from "@/components/Button";
 import buttonStyles from "@/components/Button.module.css";
 import Input from "@/components/Input";
-import { calculateCropCenter } from "@/components/UploadImage";
+import { calculateCropCenter } from "@/components/UploadImageContent";
 import useFormErrors from "@/hooks/useFormErrors";
 import { useToast } from "@/hooks/useToast";
 import { LoaderContext } from "@/providers/Loader";
