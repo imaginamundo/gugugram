@@ -7,6 +7,7 @@ import {
   sql,
 } from "drizzle-orm";
 import {
+  check,
   pgEnum,
   pgTableCreator,
   text,
@@ -23,6 +24,11 @@ export const users = createTable("users", {
   username: text("username").unique().notNull(),
   email: text("email").unique().notNull(),
   password: text("password").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
 });
 export type UserType = InferSelectModel<typeof users>;
 export type NewUserType = InferInsertModel<typeof users>;
@@ -33,16 +39,14 @@ export const userProfiles = createTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    userId: text("user_id"),
+    userId: text("user_id")
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: "cascade" }),
     description: text("description"),
     image: text("image"),
   },
-  (table) => ({
-    uniqueProfileIndex: uniqueIndex("unique_profile_index").on(
-      table.id,
-      table.userId,
-    ),
-  }),
+  (table) => [uniqueIndex("unique_profile_index").on(table.id, table.userId)],
 );
 export type UserProfileType = InferSelectModel<typeof userProfiles>;
 
@@ -51,10 +55,10 @@ export const images = createTable("images", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   image: text("image").notNull(),
-  authorId: text("author_id").notNull(),
-  createdAt: timestamp("created_at")
+  authorId: text("author_id")
     .notNull()
-    .default(sql`CURRENT_TIMESTAMP`),
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 export type ImageType = InferSelectModel<typeof images>;
 export type NewImageType = InferInsertModel<typeof images>;
@@ -64,11 +68,13 @@ export const messages = createTable("messages", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   body: text("body").notNull(),
-  authorId: text("author_id").notNull(),
-  receiverId: text("receiver_id").notNull(),
-  createdAt: timestamp("created_at")
+  authorId: text("author_id")
     .notNull()
-    .default(sql`CURRENT_TIMESTAMP`),
+    .references(() => users.id, { onDelete: "cascade" }),
+  receiverId: text("receiver_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 export type MessageType = InferSelectModel<typeof messages>;
 export type NewMessageType = InferInsertModel<typeof messages>;
@@ -82,19 +88,28 @@ export const userFriends = createTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    requestUserId: text("request_user_id").notNull(),
-    targetUserId: text("target_user_id").notNull(),
-    status: statusEnum("status").notNull(),
-    lastUpdate: timestamp("last_update")
+    requestUserId: text("request_user_id")
       .notNull()
-      .default(sql`CURRENT_TIMESTAMP`),
+      .references(() => users.id, { onDelete: "cascade" }),
+    targetUserId: text("target_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: statusEnum("status").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
   },
-  (table) => ({
-    uniqueFriendsIndex: uniqueIndex("unique_friends_index").on(
+  (table) => [
+    // Prevent duplicate friendships
+    uniqueIndex("unique_friends_index").on(
       table.requestUserId,
       table.targetUserId,
     ),
-  }),
+    // IMPROVEMENT: Prevent friending yourself at the DB level
+    check(
+      "no_self_friend",
+      sql`${table.requestUserId} <> ${table.targetUserId}`,
+    ),
+  ],
 );
 export type UserFriendsType = InferSelectModel<typeof userFriends>;
 export type NewUserFriendsType = InferInsertModel<typeof userFriends>;
@@ -111,8 +126,11 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   targetedFriends: many(userFriends, {
     relationName: "friendship_target",
   }),
-  messages: many(messages, {
-    relationName: "messages_received",
+  messagesSent: many(messages, {
+    relationName: "messages_author",
+  }),
+  messagesReceived: many(messages, {
+    relationName: "messages_receiver",
   }),
 }));
 
@@ -133,6 +151,7 @@ export const imagesUserAuthorRelations = relations(images, ({ one }) => ({
   author: one(users, {
     fields: [images.authorId],
     references: [users.id],
+    relationName: "messages_author",
   }),
 }));
 
@@ -140,10 +159,11 @@ export const messagesUserAuthorRelations = relations(messages, ({ one }) => ({
   author: one(users, {
     fields: [messages.authorId],
     references: [users.id],
+    relationName: "messages_author",
   }),
   receiver: one(users, {
     fields: [messages.receiverId],
     references: [users.id],
-    relationName: "messages_received",
+    relationName: "messages_receiver",
   }),
 }));
