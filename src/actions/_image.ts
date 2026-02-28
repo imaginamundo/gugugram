@@ -3,17 +3,23 @@ import { z } from "astro:schema";
 import { and, eq, desc } from "drizzle-orm";
 import { db } from "@database/postgres";
 import { images } from "@database/schema";
-// import { utapi } from "@utils/uploadthing";
-// import { UTFile } from "uploadthing/server";
+import { utapi } from "@utils/uploadthing";
+import { parseSchema } from "@utils/validation";
 
 const RATE_LIMIT_MS = 5000;
 
+const UploadImageSchema = z.object({
+	image: z.instanceof(File),
+});
+
 export const uploadImage = defineAction({
 	accept: "form",
-	input: z.any(),
 	handler: async (input, context) => {
 		const session = context.locals.user;
 		if (!session) throw new Error("Não autenticado");
+
+		const { fields, success: schemaSuccess } = parseSchema(input, UploadImageSchema);
+		if (!schemaSuccess) throw new Error("Dados inválidos.");
 
 		const lastImage = await db.query.images.findFirst({
 			where: eq(images.authorId, session.id),
@@ -31,72 +37,70 @@ export const uploadImage = defineAction({
 			}
 		}
 
-		const file = input.image as File;
-
-		if (!file || typeof file !== "object" || !("arrayBuffer" in file)) {
-			throw new Error("O arquivo enviado é inválido.");
-		}
+		const file = fields.image;
 
 		if (file.size > 60000) {
 			throw new Error("Imagem muito grande. O tamanho máximo é 60KB.");
 		}
 
 		try {
-			// const utFile = new UTFile([await file.arrayBuffer()], file.name, { type: file.type });
+			const upload = await utapi.uploadFiles(file);
 
-			// const upload = await utapi.uploadFiles(utFile);
+			if (!upload.data?.ufsUrl) {
+				throw new Error("Erro ao subir a imagem para o servidor.");
+			}
 
-			// if (!upload.data?.ufsUrl) {
-			// 	throw new Error("Erro ao subir a imagem para o servidor.");
-			// }
+			await db.insert(images).values({
+				authorId: session.id,
+				image: upload.data?.ufsUrl,
+			});
 
-			// await db.insert(images).values({
-			// 	authorId: session.id,
-			// 	image: upload.data.ufsUrl,
-			// });
-
-			// return {
-			// 	success: true,
-			// 	username: session.username,
-			// 	imageUrl: upload.data.ufsUrl,
-			// };
-
-			return { debug: "success" };
+			return {
+				success: true,
+				username: session.username,
+				imageUrl: upload.data?.ufsUrl,
+			};
 		} catch (e) {
 			console.error(e);
+			if (e instanceof Error) throw e;
 			throw new Error("Erro interno ao processar a imagem.");
 		}
 	},
 });
 
+const DeleteImageSchema = z.object({
+	id: z.string(),
+	imageUrl: z.string(),
+});
+
 export const deleteImage = defineAction({
 	accept: "form",
-	input: z.object({
-		id: z.string(),
-		imageUrl: z.string(),
-	}),
 	handler: async (input, context) => {
 		const session = context.locals.user;
 		if (!session) throw new Error("Não autorizado");
 
-		const imageKey = input.imageUrl.split("/").pop();
+		const { fields, success: schemaSuccess } = parseSchema(input, DeleteImageSchema);
+		if (!schemaSuccess) throw new Error("Dados inválidos.");
+
+		const imageKey = fields.imageUrl.split("/").pop();
 		if (!imageKey) throw new Error("URL de imagem inválida");
 
 		try {
-			// const deletedRow = await db
-			// 	.delete(images)
-			// 	.where(and(eq(images.id, input.id), eq(images.authorId, session.id)))
-			// 	.returning();
+			const deletedRow = await db
+				.delete(images)
+				.where(and(eq(images.id, fields.id), eq(images.authorId, session.id)))
+				.returning();
 
-			// if (deletedRow.length === 0) {
-			// 	throw new Error("Imagem não encontrada ou sem permissão para exclusão.");
-			// }
+			if (deletedRow.length === 0) {
+				throw new Error("Imagem não encontrada ou sem permissão para exclusão.");
+			}
 
-			// await utapi.deleteFiles(imageKey);
+			await utapi.deleteFiles(imageKey);
 
 			return { success: true };
 		} catch (e) {
 			console.error(e);
+			if (e instanceof Error) throw e;
 			throw new Error("Erro interno ao tentar deletar a imagem.");
 		}
 	},

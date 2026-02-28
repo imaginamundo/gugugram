@@ -1,43 +1,46 @@
 import { z } from "astro:schema";
 
-export function parseSchema<T extends z.ZodTypeAny = z.ZodNever>(
-	input: FormData,
-	Schema: T,
-):
-	| { success: true; fields: z.output<T>; fieldErrors: {} }
-	| {
-			success: false;
-			fields: z.output<T>;
-			fieldErrors: { [key in keyof z.output<T>]?: string };
-	  } {
+export function formDataToObject(formData: FormData): Record<string, any> {
+	const obj: Record<string, any> = {};
+	for (const [key, value] of formData.entries()) {
+		if (obj.hasOwnProperty(key)) {
+			if (!Array.isArray(obj[key])) {
+				obj[key] = [obj[key]];
+			}
+			obj[key].push(value);
+		} else {
+			obj[key] = value;
+		}
+	}
+	return obj;
+}
+
+export function parseSchema<T extends z.ZodTypeAny>(input: FormData, schema: T) {
 	const fields = formDataToObject(input);
-	const validation = Schema.safeParse(fields);
+	const validation = schema.safeParse(fields);
+
+	type InferedType = z.infer<T>;
 
 	if (!validation.success) {
-		const fieldErrors: { [K in keyof z.output<T>]?: string } = {};
+		const fieldErrors: Partial<Record<keyof InferedType, string>> = {};
 
 		for (const issue of validation.error.issues) {
-			const path = issue.path[0] as keyof z.output<T>;
+			const path = String(issue.path[0]) as keyof InferedType;
 			if (path && !fieldErrors[path]) {
 				fieldErrors[path] = issue.message;
 			}
 		}
 
 		return {
-			fields,
+			success: false as const,
+			fields: fields as Partial<InferedType>,
 			fieldErrors,
-			success: false,
 		};
 	}
 
-	return { fields, fieldErrors: {}, success: true };
-}
-
-export function formDataToObject(formData: FormData): Record<string, any> {
-	const obj: Record<string, any> = {};
-	for (const key of formData.keys()) {
-		const values = formData.getAll(key);
-		obj[key] = values.length > 1 ? values : values[0];
-	}
-	return obj;
+	return {
+		success: true as const,
+		fields: validation.data as InferedType,
+		fieldErrors: null,
+	};
 }

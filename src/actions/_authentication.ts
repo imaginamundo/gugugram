@@ -8,11 +8,7 @@ import { applySetCookie } from "@auth/cookie";
 export const login = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
-		const {
-			fields,
-			fieldErrors,
-			success: schemaSuccess,
-		} = parseSchema<typeof LoginSchema>(input, LoginSchema);
+		const { fields, fieldErrors, success: schemaSuccess } = parseSchema(input, LoginSchema);
 
 		if (!schemaSuccess) {
 			return {

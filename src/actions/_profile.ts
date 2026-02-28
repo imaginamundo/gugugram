@@ -1,46 +1,48 @@
+import sharp from "sharp";
 import { defineAction } from "astro:actions";
 import { z } from "astro:schema";
 import { eq } from "drizzle-orm";
 import { db } from "@database/postgres";
 import { users } from "@database/schema";
 import { utapi } from "@utils/uploadthing";
-import sharp from "sharp";
+import { parseSchema } from "@utils/validation";
+
+const UpdateProfileSchema = z.object({
+	profileImage: z.instanceof(File).optional(),
+	description: z.string().max(500).optional(),
+	username: z.string().min(3),
+	email: z.string().email(),
+});
 
 export const updateProfile = defineAction({
 	accept: "form",
-	input: z.object({
-		profileImage: z.instanceof(File).optional(),
-		description: z.string().max(500).optional(),
-		username: z.string().min(3),
-		email: z.string().email(),
-	}),
 	handler: async (input, context) => {
-		console.log({ ping: true });
 		const session = context.locals.user;
 		if (!session) {
-			console.log("auth");
-
 			return {
 				success: false,
 				error: "Não autorizado.",
 			};
 		}
 
+		const { fields, success: schemaSuccess } = parseSchema(input, UpdateProfileSchema);
+		if (!schemaSuccess) throw new Error("Dados inválidos.");
+
 		const currentUser = await db.query.users.findFirst({
 			where: eq(users.id, session.id),
 		});
 
 		const updateData: Partial<typeof users.$inferInsert> = {
-			description: input.description,
-			username: input.username,
-			displayUsername: input.username,
-			email: input.email,
+			description: fields.description,
+			username: fields.username,
+			displayUsername: fields.username,
+			email: fields.email,
 		};
 
 		let oldImageKeyToDelete: string | null = null;
 
-		if (input.profileImage && input.profileImage.size > 0) {
-			if (input.profileImage.size > 4000000) {
+		if (fields.profileImage && fields.profileImage.size > 0) {
+			if (fields.profileImage.size > 4000000) {
 				console.log("size");
 				return {
 					success: false,
@@ -49,7 +51,7 @@ export const updateProfile = defineAction({
 			}
 
 			try {
-				const arrayBuffer = await input.profileImage.arrayBuffer();
+				const arrayBuffer = await fields.profileImage.arrayBuffer();
 				const buffer = Buffer.from(arrayBuffer);
 
 				const processedBuffer = await sharp(buffer)
@@ -60,7 +62,7 @@ export const updateProfile = defineAction({
 					.png({ quality: 80 })
 					.toBuffer();
 
-				const originalName = input.profileImage.name.split(".").shift() || "avatar";
+				const originalName = fields.profileImage.name.split(".").shift() || "avatar";
 				const newFilename = `${originalName}_30x30.png`;
 
 				const fileToUpload = new File([new Uint8Array(processedBuffer)], newFilename, {

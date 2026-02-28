@@ -3,24 +3,27 @@ import { z } from "astro:schema";
 import { db } from "@database/postgres";
 import { userFriends } from "@database/schema";
 import { and, eq, or } from "drizzle-orm";
+import { parseSchema } from "@utils/validation";
 
-const friendshipSchema = z.object({
+const FriendshipSchema = z.object({
 	targetUserId: z.string().min(1),
 });
 
 export const sendFriendRequest = defineAction({
 	accept: "form",
-	input: friendshipSchema,
 	handler: async (input, context) => {
 		const session = context.locals.user;
 		if (!session) throw new Error("Não autorizado");
 
-		if (session.id === input.targetUserId) throw new Error("Ação inválida");
+		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
+		if (!schemaSuccess) throw new Error("Dados inválidos.");
+
+		if (session.id === fields.targetUserId) throw new Error("Ação inválida");
 
 		try {
 			await db.insert(userFriends).values({
 				requestUserId: session.id,
-				targetUserId: input.targetUserId,
+				targetUserId: fields.targetUserId,
 				status: "pending",
 			});
 			return { success: true };
@@ -32,10 +35,12 @@ export const sendFriendRequest = defineAction({
 
 export const acceptFriendRequest = defineAction({
 	accept: "form",
-	input: friendshipSchema,
 	handler: async (input, context) => {
 		const session = context.locals.user;
 		if (!session) throw new Error("Não autorizado");
+
+		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
+		if (!schemaSuccess) throw new Error("Dados inválidos.");
 
 		try {
 			await db
@@ -43,7 +48,7 @@ export const acceptFriendRequest = defineAction({
 				.set({ status: "accepted" })
 				.where(
 					and(
-						eq(userFriends.requestUserId, input.targetUserId),
+						eq(userFriends.requestUserId, fields.targetUserId),
 						eq(userFriends.targetUserId, session.id),
 					),
 				);
@@ -56,10 +61,12 @@ export const acceptFriendRequest = defineAction({
 
 export const removeFriendship = defineAction({
 	accept: "form",
-	input: friendshipSchema,
 	handler: async (input, context) => {
 		const session = context.locals.user;
 		if (!session) throw new Error("Não autorizado");
+
+		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
+		if (!schemaSuccess) throw new Error("Dados inválidos.");
 
 		try {
 			await db
@@ -68,10 +75,10 @@ export const removeFriendship = defineAction({
 					or(
 						and(
 							eq(userFriends.requestUserId, session.id),
-							eq(userFriends.targetUserId, input.targetUserId),
+							eq(userFriends.targetUserId, fields.targetUserId),
 						),
 						and(
-							eq(userFriends.requestUserId, input.targetUserId),
+							eq(userFriends.requestUserId, fields.targetUserId),
 							eq(userFriends.targetUserId, session.id),
 						),
 					),

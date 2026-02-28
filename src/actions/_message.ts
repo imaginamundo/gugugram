@@ -4,22 +4,27 @@ import { and, eq, or, desc } from "drizzle-orm";
 import sanitizeHtml from "sanitize-html";
 import { db } from "@database/postgres";
 import { messages } from "@database/schema";
+import { parseSchema } from "@utils/validation";
 
 const RATE_LIMIT_MS = 5000;
 
+const SendMessageSchema = z.object({
+	receiverId: z.string(),
+	body: z.string().min(1, "A mensagem precisa existir").max(1000, "Mensagem muito longa"),
+});
+
 export const sendMessage = defineAction({
 	accept: "form",
-	input: z.object({
-		receiverId: z.string(),
-		body: z.string().min(1, "A mensagem precisa existir").max(1000, "Mensagem muito longa"),
-	}),
 	handler: async (input, context) => {
 		const session = context.locals.user;
 		if (!session) throw new Error("Não autenticado");
 
+		const { fields, success: schemaSuccess } = parseSchema(input, SendMessageSchema);
+		if (!schemaSuccess) throw new Error("Dados inválidos.");
+
 		const lastMessage = await db.query.messages.findFirst({
 			where: eq(messages.authorId, session.id),
-			orderBy: [desc(messages.createdAt)], // Pega a mais recente
+			orderBy: [desc(messages.createdAt)],
 		});
 
 		if (lastMessage) {
@@ -35,16 +40,16 @@ export const sendMessage = defineAction({
 			}
 		}
 
-		const sanitizedBody = sanitizeHtml(input.body);
+		const sanitizedBody = sanitizeHtml(fields.body);
 		if (!sanitizedBody) throw new Error("Mensagem vazia");
 
-		if (session.id === input.receiverId) {
+		if (session.id === fields.receiverId) {
 			throw new Error("Não pode enviar mensagem para si");
 		}
 
 		await db.insert(messages).values({
 			authorId: session.id,
-			receiverId: input.receiverId,
+			receiverId: fields.receiverId,
 			body: sanitizedBody,
 		});
 
@@ -52,20 +57,24 @@ export const sendMessage = defineAction({
 	},
 });
 
+const RemoveMessageSchema = z.object({
+	messageId: z.string(),
+});
+
 export const removeMessage = defineAction({
 	accept: "form",
-	input: z.object({
-		messageId: z.string(),
-	}),
 	handler: async (input, context) => {
 		const user = context.locals.user;
 		if (!user) throw new Error("Não autenticado");
+
+		const { fields, success: schemaSuccess } = parseSchema(input, RemoveMessageSchema);
+		if (!schemaSuccess) throw new Error("Dados inválidos.");
 
 		await db
 			.delete(messages)
 			.where(
 				and(
-					eq(messages.id, input.messageId),
+					eq(messages.id, fields.messageId),
 					or(eq(messages.receiverId, user.id), eq(messages.authorId, user.id)),
 				),
 			);
