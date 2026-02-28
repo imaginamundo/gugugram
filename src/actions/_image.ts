@@ -3,8 +3,8 @@ import { z } from "astro:schema";
 import { and, eq, desc } from "drizzle-orm";
 import { db } from "@database/postgres";
 import { images } from "@database/schema";
-import { utapi } from "@utils/uploadthing";
-import { UTFile } from "uploadthing/server";
+// import { utapi } from "@utils/uploadthing";
+// import { UTFile } from "uploadthing/server";
 
 const RATE_LIMIT_MS = 5000;
 
@@ -42,7 +42,7 @@ export const uploadImage = defineAction({
 		}
 
 		try {
-			const utFile = new UTFile([await file.arrayBuffer()], file.name, { type: file.type });
+			// const utFile = new UTFile([await file.arrayBuffer()], file.name, { type: file.type });
 
 			// const upload = await utapi.uploadFiles(utFile);
 
@@ -83,16 +83,16 @@ export const deleteImage = defineAction({
 		if (!imageKey) throw new Error("URL de imagem inválida");
 
 		try {
-			const deletedRow = await db
-				.delete(images)
-				.where(and(eq(images.id, input.id), eq(images.authorId, session.id)))
-				.returning();
+			// const deletedRow = await db
+			// 	.delete(images)
+			// 	.where(and(eq(images.id, input.id), eq(images.authorId, session.id)))
+			// 	.returning();
 
-			if (deletedRow.length === 0) {
-				throw new Error("Imagem não encontrada ou sem permissão para exclusão.");
-			}
+			// if (deletedRow.length === 0) {
+			// 	throw new Error("Imagem não encontrada ou sem permissão para exclusão.");
+			// }
 
-			await utapi.deleteFiles(imageKey);
+			// await utapi.deleteFiles(imageKey);
 
 			return { success: true };
 		} catch (e) {
