@@ -10,7 +10,7 @@ const RATE_LIMIT_MS = 5000;
 export const uploadImage = defineAction({
 	accept: "form",
 	input: z.object({
-		image: z.custom<File>((val) => val instanceof Blob),
+		image: z.any(),
 	}),
 	handler: async (input, context) => {
 		const session = context.locals.user;
