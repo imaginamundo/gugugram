@@ -7,7 +7,8 @@ import vercel from "@astrojs/vercel";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [svelte()],
-  adapter: vercel(),
-  output: "server",
+	site: "https://www.gugugram.com",
+	integrations: [svelte()],
+	adapter: vercel(),
+	output: "server",
 });
