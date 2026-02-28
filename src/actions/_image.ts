@@ -10,9 +10,7 @@ const RATE_LIMIT_MS = 5000;
 
 export const uploadImage = defineAction({
 	accept: "form",
-	input: z.object({
-		image: z.unknown(),
-	}),
+	input: z.any(),
 	handler: async (input, context) => {
 		const session = context.locals.user;
 		if (!session) throw new Error("Não autenticado");
