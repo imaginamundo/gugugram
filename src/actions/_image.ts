@@ -4,13 +4,14 @@ import { and, eq, desc } from "drizzle-orm";
 import { db } from "@database/postgres";
 import { images } from "@database/schema";
 import { utapi } from "@utils/uploadthing";
+import { UTFile } from "uploadthing/server";
 
 const RATE_LIMIT_MS = 5000;
 
 export const uploadImage = defineAction({
 	accept: "form",
 	input: z.object({
-		image: z.instanceof(File).refine((file) => file.size > 0, "Arquivo é obrigatório"),
+		image: z.any(),
 	}),
 	handler: async (input, context) => {
 		console.log(typeof input.image, input.image.constructor.name);
@@ -41,7 +42,9 @@ export const uploadImage = defineAction({
 		}
 
 		try {
-			const upload = await utapi.uploadFiles(file);
+			const utFile = new UTFile([await file.arrayBuffer()], file.name, { type: file.type });
+
+			const upload = await utapi.uploadFiles(utFile);
 
 			if (!upload.data?.ufsUrl) {
 				throw new Error("Erro ao subir a imagem para o servidor.");
@@ -49,13 +52,13 @@ export const uploadImage = defineAction({
 
 			await db.insert(images).values({
 				authorId: session.id,
-				image: upload.data?.ufsUrl,
+				image: upload.data.ufsUrl,
 			});
 
 			return {
 				success: true,
 				username: session.username,
-				imageUrl: upload.data?.ufsUrl,
+				imageUrl: upload.data.ufsUrl,
 			};
 		} catch (e) {
 			console.error(e);
