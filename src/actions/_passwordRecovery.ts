@@ -37,7 +37,7 @@ export const resetPassword = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, ResetPasswordSchema);
-		if (!schemaSuccess) throw new Error("Dados inválidos.");
+		if (!schemaSuccess) return { success: false, error: "Token inválido." };
 
 		try {
 			await auth.api.resetPassword({
@@ -50,7 +50,7 @@ export const resetPassword = defineAction({
 
 			return { success: true };
 		} catch (error) {
-			throw new Error("Token inválido ou expirado.");
+			return { success: false, error: "Erro ao redefinir senha." };
 		}
 	},
 });

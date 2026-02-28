@@ -10,6 +10,8 @@ if (!token) {
   return Astro.redirect("/login?error=token_missing");
 }
 
+const result = Astro.getActionResult(actions.resetPassword);
+
 const seo = {
 	title: `Nova senha`,
 	robots: 'noindex,nofollow'
@@ -17,6 +19,12 @@ const seo = {
 ---
 <Layout {...seo}>
   <div class="form p">
+    {!!result?.data?.error && (
+			<p class="error mb flex center gap ">
+				<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+				{result.data.error}
+			</p>
+		)}
     <form method="POST" action={actions.resetPassword}>
       <input type="hidden" name="token" value={token} />
       <fieldset>
