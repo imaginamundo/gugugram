@@ -11,6 +11,9 @@ if (!token) {
 }
 
 const result = Astro.getActionResult(actions.resetPassword);
+if (result?.data?.success) {
+	return Astro.redirect('/entrar');
+}
 
 const seo = {
 	title: `Nova senha`,

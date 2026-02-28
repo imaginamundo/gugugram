@@ -97,7 +97,7 @@ function emailTemplate(url: string, token: string) {
                                             "
                                         >
                                             <a
-                                                href="${url}/nova-senha?token=${token}"
+                                                href="${url}?token=${token}"
                                                 target="_blank"
                                                 >👉 Clique aqui para definir uma nova senha 👈</a
                                             >
@@ -127,7 +127,7 @@ function emailTemplate(url: string, token: string) {
 function textTemplate(url: string, token: string) {
 	return `Troque sua senha no Gugugram
 
-Clique aqui para definir uma nova senha: ${url}/nova-senha?token=${token}
+Clique aqui para definir uma nova senha: ${url}?token=${token}
 
 Se você não solicitou troca de senha, ignore este e-mail`;
 }
