@@ -16,7 +16,7 @@ const seo = {
 	<div class="form p">
 		{!!result?.data?.message && (
 			<p class="mb flex center gap ">
-				<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+				<img src="/icons/mailbox_world-2.png" alt="'Ícone de erro" />
 				{result.data.message}
 			</p>
 		)}
@@ -25,7 +25,7 @@ const seo = {
         <legend>Esqueci minha senha</legend>
 				<label class="label">
 					E-mail:
-					<Input class="block" type="email" placeholder="Seu e-mail cadastrado" />
+					<Input class="block" name="email" type="email" placeholder="Seu e-mail cadastrado" />
 				</label>
 				<Button class="m-sm">Enviar e-mail de troca de senha</Button>
 			</fieldset>

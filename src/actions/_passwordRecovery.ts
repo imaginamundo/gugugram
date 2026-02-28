@@ -17,11 +17,14 @@ export const requestPasswordReset = defineAction({
 			headers: context.request.headers,
 			body: {
 				email: fields.email,
-				redirectTo: "http://localhost:4321/nova-senha",
+				redirectTo: `${import.meta.env.PUBLIC_BASE_URL}/nova-senha`,
 			},
 		});
 
-		return { success: true, message: "Se o e-mail existir, um link foi enviado." };
+		return {
+			success: true,
+			message: "Se o e-mail existir, um link foi enviado para você inserir uma nova senha.",
+		};
 	},
 });
 

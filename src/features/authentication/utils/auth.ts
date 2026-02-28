@@ -27,8 +27,8 @@ export const auth = betterAuth({
 		minPasswordLength: 1,
 		maxPasswordLength: 128,
 		requireEmailVerification: false,
-		sendResetPassword: async ({ user, token }) => {
-			await sendEmail(user.email, token);
+		sendResetPassword: async ({ user, url, token }) => {
+			await sendEmail(user.email, url, token);
 		},
 	},
 	plugins: [

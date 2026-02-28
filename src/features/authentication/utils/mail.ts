@@ -11,13 +11,13 @@ const transporter = nodemailer.createTransport({
 	},
 });
 
-export async function sendEmail(to: string, token: string) {
+export async function sendEmail(to: string, url: string, token: string) {
 	const options = {
 		from: `Diogo do Gugugram<${process.env.MAILER_USER}>`,
 		to: to,
 		subject: "Gugugram - Cadastrar nova senha",
-		text: textTemplate(token),
-		html: emailTemplate(token),
+		text: textTemplate(url, token),
+		html: emailTemplate(url, token),
 	};
 	try {
 		const info = await transporter.sendMail(options);
@@ -27,7 +27,7 @@ export async function sendEmail(to: string, token: string) {
 	}
 }
 
-function emailTemplate(token: string) {
+function emailTemplate(url: string, token: string) {
 	return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html dir="ltr" lang="pt-BR">
     <head>
@@ -97,7 +97,7 @@ function emailTemplate(token: string) {
                                             "
                                         >
                                             <a
-                                                href="${import.meta.env.PUBLIC_BASE_URL}/nova-senha?token=${token}"
+                                                href="${url}/nova-senha?token=${token}"
                                                 target="_blank"
                                                 >👉 Clique aqui para definir uma nova senha 👈</a
                                             >
@@ -124,10 +124,10 @@ function emailTemplate(token: string) {
 </html>`;
 }
 
-function textTemplate(token: string) {
+function textTemplate(url: string, token: string) {
 	return `Troque sua senha no Gugugram
 
-Clique aqui para definir uma nova senha: ${import.meta.env.PUBLIC_BASE_URL}/nova-senha?token=${token}
+Clique aqui para definir uma nova senha: ${url}/nova-senha?token=${token}
 
 Se você não solicitou troca de senha, ignore este e-mail`;
 }
