@@ -1,0 +1,113 @@
+---
+import Layout from "@layout/Main.astro";
+import Button from "@ui/Button.svelte";
+import Checkbox from "@ui/Checkbox.svelte";
+import Radio from "@ui/Radio.svelte";
+import Input from "@ui/Input.svelte";
+import Textarea from "@ui/Textarea.svelte";
+import Select from "@ui/Select.svelte";
+
+const seo = {
+	title: `Componentes daqui, rsrs`,
+	description: `Componentes do gugugram, algumas coisas faltam mas a vida`
+}
+---
+
+<Layout {...seo}>
+	<h1>Core components</h1>
+
+	<h2>Button</h2>
+	<Button>Button</Button>
+	<Button disabled>Disabled</Button>
+
+	<h2>Checkbox</h2>
+	<fieldset>
+		<legend>Examples</legend>
+		<label class="inline-label">
+			<Checkbox />
+			This is a checkbox
+		</label>
+		<label class="inline-label">
+			<Checkbox disabled />
+			Disabled
+		</label>
+	</fieldset>
+
+	<h2>Radio</h2>
+	<fieldset>
+		<legend>Examples</legend>
+		<label class="inline-label">
+			<Radio name="test" />
+			This is a radio
+		</label>
+		<label class="inline-label">
+			<Radio name="test" />
+			Other radio
+		</label>
+		<label class="inline-label">
+			<Radio name="test" disabled />
+			Disabled
+		</label>
+	</fieldset>
+
+	<h2>Input</h2>
+	<label class="label">
+		Input:
+		<Input />
+	</label>
+	<label class="label">
+		Disabled:
+		<Input disabled />
+	</label>
+
+	<h2>Textarea</h2>
+	<label class="label">
+		Textarea:
+		<Textarea />
+	</label>
+	<label class="label">
+		Disabled:
+		<Textarea disabled />
+	</label>
+
+	<h2>Select</h2>
+	<Select>
+		<option value="98">98</option>
+		<optgroup label="Tech">
+			<option value="svelte">Svelte</option>
+			<option value="astro">Astro</option>
+		</optgroup>
+	</Select>
+
+	<Select disabled>
+		<option value="98">98</option>
+		<optgroup label="Tech">
+			<option value="svelte">Svelte</option>
+			<option value="astro">Astro</option>
+		</optgroup>
+	</Select>
+
+	<h2>Title bar</h2>
+	<h3>Active:</h3>
+	<div class="title-bar">
+		<p>Title bar!</p>
+	</div>
+	<h3>Inactive:</h3>
+	<div class="title-bar inactive">
+		<p>Title bar inactive</p>
+	</div>
+
+	<h2>Window</h2>
+	<div class="window">
+		<div class="title-bar">
+			<p>Title<p>
+		</div>
+		<div class="window-body">
+			<p>Hello, world!</p>
+		</div>
+		<div class="status-bar">
+			<p>Hello</p>
+			<p>World!</p>
+		</div>
+	</div>
+</Layout>

@@ -1,0 +1,22 @@
+---
+import Layout from "@layout/Main.astro";
+import UsersList from "@components/UsersList/UsersList.astro";
+import { getUsers } from "@services/user";
+
+const query = Astro.url.searchParams.get('q') || '';
+const session = Astro.locals.user;
+
+const users = await getUsers({query, session});
+
+const seo = {
+	title: `Buscar por ${query}`,
+	robots: 'noindex,follow'
+}
+---
+<Layout {...seo}>
+	<h2>Buscar por: {query}</h2>
+	<div class="friends field-border p">
+		<UsersList users={users} additionalParameter={`q=${query}`} />
+		{users.length === 0 && <p>Nenhum usuário encontrado :(</p>}
+	</div>
+</Layout>

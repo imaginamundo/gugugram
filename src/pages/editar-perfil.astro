@@ -1,0 +1,62 @@
+---
+import { actions } from "astro:actions";
+import Layout from "@layout/Main.astro";
+import Input from "@ui/Input.svelte";
+import Button from "@ui/Button.svelte";
+import Textarea from "@components/_ui/Textarea.svelte";
+import RemoveProfilePicture from '@components/RemoveProfilePicture/RemoveProfilePicture.svelte';
+import { getProfile } from "@services/user";
+
+
+const session = Astro.locals.user;
+if (!session || !session.username) return Astro.redirect('/');
+
+const result = Astro.getActionResult(actions.updateProfile);
+if (result?.data?.success) {
+	return Astro.redirect(`/${session.username}`);
+}
+
+const { user } = await getProfile({
+	username: session?.username,
+	session,
+});
+
+const seo = {
+	title: `Editar perfil`,
+	robots: 'noindex,nofollow,'
+}
+---
+
+<Layout {...seo}>
+	<div class="form p">
+    {user?.image && (
+      <RemoveProfilePicture {user} client:load />
+    )}
+		<form action={actions.updateProfile} method="POST" enctype="multipart/form-data" class="mb">
+			<fieldset>
+        <legend>Editar perfil</legend>
+        
+        <label class="label">
+          Nova imagem de perfil
+					<Input name="image" autocomplete="username" type="file" class="block" placeholder="Sua imagem do perfil" />
+        </label>
+        <label class="label">
+					Descrição
+					<Textarea name="description" class="block" placeholder="Descrição que será exibida no seu perfil" value={user?.description} />
+				</label>
+				<label class="label">
+					Nome de usuário
+					<Input name="username" autocomplete="username" type="text" class="block" placeholder="Seu nome de usuário" value={session.username} />
+				</label>
+        <label class="label">
+					E-mail
+					<Input name="email" autocomplete="email" type="text" class="block" placeholder="Seu e-mail" value={session.email} />
+				</label>
+				<div class="flex justify-end">
+          <Button class="m-sm" type="button">Cancelar</Button>
+          <Button class="m-sm">Atualizar</Button>
+        </div>
+			</fieldset>
+		</form>
+	</div>
+</Layout>

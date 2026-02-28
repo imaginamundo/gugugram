@@ -1,34 +1,23 @@
 {
-  "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/api/*": ["./src/app/api/*"],
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": [
-    "types/svgr.d.ts",
-    "types/auth.d.ts",
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": ["node_modules"]
+	"extends": "astro/tsconfigs/strict",
+	"include": [".astro/types.d.ts", ".src/types.d.ts", "**/*"],
+	"exclude": ["dist"],
+	"compilerOptions": {
+		"module": "esnext",
+		"moduleResolution": "Bundler",
+		"baseUrl": ".",
+		"paths": {
+			"@components/*": ["./src/features/_shared/components/*"],
+			"@ui/*": ["./src/features/_shared/components/_ui/*"],
+			"@layout/*": ["./src/features/_shared/components/layout/*"],
+			"@utils/*": ["./src/features/_shared/utils/*"],
+			"@auth/*": ["./src/features/authentication/utils/*"],
+			"@stores/*": ["./src/features/_shared/stores/*"],
+			"@shared/*": ["./src/features/_shared/*"],
+			"@actions/*": ["./src/actions/*"],
+			"@services/*": ["./src/services/*"],
+			"@database/*": ["./src/database/*"],
+			"@features/*": ["./src/features/*"]
+		}
+	}
 }

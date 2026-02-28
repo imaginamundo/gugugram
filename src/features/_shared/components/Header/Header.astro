@@ -1,0 +1,92 @@
+---
+import Button from "@components/_ui/Button.svelte";
+import Input from "@components/_ui/Input.svelte";
+import UploadImageModal from "@components/UploadImageModal/UploadImageModal.svelte";
+
+const { user } = Astro.locals;
+---
+
+<div class="header">
+  <fieldset class="header-button-home flex p-0">
+    <a class="header-button flex gap center p w-full justify-center" href="/">
+      <img src="/icons/home.png" width="19" height="20" alt="Ícone de casa" />
+      Página inicial
+    </a>
+  </fieldset>
+
+  <fieldset class="header-button-upload flex p-0">
+    <UploadImageModal client:load />
+  </fieldset>
+
+  <fieldset class="header-search flex center grow p-sm">
+    <form action="/buscar" method="GET" class="flex center w-full">
+      <label class="flex center grow p-sm">
+        Buscar
+        <Input 
+          client:load 
+          name="q"
+          class="w-full ml-sm" 
+          placeholder="Buscar por nome de usuário" 
+        />
+      </label>
+      <Button client:load class="ml-sm">
+        <img src="/icons/search-web.png" alt="Ícone de lupa e um globo" />
+        Buscar
+      </Button>
+    </form>
+  </fieldset>
+
+  <fieldset class="header-user flex center">
+    {user ? (
+      <div class="flex center gap">
+        <span class="text-sm">Olá, <a href={ `/${user.username}` } class="text-xs underline"><strong>{user.username}</strong></a>!</span>
+        <span>|</span>
+        <form action="/api/logout">
+          <Button type="submit">
+            Sair da conta
+          </Button>
+        </form>
+      </div>
+    ) : (
+      <p class="text-center w-full">
+        <a href="/entrar">Entrar</a>
+        ou
+        <a href="/cadastrar">Cadastrar</a>
+      </p>
+    )}
+  </fieldset>
+</div>
+
+<style>
+  .header {
+    display: grid;
+    grid-template-areas:
+      "home upload user"
+      "search search search";
+  }
+
+  @media (min-width: 600px) {
+    .header {
+      grid-template-areas: "home upload search user";
+      grid-template-columns: auto auto 1fr auto;
+    }
+  }
+
+  .header-button-home { grid-area: home; }
+  .header-button-upload { grid-area: upload; }
+  .header-search { grid-area: search; }
+  .header-user { grid-area: user; }
+
+  .header-button {
+    color: currentColor;
+    text-decoration: none;
+  }
+  
+  .header-button img {
+    filter: url("#grayscale");
+  }
+  
+  .header-button:hover img {
+    filter: none;
+  }
+</style>

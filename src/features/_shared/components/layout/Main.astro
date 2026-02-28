@@ -1,0 +1,63 @@
+---
+import "@shared/styles/global.css";
+import SVGFilters from "@shared/icons/_filter.svg";
+import Header from "@components/Header/Header.astro";
+import ImageModal from "@components/ImageModal/ImageModal.svelte";
+
+const session = Astro.locals.user;
+
+interface Props {
+	title?: string;
+	description?: string;
+	robots?: string;
+}
+
+const { title, description, robots = 'index,follow' } = Astro.props;
+
+let fullTitle = 'Gugugram';
+if (title) {
+	fullTitle += ` • ${title}`;
+}
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{fullTitle}</title>
+		{description && <meta name="description" content={description} />}
+		{robots && <meta name="robots" content={robots} />}
+		<script>
+			const url = new URL(window.location.href);
+			if (url.searchParams.has('_action')) {
+				url.searchParams.delete('_action');
+				window.history.replaceState({}, '', url.pathname + url.search);
+			}
+		</script>
+	</head>
+	<body>
+		<SVGFilters />
+		<div class="window">
+			<div class="title-bar"><p><strong>Gugugram</strong></p></div>
+			<Header />
+			<div class="window-body">
+				<slot />
+				<div class="mt text-center">
+					<div class="field-border inline-block">
+						<a href="https://www.mozilla.org/firefox" title="Download Mozilla Firefox">
+							<img src="/moz_carcar3.gif" width="88" height="31" />
+						</a>
+					</div>
+					<ImageModal {session} client:load />
+				</div>
+			</div>
+			<footer class="status-bar">
+				<p>
+					Isso é um site. Início do desenvolvimento dia 15 de abril de 2024. Alguns direitos
+					reservados
+				</p>
+				<a href="/sobre">Sobre o gugugram</a>
+			</footer>
+		</div>
+	</body>
+</html>

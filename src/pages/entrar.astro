@@ -1,0 +1,42 @@
+---
+import Layout from "@layout/Main.astro";
+import Input from "@ui/Input.svelte";
+import Button from "@ui/Button.svelte";
+import { actions } from "astro:actions";
+
+const result = Astro.getActionResult(actions.login);
+if (result?.data?.success) {
+	return Astro.redirect(`/${result.data.username}`);
+}
+
+const seo = {
+	title: `Entrar na sua conta Gugugram`,
+	description: `Faça sua autenticação e aproveite para enviar mensagem e imagens!`
+}
+---
+
+<Layout {...seo}>
+	<div class="form p">
+		{!!result?.data?.error && (
+			<p class="error mb flex center gap ">
+				<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+				{result.data.error}
+			</p>
+		)}
+		<form action={actions.login} method="POST" class="mb">
+			<fieldset>
+        <legend>Entrar</legend>
+				<label class="label">
+					Nome de usuário ou e-mail:
+					<Input name="identity" autocomplete="username" type="text" class="block" placeholder="Seu nome de usuário ou e-mail" />
+				</label>
+				<label class="label">
+					Senha:
+					<Input name="password" autocomplete="current-password" class="block" type="password" placeholder="Sua senha" />
+				</label>
+				<Button class="m-sm">Entrar</Button>
+			</fieldset>
+		</form>
+		<p><a href="/esqueci-minha-senha">Esqueci minha senha</a></p>
+	</div>
+</Layout>

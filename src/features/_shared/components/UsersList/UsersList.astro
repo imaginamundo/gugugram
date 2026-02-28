@@ -1,0 +1,48 @@
+---
+import type { User } from "@services/user";
+import FriendshipButtons from "@components/FriendshipButtons/FriendshipButtons.svelte";
+
+interface Props {
+  users: User[];
+  additionalParameter?: string;
+}
+const { users, additionalParameter } = Astro.props;
+const session = Astro.locals.user;
+---
+
+{users.length !== 0 && (
+  <div class="flex flex-col gap">
+    {users.map((user) => (
+      <div class="flex center user">
+        <p>
+          <a href={`/${user.username}`} class="flex center gap">
+            <img
+              class="user-image image-border"
+              src={user.image || "/default-avatar.png"} 
+              alt={`Imagem de perfil de ${user.username}`}
+              width="30"
+              height="30"
+            />
+            <span class="username">{user.username}</span>
+          </a>
+        </p>
+  
+        <div>
+          <FriendshipButtons 
+            targetUserId={user.id} 
+            friendship={user.friendship} 
+            isLoggedIn={!!session} 
+            isOwnProfile={session?.id === user.id} 
+            additionalParameter={additionalParameter}
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+
+<style>
+  .user {
+    gap: 1rem;
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+import type { ProfileUser } from "@services/user"
+import FriendshipButtons from "@components/FriendshipButtons/FriendshipButtons.svelte";
+
+interface Props {
+  user: ProfileUser;
+}
+
+const { user } = Astro.props;
+const session = Astro.locals.user;
+
+const isOwnProfile = session?.id === user.id;
+---
+
+<header>
+  <h1>
+    <img
+      src={user.image}
+      alt={`Imagem de perfil de ${user.username}`}
+      class="user-image image-border"
+      width="30"
+      height="30"
+    />
+    {user.username}
+  </h1>
+  
+  {user.description && (
+    <p class="mb">{user.description}</p>
+  )}
+
+  {isOwnProfile && (<a href="/editar-perfil">Editar perfil</a>)}
+
+  <FriendshipButtons 
+    targetUserId={user.id} 
+    friendship={user.friendship} 
+    isLoggedIn={!!session} 
+    isOwnProfile={isOwnProfile} 
+  />
+</header>

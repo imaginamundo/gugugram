@@ -1,0 +1,35 @@
+---
+import { getProfile } from "@services/user";
+import { getImagePosts } from "@services/image";
+import Layout from "@layout/Main.astro";
+import ProfileHeader from "@components/ProfileHeader/ProfileHeader.astro";
+import ProfileTabs from "@components/ProfileTabs/ProfileTabs.svelte";
+import ImagePostList from "@components/ImagePostList/ImagePostList.svelte";
+
+const { username } = Astro.params;
+if (!username) return new Response(null, { status: 404 });
+
+const session = Astro.locals.user;
+
+const { user, messagesCount, friendsCount, pendingFriendRequest } = await getProfile({
+	username,
+	session,
+});
+
+
+if (!user) return new Response(null, { status: 404 });
+
+const images = await getImagePosts(username);
+
+const seo = {
+	title: `Imagens de ${username}`,
+	description: `Suba suas imagens no Gugugram e adicione ${username} como amigo!`
+}
+---
+
+<Layout {...seo}>
+	<ProfileHeader {user} />
+	<ProfileTabs selectedTab="fotos" {username} {messagesCount} {friendsCount} {pendingFriendRequest}>
+		<ImagePostList posts={images} client:load />
+	</ProfileTabs>
+</Layout>

@@ -1,0 +1,35 @@
+---
+import type { FriendsType } from "@services/user";
+import UsersList from "@components/UsersList/UsersList.astro";
+
+interface Props extends FriendsType {}
+const { friends, friendRequests } = Astro.props;
+---
+
+<div class="friends field-border p">
+  {friendRequests.length > 0 && (
+    <h2 class="mt-0">Solicitações de amizade</h2>
+  )}
+
+  <UsersList users={friendRequests} />
+
+  {friends.length > 0 && (
+    <h2 class="mt-0">Amigos</h2>
+  )}
+
+  <UsersList users={friends} />
+
+  {friends.length === 0 && (
+    <h2 class="mt-0">Nenhum amigo, melhore :(</h2>
+  )}
+</div>
+
+<style>
+  .friends {
+    background-color: #fff;
+  }
+
+  .friends :global(div + h2) {
+    margin-top: 10px;
+  }
+</style>

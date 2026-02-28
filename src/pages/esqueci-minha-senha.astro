@@ -1,0 +1,35 @@
+---
+import { actions } from "astro:actions";
+import Layout from "@layout/Main.astro";
+import Input from "@ui/Input.svelte";
+import Button from "@ui/Button.svelte";
+
+const result = Astro.getActionResult(actions.requestPasswordReset);
+
+const seo = {
+	title: `Recuperação de senha`,
+	robots: 'noindex,nofollow'
+}
+---
+
+<Layout {...seo}>
+	<div class="form p">
+		{!!result?.data?.message && (
+			<p class="mb flex center gap ">
+				<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+				{result.data.message}
+			</p>
+		)}
+		<form class="mb" method="POST" action={actions.requestPasswordReset}>
+			<fieldset>
+        <legend>Esqueci minha senha</legend>
+				<label class="label">
+					E-mail:
+					<Input class="block" type="email" placeholder="Seu e-mail cadastrado" />
+				</label>
+				<Button class="m-sm">Enviar e-mail de troca de senha</Button>
+			</fieldset>
+		</form>
+		<p><a href="/entrar">Entrar</a> ou <a href="/cadastrar">Cadastrar</a></p>
+	</div>
+</Layout>

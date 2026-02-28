@@ -1,0 +1,75 @@
+---
+import type { ProfileUser } from "@services/user"
+import type { MessagesType } from "@services/message";
+import { actions } from "astro:actions";
+import { formatDate } from "@utils/date";
+import Button from "@components/_ui/Button.svelte";
+import Input from "@components/_ui/Input.svelte";
+
+interface Props {
+  messages: MessagesType["messagesReceived"];
+  user: ProfileUser;
+}
+const { messages, user } = Astro.props;
+const session = Astro.locals.user;
+
+const isOwnProfile = session?.id === user.id;
+---
+
+<div class="messages field-border p">
+  {messages.map((message) => (
+    <div class="flex gap center">
+      {session && (session.id === message.author.id || isOwnProfile) && (
+        <form method="POST" action={actions.removeMessage}>
+          <input type="hidden" name="messageId" value={message.id} />
+          <Button type="submit">Apagar</Button>
+        </form>
+      )}
+      <div>
+        <p>
+          <span class="text-muted">
+            (<time datetime={message.createdAt.toISOString()}>{formatDate(message.createdAt)}</time>)
+          </span>
+          <a href={`/${message.author.username}`}>{message.author.username}</a> disse:
+        </p>
+        <p class="pl">{message.body}</p>
+      </div>
+    </div>
+  ))}
+</div>
+
+
+{session && session.id !== user.id && (
+  <form method="POST" action={actions.sendMessage} class="flex justify-stretch gap mt">
+    <input type="hidden" name="receiverId" value={user.id} />
+    
+    <Input 
+      name="body" 
+      placeholder="Escreva uma mensagem para enviar" 
+      class="w-full p" 
+      style="height: auto" 
+      required
+    />
+    
+    <Button type="submit" class="p">Enviar</Button>
+  </form>
+)}
+
+<style>
+  .messages {
+    display: flex;
+    /* Inverte a ordem visual para as mensagens novas ficarem embaixo se a lista for curta */
+    flex-direction: column-reverse; 
+    background-color: #fff;
+    box-sizing: border-box;
+    overflow: auto;
+    line-height: 1.6em;
+    height: calc(100dvh - 381px);
+  }
+
+  @media (min-width: 600px) {
+    .messages {
+      height: calc(100dvh - 330px);
+    }
+  }
+</style>

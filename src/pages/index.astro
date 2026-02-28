@@ -1,0 +1,16 @@
+---
+import Layout from "@layout/Main.astro";
+import { getLatestPosts } from "@services/image";
+import ImagePostList from '@components/ImagePostList/ImagePostList.svelte';
+
+const latestPosts = await getLatestPosts();
+
+const seo = {
+	description: 'Conheça as últimas imagens que subiram na rede social Gugugram!'
+}
+---
+<Layout {...seo}>
+	<p>A sua rede social de compartilhar imagens feitas com 5px², 10px², 15px², 20px², 30px² e 60px².</p>
+	<h2>Últimas imagens</h2>
+	<ImagePostList posts={latestPosts} client:load />
+</Layout>

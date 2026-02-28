@@ -1,0 +1,32 @@
+---
+import { actions } from "astro:actions";
+import Layout from "@layout/Main.astro";
+import Input from "@ui/Input.svelte";
+import Button from "@ui/Button.svelte";
+
+const token = Astro.url.searchParams.get("token");
+
+if (!token) {
+  return Astro.redirect("/login?error=token_missing");
+}
+
+const seo = {
+	title: `Nova senha`,
+	robots: 'noindex,nofollow'
+}
+---
+<Layout {...seo}>
+  <div class="form p">
+    <form method="POST" action={actions.resetPassword}>
+      <input type="hidden" name="token" value={token} />
+      <fieldset>
+          <legend>Entrar</legend>
+        <label class="label">
+          Nova Senha:
+          <Input type="password" autocomplete="new-password" name="newPassword" placeholder="Insira sua nova senha" required />
+        </label>
+        <Button class="m-sm">Atualizar senha</Button>
+      </fieldset>
+    </form>
+  </div>
+</Layout>
