@@ -46,22 +46,24 @@ export const uploadImage = defineAction({
 		try {
 			const utFile = new UTFile([await file.arrayBuffer()], file.name, { type: file.type });
 
-			const upload = await utapi.uploadFiles(utFile);
+			// const upload = await utapi.uploadFiles(utFile);
 
-			if (!upload.data?.ufsUrl) {
-				throw new Error("Erro ao subir a imagem para o servidor.");
-			}
+			// if (!upload.data?.ufsUrl) {
+			// 	throw new Error("Erro ao subir a imagem para o servidor.");
+			// }
 
-			await db.insert(images).values({
-				authorId: session.id,
-				image: upload.data.ufsUrl,
-			});
+			// await db.insert(images).values({
+			// 	authorId: session.id,
+			// 	image: upload.data.ufsUrl,
+			// });
 
-			return {
-				success: true,
-				username: session.username,
-				imageUrl: upload.data.ufsUrl,
-			};
+			// return {
+			// 	success: true,
+			// 	username: session.username,
+			// 	imageUrl: upload.data.ufsUrl,
+			// };
+
+			return { debug: "success" };
 		} catch (e) {
 			console.error(e);
 			throw new Error("Erro interno ao processar a imagem.");
