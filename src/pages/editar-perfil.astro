@@ -29,6 +29,12 @@ const seo = {
 
 <Layout {...seo}>
 	<div class="form p">
+		{!!result?.data?.error && (
+			<p class="error mb flex center gap ">
+				<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+				{result.data.error}
+			</p>
+		)}
     {user?.image && (
       <RemoveProfilePicture {user} client:load />
     )}

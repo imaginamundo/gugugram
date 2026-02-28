@@ -45,7 +45,7 @@ export const updateProfile = defineAction({
 			if (fields.profileImage.size > 4000000) {
 				console.log("size");
 				return {
-					success: false,
+					success: false as const,
 					error: "A imagem de perfil é muito pesada. Máximo de 4MB.",
 				};
 			}
@@ -75,7 +75,7 @@ export const updateProfile = defineAction({
 					console.log("subir");
 
 					return {
-						success: false,
+						success: false as const,
 						error: "Erro ao subir a nova imagem de perfil.",
 					};
 				}
@@ -90,7 +90,7 @@ export const updateProfile = defineAction({
 				console.log("process");
 
 				return {
-					success: false,
+					success: false as const,
 					error:
 						"Erro ao processar a imagem de perfil. Certifique-se de que é um arquivo de imagem válido.",
 				};
@@ -110,19 +110,17 @@ export const updateProfile = defineAction({
 				console.log("usuario ja tem");
 
 				return {
-					success: false,
+					success: false as const,
 					error: "Este nome de usuário ou e-mail já está em uso.",
 				};
 			}
-			console.log("atualiza");
-
 			return {
-				success: false,
+				success: false as const,
 				error: "Erro interno ao atualizar o perfil.",
 			};
 		}
 
-		return { success: true };
+		return { success: true as const };
 	},
 });
 
