@@ -1,9 +1,3 @@
-import { createAuthClient } from "better-auth/svelte";
-
-export const authClient = createAuthClient({
-	baseURL: import.meta.env.PUBLIC_BASE_URL,
-});
-
 export const authErrors = {
 	// Erros de Autenticação Geral
 	USER_NOT_FOUND: "Usuário não encontrado.",
