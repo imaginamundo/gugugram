@@ -10,7 +10,7 @@ const RATE_LIMIT_MS = 5000;
 export const uploadImage = defineAction({
 	accept: "form",
 	input: z.object({
-		image: z.instanceof(File),
+		image: z.custom<File>((val) => val instanceof Blob),
 	}),
 	handler: async (input, context) => {
 		const session = context.locals.user;
@@ -56,6 +56,7 @@ export const uploadImage = defineAction({
 				imageUrl: upload.data?.ufsUrl,
 			};
 		} catch (e) {
+			console.error(e);
 			if (e instanceof Error) throw e;
 			throw new Error("Erro interno ao processar a imagem.");
 		}
