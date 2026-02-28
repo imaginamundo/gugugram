@@ -23,7 +23,7 @@ export const requestPasswordReset = defineAction({
 
 		return {
 			success: true,
-			message: "Se o e-mail existir, um link foi enviado para você inserir uma nova senha.",
+			message: "Se o e-mail existir, um link foi enviado para você cadastrar uma nova senha.",
 		};
 	},
 });

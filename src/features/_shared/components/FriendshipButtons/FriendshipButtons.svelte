@@ -22,7 +22,7 @@
 </script>
 
 {#if isLoggedIn && !isOwnProfile}
-  <div class="friendship-actions">
+  <div class="flex flex-col gap">
     {#if !friendship?.status}
       <form method="POST" action={actions.sendFriendRequest + parameter}>
         <input type="hidden" name="targetUserId" value={targetUserId} />

@@ -4,15 +4,15 @@ import Layout from "@layout/Main.astro";
 import Input from "@ui/Input.svelte";
 import Button from "@ui/Button.svelte";
 
-const token = Astro.url.searchParams.get("token");
-
-if (!token) {
-  return Astro.redirect("/login?error=token_missing");
-}
 
 const result = Astro.getActionResult(actions.resetPassword);
 if (result?.data?.success) {
 	return Astro.redirect('/entrar');
+}
+
+const token = Astro.url.searchParams.get("token");
+if (!token) {
+  return Astro.redirect("/entrar");
 }
 
 const seo = {
