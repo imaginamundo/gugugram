@@ -57,7 +57,6 @@ export const uploadImage = defineAction({
 			};
 		} catch (e) {
 			console.error(e);
-			if (e instanceof Error) throw e;
 			throw new Error("Erro interno ao processar a imagem.");
 		}
 	},
@@ -91,7 +90,6 @@ export const deleteImage = defineAction({
 			return { success: true };
 		} catch (e) {
 			console.error(e);
-			if (e instanceof Error) throw e;
 			throw new Error("Erro interno ao tentar deletar a imagem.");
 		}
 	},
