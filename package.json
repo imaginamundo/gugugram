@@ -1,6 +1,9 @@
 {
 	"name": "gugugram",
 	"type": "module",
+	"engines": {
+		"node": ">=20.0.0"
+	},
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "astro dev",
@@ -13,7 +16,6 @@
 		"db:studio": "drizzle-kit studio"
 	},
 	"dependencies": {
-		"@astrojs/node": "^9.5.4",
 		"@astrojs/svelte": "^7.2.5",
 		"@astrojs/vercel": "^9.0.4",
 		"@sentry/astro": "^10.40.0",

@@ -10,9 +10,11 @@ const RATE_LIMIT_MS = 5000;
 export const uploadImage = defineAction({
 	accept: "form",
 	input: z.object({
-		image: z.any(),
+		image: z.instanceof(File).refine((file) => file.size > 0, "Arquivo é obrigatório"),
 	}),
 	handler: async (input, context) => {
+		console.log(typeof input.image, input.image.constructor.name);
+
 		const session = context.locals.user;
 		if (!session) throw new Error("Não autenticado");
 
@@ -32,7 +34,7 @@ export const uploadImage = defineAction({
 			}
 		}
 
-		const file = input.image;
+		const file = input.image as File;
 
 		if (file.size > 60000) {
 			throw new Error("Imagem muito grande. O tamanho máximo é 60KB.");
