@@ -1,4 +1,3 @@
-import sharp from "sharp";
 import { defineAction } from "astro:actions";
 import { z } from "astro:schema";
 import { eq } from "drizzle-orm";
@@ -8,7 +7,7 @@ import { utapi } from "@utils/uploadthing";
 import { parseSchema } from "@utils/validation";
 
 const UpdateProfileSchema = z.object({
-	profileImage: z.instanceof(File).optional(),
+	profileImage: z.string().optional(),
 	description: z.string().max(500).optional(),
 	username: z.string().min(3),
 	email: z.string().email(),
@@ -17,6 +16,7 @@ const UpdateProfileSchema = z.object({
 export const updateProfile = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
+		console.log({ input, context });
 		const session = context.locals.user;
 		if (!session) {
 			return {
@@ -24,9 +24,13 @@ export const updateProfile = defineAction({
 				error: "Não autorizado.",
 			};
 		}
-
 		const { fields, success: schemaSuccess } = parseSchema(input, UpdateProfileSchema);
-		if (!schemaSuccess) throw new Error("Dados inválidos.");
+		if (!schemaSuccess) {
+			return {
+				success: false as const,
+				error: "Erro ao validar dados.",
+			};
+		}
 
 		const currentUser = await db.query.users.findFirst({
 			where: eq(users.id, session.id),
@@ -41,39 +45,19 @@ export const updateProfile = defineAction({
 
 		let oldImageKeyToDelete: string | null = null;
 
-		if (fields.profileImage && fields.profileImage.size > 0) {
-			if (fields.profileImage.size > 4000000) {
-				console.log("size");
-				return {
-					success: false as const,
-					error: "A imagem de perfil é muito pesada. Máximo de 4MB.",
-				};
-			}
-
+		if (fields.profileImage && fields.profileImage.includes(",")) {
 			try {
-				const arrayBuffer = await fields.profileImage.arrayBuffer();
-				const buffer = Buffer.from(arrayBuffer);
+				const base64Data = fields.profileImage.replace(/^data:image\/\w+;base64,/, "");
+				const buffer = Buffer.from(base64Data, "base64");
 
-				const processedBuffer = await sharp(buffer)
-					.resize(30, 30, {
-						fit: "cover",
-						position: "centre",
-					})
-					.png({ quality: 80 })
-					.toBuffer();
-
-				const originalName = fields.profileImage.name.split(".").shift() || "avatar";
+				const originalName = fields.username || "avatar";
 				const newFilename = `${originalName}_30x30.png`;
 
-				const fileToUpload = new File([new Uint8Array(processedBuffer)], newFilename, {
-					type: "image/png",
-				});
+				const file = new File([buffer], newFilename, { type: "image/png" });
 
-				const upload = await utapi.uploadFiles(fileToUpload);
+				const upload = await utapi.uploadFiles(file);
 
 				if (!upload.data?.ufsUrl) {
-					console.log("subir");
-
 					return {
 						success: false as const,
 						error: "Erro ao subir a nova imagem de perfil.",
@@ -87,7 +71,6 @@ export const updateProfile = defineAction({
 				}
 			} catch (processingError) {
 				console.error(processingError);
-				console.log("process");
 
 				return {
 					success: false as const,
@@ -107,8 +90,6 @@ export const updateProfile = defineAction({
 			}
 		} catch (error: any) {
 			if (error.code === "23505") {
-				console.log("usuario ja tem");
-
 				return {
 					success: false as const,
 					error: "Este nome de usuário ou e-mail já está em uso.",
@@ -153,7 +134,6 @@ export const removeProfileImage = defineAction({
 
 			return { success: true };
 		} catch (error) {
-			console.error(error);
 			return {
 				success: false,
 				error: "Erro interno ao tentar remover a foto de perfil.",
@@ -161,3 +141,22 @@ export const removeProfileImage = defineAction({
 		}
 	},
 });
+
+async function uploadBase64(base64String: string) {
+	// 1. Remove the data URL prefix to get just the data
+	const base64Data = base64String.replace(/^data:image\/\w+;base64,/, "");
+
+	// 2. Convert Base64 to a Buffer
+	const buffer = Buffer.from(base64Data, "base64");
+
+	// 3. Create a File object (UploadThing requires a name and type)
+	// Note: utapi.uploadFiles expects an array or a single file object
+	const file = new File([buffer], "uploaded_file.png", { type: "image/png" });
+
+	try {
+		const response = await utapi.uploadFiles(file);
+		return response;
+	} catch (error) {
+		console.log(error);
+	}
+}

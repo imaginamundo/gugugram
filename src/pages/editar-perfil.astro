@@ -1,11 +1,12 @@
 ---
 import { actions } from "astro:actions";
+import { getProfile } from "@services/user";
 import Layout from "@layout/Main.astro";
 import Input from "@ui/Input.svelte";
 import Button from "@ui/Button.svelte";
-import Textarea from "@components/_ui/Textarea.svelte";
 import RemoveProfilePicture from '@components/RemoveProfilePicture/RemoveProfilePicture.svelte';
-import { getProfile } from "@services/user";
+import Textarea from "@components/_ui/Textarea.svelte";
+import InputImage from "@components/InputImage/InputImage.svelte";
 
 
 const session = Astro.locals.user;
@@ -44,7 +45,7 @@ const seo = {
         
         <label class="label">
           Nova imagem de perfil
-					<Input name="image" autocomplete="username" type="file" class="block" placeholder="Sua imagem do perfil" />
+					<InputImage name="profileImage" client:load />
         </label>
         <label class="label">
 					Descrição
