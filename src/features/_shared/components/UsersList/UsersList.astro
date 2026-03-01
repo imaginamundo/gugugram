@@ -34,6 +34,7 @@ const session = Astro.locals.user;
             isLoggedIn={!!session} 
             isOwnProfile={session?.id === user.id} 
             additionalParameter={additionalParameter}
+            client:load
           />
         </div>
       </div>
