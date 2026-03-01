@@ -38,8 +38,8 @@ const { user } = Astro.locals;
 
   <fieldset class="header-user flex center">
     {user ? (
-      <div class="flex flex-col gap">
-        <span class="text-sm">Olá, <a href={ `/${user.username}` } class="text-xs underline"><strong>{user.username}</strong></a>!</span>
+      <div class="flex flex-col gap-sm">
+        <span class="text-sm">Olá, <a href={ `/${user.username}` } class="text-xs underline"><strong>{user.username}</strong></a></span>
         <form action="/api/logout">
           <Button type="submit">
             Sair da conta

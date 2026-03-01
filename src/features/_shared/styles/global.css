@@ -505,6 +505,9 @@ label:focus-within {
 }
 
 /* Spacing */
+.gap-sm {
+	gap: calc(var(--border-width) + var(--element-spacing) / 2);
+}
 .gap {
 	gap: calc(2 * var(--border-width) + var(--element-spacing));
 }
