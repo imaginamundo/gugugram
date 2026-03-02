@@ -27,7 +27,7 @@ export const GET: APIRoute = async ({ site }) => {
       <url>
         <loc>${site}sobre</loc>
         <changefreq>daily</changefreq>
-        <priority>1.0</priority>
+        <priority>0.8</priority>
       </url>
       ${userUrls}
     </urlset>`;
