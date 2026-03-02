@@ -53,7 +53,6 @@ export const login = defineAction({
 				username: data.user.username as string,
 			};
 		} catch (e) {
-			console.error(e);
 			return {
 				success: false as const,
 				error: authErrors["INTERNAL_SERVER_ERROR"],
