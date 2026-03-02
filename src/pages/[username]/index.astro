@@ -4,7 +4,7 @@ import { getImagePosts } from "@services/image";
 import Layout from "@layout/Main.astro";
 import ProfileHeader from "@components/ProfileHeader/ProfileHeader.astro";
 import ProfileTabs from "@components/ProfileTabs/ProfileTabs.svelte";
-import ImagePostList from "@components/ImagePostList/ImagePostList.svelte";
+import ImagePostList from "@components/ImagePostList/ImagePostList.astro";
 
 const { username } = Astro.params;
 if (!username) return new Response(null, { status: 404 });
