@@ -21,6 +21,10 @@ export const uploadImage = defineAction({
 		const { fields, success: schemaSuccess } = parseSchema(input, UploadImageSchema);
 		if (!schemaSuccess) throw new Error("Dados inválidos.");
 
+		if (fields.image.size > 60000) {
+			throw new Error("Imagem muito grande. O tamanho máximo é 60KB.");
+		}
+
 		const lastImage = await db.query.images.findFirst({
 			where: eq(images.authorId, session.id),
 			orderBy: [desc(images.createdAt)],
@@ -38,10 +42,6 @@ export const uploadImage = defineAction({
 		}
 
 		const file = fields.image;
-
-		if (file.size > 60000) {
-			throw new Error("Imagem muito grande. O tamanho máximo é 60KB.");
-		}
 
 		try {
 			const upload = await utapi.uploadFiles(file);
