@@ -3,7 +3,7 @@ import Button from "@components/_ui/Button.svelte";
 import Input from "@components/_ui/Input.svelte";
 import UploadImageModal from "@components/UploadImageModal/UploadImageModal.svelte";
 
-const { user } = Astro.locals;
+const session = Astro.locals.user;
 ---
 
 <div class="header">
@@ -15,7 +15,7 @@ const { user } = Astro.locals;
   </fieldset>
 
   <fieldset class="header-button-upload flex p-0">
-    <UploadImageModal client:idle />
+    <UploadImageModal {session} client:idle />
   </fieldset>
 
   <fieldset class="header-search flex center grow p-sm">
@@ -37,9 +37,9 @@ const { user } = Astro.locals;
   </fieldset>
 
   <fieldset class="header-user flex center">
-    {user ? (
+    {session ? (
       <div class="flex flex-col gap-sm">
-        <span class="text-sm">Olá, <a href={ `/${user.username}` } class="text-xs underline"><strong>{user.username}</strong></a></span>
+        <span class="text-sm">Olá, <a href={ `/${session.username}` } class="text-xs underline"><strong>{session.username}</strong></a></span>
         <form action="/api/logout">
           <Button type="submit">
             Sair da conta

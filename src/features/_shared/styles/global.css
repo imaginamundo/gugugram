@@ -178,7 +178,7 @@ figure {
 	.helper-text {
 		color: #676767;
 	}
-	.error-text {
+	.helper-error {
 		color: red;
 	}
 }
@@ -385,6 +385,10 @@ label:focus-within {
 		padding: 2px 3px;
 		margin: 0;
 	}
+}
+
+.button-image {
+	padding: 0;
 }
 
 .image-border {

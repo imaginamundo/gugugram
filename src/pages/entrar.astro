@@ -29,10 +29,16 @@ const seo = {
 				<label class="label">
 					Nome de usuário ou e-mail:
 					<Input name="identity" autocomplete="username" type="text" class="block" placeholder="Seu nome de usuário ou e-mail" />
+					{!!result?.data?.fieldErrors?.identity && (
+						<span class="helper-error">{result.data.fieldErrors.identity}</span>
+					)}
 				</label>
 				<label class="label">
 					Senha:
 					<Input name="password" autocomplete="current-password" class="block" type="password" placeholder="Sua senha" />
+					{!!result?.data?.fieldErrors?.password && (
+						<span class="helper-error">{result.data.fieldErrors.password}</span>
+					)}
 				</label>
 				<Button class="m-sm">Entrar</Button>
 			</fieldset>

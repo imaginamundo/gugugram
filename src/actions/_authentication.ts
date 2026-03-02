@@ -38,9 +38,9 @@ export const login = defineAction({
 
 				return {
 					success: false as const,
-					error: authErrors[errorCode] || authErrors["INVALID_USERNAME_OR_PASSWORD"],
 					fields,
 					fieldErrors: {},
+					error: authErrors[errorCode] || authErrors["INVALID_USERNAME_OR_PASSWORD"],
 				};
 			}
 
@@ -67,10 +67,10 @@ export const login = defineAction({
 export const register = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
-		const { fields, success: schemaSuccess } = parseSchema(input, RegisterSchema);
+		const { fields, fieldErrors, success: schemaSuccess } = parseSchema(input, RegisterSchema);
 
 		if (!schemaSuccess) {
-			return { success: false as const, error: "Dados inválidos" };
+			return { success: false as const, fields, fieldErrors, error: "Dados inválidos" };
 		}
 
 		try {
@@ -98,11 +98,15 @@ export const register = defineAction({
 
 			return {
 				success: false as const,
+				fields,
+				fieldErrors: {},
 				error: authErrors[errorCode] || "Erro ao criar conta",
 			};
 		} catch (e) {
 			return {
 				success: false as const,
+				fields,
+				fieldErrors: {},
 				error: authErrors["INTERNAL_SERVER_ERROR"],
 			};
 		}

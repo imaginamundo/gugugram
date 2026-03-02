@@ -6,7 +6,7 @@
 	const {post}: {post: PostType} = $props();
 </script>
 
-<Button onclick={() => (store.post = post)} class="p-0">
+<Button onclick={() => (store.post = post)} class="button-image">
 	<img
 		class="image-border"
 		src={post.image}

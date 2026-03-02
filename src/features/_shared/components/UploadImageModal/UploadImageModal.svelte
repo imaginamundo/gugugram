@@ -5,6 +5,11 @@
 	import Modal from "@components/_ui/Modal.svelte";
 	import Radio from "@components/_ui/Radio.svelte";
 
+	interface Props {
+    session: App.Locals['user'];
+  }
+  const { session }: Props = $props();
+
 	const DEFAULT_SIZE = 15;
 	const sizes = [5, 10, 15, 30, 60];
 
@@ -18,6 +23,13 @@
 	let canvasRef = $state<HTMLCanvasElement | null>(null);
 	let inputFileRef: HTMLInputElement;
 	let formRef: HTMLFormElement;
+
+	function handleLabelClick(e: MouseEvent) {
+    if (!session) {
+      e.preventDefault();
+      window.location.href = "/entrar";
+    }
+  }
 
 	function selectImage(e: Event & { currentTarget: HTMLInputElement }) {
 		const file = e.currentTarget.files?.[0];
@@ -162,7 +174,7 @@
   }
 </script>
 
-<label class="header-button flex gap center p w-full justify-center">
+<label class="header-button flex gap center p w-full justify-center" onclick={handleLabelClick}>
 	<input
 		type="file"
 		accept="image/*"
