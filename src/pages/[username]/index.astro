@@ -30,6 +30,6 @@ const seo = {
 <Layout {...seo}>
 	<ProfileHeader {user} />
 	<ProfileTabs selectedTab="fotos" {username} {messagesCount} {friendsCount} {pendingFriendRequest}>
-		<ImagePostList posts={images} client:load />
+		<ImagePostList posts={images} />
 	</ProfileTabs>
 </Layout>

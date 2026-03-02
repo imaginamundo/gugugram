@@ -37,42 +37,34 @@ export function getLatestPosts() {
 		});
 }
 
-export async function getImagePosts(username: string) {
-	const imagePostsData = await db.query.users
-		.findFirst({
-			where: (user, { eq }) => eq(user.username, username),
-			columns: {
-				id: true,
-				name: true,
-			},
-			with: {
-				images: {
-					orderBy: [desc(images.createdAt)],
-					columns: {
-						id: true,
-						image: true,
-						createdAt: true,
-					},
-					with: {
-						author: {
-							columns: {
-								id: true,
-								username: true,
-							},
-						},
-					},
+export async function getImagePosts(username: string): Promise<PostType[]> {
+	const user = await db.query.users.findFirst({
+		where: (user, { eq }) => eq(user.username, username),
+		columns: {
+			id: true,
+			username: true,
+		},
+		with: {
+			images: {
+				orderBy: [desc(images.createdAt)],
+				columns: {
+					id: true,
+					image: true,
+					createdAt: true,
 				},
 			},
-		})
-		.then((user) => {
-			if (!user) {
-				return [];
-			}
+		},
+	});
 
-			return user.images.map(formatPostType);
-		});
+	if (!user || !user.images) {
+		return [];
+	}
 
-	if (!imagePostsData) return [];
-
-	return imagePostsData;
+	return user.images.map((img) => ({
+		id: img.id,
+		image: img.image,
+		userId: user.id,
+		username: user.username,
+		createdAt: img.createdAt,
+	}));
 }
