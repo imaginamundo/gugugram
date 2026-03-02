@@ -7,7 +7,7 @@ import { hashPassword, validatePassword } from "./password";
 import { sendEmail } from "./mail";
 
 export const auth = betterAuth({
-	baseURL: import.meta.env.PUBLIC_BASE_URL,
+	baseURL: import.meta.env.SITE,
 	database: drizzleAdapter(db, {
 		provider: "pg",
 		schema: {
