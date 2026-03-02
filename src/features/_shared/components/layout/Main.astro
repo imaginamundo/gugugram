@@ -18,15 +18,43 @@ let fullTitle = 'Gugugram';
 if (title) {
 	fullTitle += ` • ${title}`;
 }
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || Astro.url);
+const shareImageURL = new URL('/seo/1280x640.png', canonicalURL);
 ---
 
-<html lang="en">
+<html lang="pt-BR">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>{fullTitle}</title>
 		{description && <meta name="description" content={description} />}
 		{robots && <meta name="robots" content={robots} />}
+		<link rel="manifest" href="/manifest.json" />
+
+		<meta name="theme-color" content="#c0c0c0" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/seo/16.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/seo/32.png" />
+
+		<link rel="apple-touch-icon" sizes="180x180" href="/seo/180.png" />
+
+		<link rel="icon" type="image/png" sizes="192x192" href="/seo/192.png" />
+		<link rel="icon" type="image/png" sizes="256x256" href="/seo/256.png" />
+		<link rel="icon" type="image/png" sizes="512x512" href="/seo/512.png" />
+
+		<meta property="og:title" content={fullTitle} />
+		{description && <meta property="og:description" content={description} />}
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:type" content="site" />
+		<meta property="og:image" content={shareImageURL} />
+		<meta property="og:image:width" content="1280" />
+		<meta property="og:image:height" content="640" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={fullTitle} />
+    {description && <meta name="twitter:description" content={description} />}
+    <meta name="twitter:image" content={shareImageURL} />
 		<script>
 			const url = new URL(window.location.href);
 			if (url.searchParams.has('_action')) {
