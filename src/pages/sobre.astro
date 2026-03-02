@@ -1,0 +1,23 @@
+---
+import Layout from "@layout/Main.astro";
+import { actions } from "astro:actions";
+
+const result = Astro.getActionResult(actions.login);
+if (result?.data?.success) {
+	return Astro.redirect(`/${result.data.username}`);
+}
+
+const seo = {
+	title: `Sobre o Gugugram`,
+  description: 'Saiba mais sobre a rede social Gugugram'
+}
+---
+
+<Layout {...seo}>
+	<div class="form p">
+		<h1>Sobre o Gugugram</h1>
+    <p class="mb">O Gugugram é uma rede social criada para compartilhar imagens geralmente muito ruins e de qualidade duvidosa.</p>
+		<p class="mb">Atualmente feita com <a href="https://astro.build">Astro</a> e uns ícones que achei na internet que eram do Windows 98 ou coisa parecida.</p>
+		<p>Se tiver alguma sugestão, pode criar um issue no <a href="https://github.com/imaginamundo/gugugram" target="_blank" rel="noopener">github do Gugugram</a> ou mandar uma mensagem no <a href="https://www.instagram.com/fotografolixo/" target="_blank" rel="noopener">Instagram</a>.</p>
+	</div>
+</Layout>

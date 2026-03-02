@@ -9,7 +9,7 @@ export const GET: APIRoute = async ({ site }) => {
 		.map(
 			(user) => `
     <url>
-      <loc>${site}/${user.username}</loc>
+      <loc>${site}${user.username}</loc>
       <changefreq>weekly</changefreq>
       <priority>0.8</priority>
     </url>
@@ -21,6 +21,11 @@ export const GET: APIRoute = async ({ site }) => {
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       <url>
         <loc>${site}</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+      </url>
+      <url>
+        <loc>${site}sobre</loc>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
       </url>
