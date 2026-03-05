@@ -65,6 +65,7 @@
 		url("/fonts/ms-sans-serif-8pt.woff2") format("woff2");
 	font-weight: normal;
 	font-style: normal;
+	font-display: swap;
 }
 
 ::-webkit-scrollbar {
@@ -427,16 +428,13 @@ label:focus-within {
 				outline: 1px dotted #222;
 			}
 		}
-		&[aria-selected="true"] {
+		&[data-selected="true"] {
 			padding-bottom: 2px;
 			margin-top: -2px;
 			background-color: var(--surface);
 			position: relative;
 			z-index: 8;
 			margin-left: -3px;
-			> a:focus {
-				outline: none;
-			}
 		}
 	}
 }

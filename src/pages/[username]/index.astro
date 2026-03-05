@@ -16,20 +16,26 @@ const { user, messagesCount, friendsCount, pendingFriendRequest } = await getPro
 	session,
 });
 
-
 if (!user) return new Response(null, { status: 404 });
 
 const images = await getImagePosts(username);
 
 const seo = {
 	title: `Imagens de ${username}`,
-	description: `Suba suas imagens no Gugugram e adicione ${username} como amigo!`
-}
+	description: `Suba suas imagens no Gugugram e adicione ${username} como amigo!`,
+};
 ---
 
 <Layout {...seo}>
 	<ProfileHeader {user} />
-	<ProfileTabs selectedTab="fotos" {username} {messagesCount} {friendsCount} {pendingFriendRequest}>
+	<ProfileTabs
+		selectedTab="fotos"
+		{username}
+		{messagesCount}
+		{friendsCount}
+		{pendingFriendRequest}
+		client:load
+	>
 		<ImagePostList posts={images} />
 	</ProfileTabs>
 </Layout>
