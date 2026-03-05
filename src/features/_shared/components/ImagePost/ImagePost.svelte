@@ -3,16 +3,17 @@
 	import { imageModalStore as store } from "@stores/imageModalStore.svelte";
 	import type { PostType } from "@services/image";
 
-	const {post}: {post: PostType} = $props();
+	const { post, index }: { post: PostType; index?: number } = $props();
 </script>
 
 <Button onclick={() => (store.post = post)} class="button-image">
 	<img
 		class="image-border"
-		src={post.image}
-		alt={`Imagem por ${post.username}`}
-		width="120"
+    src={post.image}
+    width="120"
 		height="120"
-		loading="lazy"
+    alt={`Imagem por ${post.username}`}
+    loading={ !!index && index < 20 ? "eager" : "lazy" }
+    fetchpriority={ !!index && index < 20 ? "high" : "auto" }
 	/>
 </Button>

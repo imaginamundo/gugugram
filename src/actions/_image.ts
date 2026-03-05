@@ -50,7 +50,11 @@ export const uploadImage = defineAction({
 		const arrayBuffer = await file.arrayBuffer();
 		const dimensions = await imageSize(Buffer.from(arrayBuffer));
 
-		const isSquare = (dimensions.width = dimensions.height);
+		if (!dimensions || dimensions.width === undefined || dimensions.height === undefined) {
+			throw new Error("Arquivo de imagem inválido ou corrompido.");
+		}
+
+		const isSquare = dimensions.width === dimensions.height;
 		const isAllowedDimension =
 			ALLOWED_DIMENSIONS.includes(dimensions.width) &&
 			ALLOWED_DIMENSIONS.includes(dimensions.height);
@@ -60,7 +64,8 @@ export const uploadImage = defineAction({
 		}
 
 		try {
-			const upload = await utapi.uploadFiles(file);
+			const fileToUpload = new File([arrayBuffer], file.name, { type: file.type });
+			const upload = await utapi.uploadFiles(fileToUpload);
 
 			if (!upload.data?.ufsUrl) {
 				throw new Error("Erro ao subir a imagem para o servidor.");
@@ -68,11 +73,18 @@ export const uploadImage = defineAction({
 
 			const sanitizedDescription = fields.description ? sanitizeHtml(fields.description) : null;
 
-			await db.insert(images).values({
-				authorId: session.id,
-				description: sanitizedDescription,
-				image: upload.data?.ufsUrl,
-			});
+			try {
+				await db.insert(images).values({
+					authorId: session.id,
+					description: sanitizedDescription,
+					image: upload.data?.ufsUrl,
+				});
+			} catch (dbError) {
+				const imageKey = upload.data.ufsUrl.split("/").pop();
+				if (imageKey) await utapi.deleteFiles(imageKey);
+
+				throw new Error("Erro ao salvar no banco de dados. Upload cancelado.");
+			}
 
 			return {
 				success: true,

@@ -1,6 +1,7 @@
 ---
 import ImagePost from "@components/ImagePost/ImagePost.svelte";
 import type { PostType } from "@services/image";
+import { getImage } from 'astro:assets';
 
 interface Props {
   posts: PostType[];
@@ -13,8 +14,8 @@ const { posts } = Astro.props;
   {posts.length === 0 ? (
     <p>Ainda sem nenhuma imagem :(</p>
   ) : (
-    posts.map((post) => (
-      <ImagePost post={post} client:visible />
+    posts.map((post, index) => (
+      <ImagePost {post} {index} client:visible />
     ))
   )}
 </div>
