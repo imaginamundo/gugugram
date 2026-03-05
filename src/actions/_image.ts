@@ -1,11 +1,12 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro:schema";
 import { and, eq, desc } from "drizzle-orm";
+import { imageSize } from "image-size";
+import sanitizeHtml from "sanitize-html";
 import { db } from "@database/postgres";
 import { images } from "@database/schema";
 import { utapi } from "@utils/uploadthing";
 import { parseSchema } from "@utils/validation";
-import { imageSize } from "image-size";
 
 const RATE_LIMIT_MS = 5000;
 const ALLOWED_DIMENSIONS = [5, 10, 15, 30, 60];
@@ -65,9 +66,11 @@ export const uploadImage = defineAction({
 				throw new Error("Erro ao subir a imagem para o servidor.");
 			}
 
+			const sanitizedDescription = fields.description ? sanitizeHtml(fields.description) : null;
+
 			await db.insert(images).values({
 				authorId: session.id,
-				description: fields.description || null,
+				description: sanitizedDescription,
 				image: upload.data?.ufsUrl,
 			});
 

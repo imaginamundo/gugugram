@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { actions } from "astro:actions";
+	import { formatDate } from "@utils/date";
 	import Button from "@components/_ui/Button.svelte";
 	import Modal from "@components/_ui/Modal.svelte";
 	import { imageModalStore as store } from "@stores/imageModalStore.svelte";
@@ -31,8 +32,12 @@
 		<div class="window-body">
 			<figure>
 				<img src={store.post.image} alt={`Imagem por ${store.post.username}`} class="w-full image-border" />
-				<figcaption class="p">
-					Imagem por <a href={`/${store.post.username}`}>{store.post.username}</a>
+				<figcaption class="description mt mb">
+					({formatDate(store.post.createdAt)}) <a href={`/${store.post.username}`}>{store.post.username}</a>
+					{#if store.post.description}
+						escreveu:
+						<p class="field-border mt p description-content">{store.post.description}</p>
+					{/if}
 				</figcaption>
 			</figure>
 			<div class="flex gap justify-between row-reverse">
@@ -70,3 +75,13 @@
 		</div>
 	{/if}
 </Modal>
+
+<style>
+	.description {
+		text-align: left;
+	}
+	.description-content {
+		background: #fff;
+		overflow-wrap: break-word;
+	}
+</style>

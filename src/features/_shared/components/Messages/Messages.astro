@@ -32,7 +32,7 @@ const isOwnProfile = session?.id === user.id;
           </span>
           <a href={`/${message.author.username}`}>{message.author.username}</a> disse:
         </p>
-        <p class="pl">{message.body}</p>
+        <p class="pl message">{message.body}</p>
       </div>
     </div>
   ))}
@@ -67,6 +67,9 @@ const isOwnProfile = session?.id === user.id;
     height: calc(100dvh - 381px);
   }
 
+  .message {
+    overflow-wrap: break-word;
+  }
   @media (min-width: 600px) {
     .messages {
       height: calc(100dvh - 330px);

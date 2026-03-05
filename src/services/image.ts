@@ -5,25 +5,19 @@ import { images } from "@database/schema";
 export type PostType = {
 	id: string;
 	image: string;
+	description: string | null;
 	userId: string;
 	username: string;
 	createdAt: Date;
 };
 
-const formatPostType = (item: any): PostType => ({
-	id: item.id,
-	image: item.image,
-	userId: item.author.id,
-	username: item.author.username,
-	createdAt: item.createdAt,
-});
-
-export function getLatestPosts() {
+export function getLatestPosts(): Promise<PostType[]> {
 	return db.query.images
 		.findMany({
 			columns: {
 				id: true,
 				image: true,
+				description: true,
 				createdAt: true,
 			},
 			with: {
@@ -33,7 +27,16 @@ export function getLatestPosts() {
 			limit: 120,
 		})
 		.then((result) => {
-			return result.map(formatPostType);
+			return result.map((item) => {
+				return {
+					id: item.id,
+					image: item.image,
+					description: item.description,
+					userId: item.author.id,
+					username: item.author.username,
+					createdAt: item.createdAt,
+				};
+			});
 		});
 }
 
@@ -50,6 +53,7 @@ export async function getImagePosts(username: string): Promise<PostType[]> {
 				columns: {
 					id: true,
 					image: true,
+					description: true,
 					createdAt: true,
 				},
 			},
@@ -63,6 +67,7 @@ export async function getImagePosts(username: string): Promise<PostType[]> {
 	return user.images.map((img) => ({
 		id: img.id,
 		image: img.image,
+		description: img.description,
 		userId: user.id,
 		username: user.username,
 		createdAt: img.createdAt,
