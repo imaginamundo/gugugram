@@ -110,7 +110,6 @@ export const imagesUserAuthorRelations = relations(images, ({ one }) => ({
 	author: one(users, {
 		fields: [images.authorId],
 		references: [users.id],
-		relationName: "messages_author",
 	}),
 }));
 

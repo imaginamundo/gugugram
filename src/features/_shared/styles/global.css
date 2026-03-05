@@ -119,6 +119,7 @@ body {
 	image-rendering: crisp-edges;
 	font-smooth: never;
 	-webkit-font-smoothing: none;
+	-moz-osx-font-smoothing: grayscale;
 	font-size: 11px;
 	line-height: 11px;
 	background: var(--surface);
@@ -437,13 +438,6 @@ label:focus-within {
 			margin-left: -3px;
 		}
 	}
-}
-
-#svg-filters {
-	position: absolute;
-	pointer-events: none;
-	top: 0;
-	left: 0;
 }
 
 /* Helpers */

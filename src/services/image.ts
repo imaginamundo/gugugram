@@ -1,4 +1,4 @@
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "@database/postgres";
 import { images } from "@database/schema";
 
@@ -72,4 +72,26 @@ export async function getImagePosts(username: string): Promise<PostType[]> {
 		username: user.username,
 		createdAt: img.createdAt,
 	}));
+}
+
+export async function getImagePost(id: string): Promise<PostType | null> {
+	const postRecord = await db.query.images.findFirst({
+		where: eq(images.id, id),
+		with: {
+			author: {
+				columns: { id: true, username: true },
+			},
+		},
+	});
+
+	if (!postRecord) return null;
+
+	return {
+		id: postRecord.id,
+		image: postRecord.image,
+		description: postRecord.description,
+		userId: postRecord.author.id,
+		username: postRecord.author.username,
+		createdAt: postRecord.createdAt,
+	};
 }

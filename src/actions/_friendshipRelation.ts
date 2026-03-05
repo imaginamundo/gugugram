@@ -21,6 +21,22 @@ export const sendFriendRequest = defineAction({
 		if (session.id === fields.targetUserId) throw new Error("Ação inválida");
 
 		try {
+			const existingReverseRequest = await db.query.userFriends.findFirst({
+				where: and(
+					eq(userFriends.requestUserId, fields.targetUserId),
+					eq(userFriends.targetUserId, session.id),
+				),
+			});
+
+			if (existingReverseRequest) {
+				await db
+					.update(userFriends)
+					.set({ status: "accepted" })
+					.where(eq(userFriends.id, existingReverseRequest.id));
+
+				return { success: true, status: "accepted" };
+			}
+
 			await db.insert(userFriends).values({
 				requestUserId: session.id,
 				targetUserId: fields.targetUserId,

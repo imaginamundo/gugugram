@@ -2,7 +2,7 @@
 import "@shared/styles/global.css";
 import SVGFilters from "@shared/icons/_filter.svg";
 import Header from "@components/Header/Header.astro";
-import ImageModal from "@components/ImageModal/ImageModal.svelte";
+import ImageModalPrefetch from "@components/ImageModal/ImageModalPrefetch.astro";
 
 const session = Astro.locals.user;
 
@@ -78,7 +78,7 @@ const shareImageURL = new URL('/seo/1280x640.png', canonicalURL);
 							<img src="/moz_carcar3.gif" width="88" height="31" alt="Mozilla Firefox banner" />
 						</a>
 					</div>
-					<ImageModal {session} client:load />
+					<ImageModalPrefetch {session} client:load />
 				</div>
 			</div>
 			<footer class="status-bar" role="contentinfo">
