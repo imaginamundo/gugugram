@@ -139,7 +139,7 @@
 				(blob) => {
 					resolve(blob);
 				},
-				"image/png",
+				"image/webp",
 				1.0,
 			);
 		});
@@ -155,8 +155,8 @@
 			const blob = await getCanvasBlob(canvasRef);
 			if (!blob) throw new Error("Erro ao gerar imagem.");
 
-			const file = new File([blob], `image-${imageSize}x${imageSize}.png`, {
-				type: "image/png",
+			const file = new File([blob], `image-${imageSize}x${imageSize}.webp`, {
+				type: "image/webp",
 			});
 
 			const formData = new FormData();
