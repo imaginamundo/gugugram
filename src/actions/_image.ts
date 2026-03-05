@@ -5,11 +5,14 @@ import { db } from "@database/postgres";
 import { images } from "@database/schema";
 import { utapi } from "@utils/uploadthing";
 import { parseSchema } from "@utils/validation";
+import { imageSize } from "image-size";
 
 const RATE_LIMIT_MS = 5000;
+const ALLOWED_DIMENSIONS = [5, 10, 15, 30, 60];
 
 const UploadImageSchema = z.object({
 	image: z.instanceof(File),
+	description: z.string().max(500, "Descrição muito longa.").optional(),
 });
 
 export const uploadImage = defineAction({
@@ -43,6 +46,18 @@ export const uploadImage = defineAction({
 
 		const file = fields.image;
 
+		const arrayBuffer = await file.arrayBuffer();
+		const dimensions = await imageSize(Buffer.from(arrayBuffer));
+
+		const isSquare = (dimensions.width = dimensions.height);
+		const isAllowedDimension =
+			ALLOWED_DIMENSIONS.includes(dimensions.width) &&
+			ALLOWED_DIMENSIONS.includes(dimensions.height);
+
+		if (!isSquare || !isAllowedDimension) {
+			throw new Error("Tamanho de imagem imcompatível.");
+		}
+
 		try {
 			const upload = await utapi.uploadFiles(file);
 
@@ -52,6 +67,7 @@ export const uploadImage = defineAction({
 
 			await db.insert(images).values({
 				authorId: session.id,
+				description: fields.description || null,
 				image: upload.data?.ufsUrl,
 			});
 

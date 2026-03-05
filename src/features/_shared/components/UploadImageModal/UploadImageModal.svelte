@@ -4,11 +4,12 @@
 	import Checkbox from "@components/_ui/Checkbox.svelte";
 	import Modal from "@components/_ui/Modal.svelte";
 	import Radio from "@components/_ui/Radio.svelte";
+	import Textarea from "@components/_ui/Textarea.svelte";
 
 	interface Props {
-    session: App.Locals['user'];
-  }
-  const { session }: Props = $props();
+		session: App.Locals["user"];
+	}
+	const { session }: Props = $props();
 
 	const DEFAULT_SIZE = 15;
 	const sizes = [5, 10, 15, 30, 60];
@@ -16,7 +17,9 @@
 	let imageSrc = $state("");
 	let imageSize = $state(DEFAULT_SIZE);
 	let imageResize = $state(true);
+	let imageDescription = $state("");
 	let loading = $state(false);
+	let actionError = $state('');
 
 	let modalRef = $state<HTMLDialogElement | null>(null);
 	let imageRef = $state<HTMLImageElement | null>(null);
@@ -24,14 +27,14 @@
 	let inputFileRef: HTMLInputElement;
 	let formRef: HTMLFormElement;
 
-	function handleLabelClick(e: MouseEvent) {
-    if (!session) {
-      e.preventDefault();
-      window.location.href = "/entrar";
-    }
-  }
+	const characterCountLimit = 500;
 
 	function selectImage(e: Event & { currentTarget: HTMLInputElement }) {
+		if (!session) {
+			e.preventDefault();
+			window.location.href = "/entrar";
+		}
+
 		const file = e.currentTarget.files?.[0];
 		if (file) {
 			const reader = new FileReader();
@@ -66,15 +69,21 @@
 
 	$effect(() => {
 		imageSize;
-    imageResize;
-    imageSrc;
-		
+		imageResize;
+		imageSrc;
+
 		if (imageRef && imageSrc) {
 			if (imageRef.complete && imageRef.naturalWidth > 0) {
 				drawCrop();
 			} else {
 				imageRef.onload = () => drawCrop();
 			}
+		}
+	});
+
+	$effect(() => {
+		if (imageDescription.length > characterCountLimit) {
+			imageDescription = imageDescription.slice(0, characterCountLimit);
 		}
 	});
 
@@ -106,8 +115,11 @@
 	function onModalClose() {
 		imageSize = 15;
 		imageSrc = "";
+		imageDescription = "";
 		imageResize = true;
 		loading = false;
+		actionError = '';
+		
 		if (inputFileRef) inputFileRef.value = "";
 	}
 
@@ -134,47 +146,44 @@
 	}
 
 	async function handleSubmit(e: SubmitEvent) {
-    e.preventDefault(); 
-    if (!canvasRef) return;
+		e.preventDefault();
+		if (!canvasRef) return;
 
-    loading = true;
+		loading = true;
 
-    try {
-      const blob = await getCanvasBlob(canvasRef);
-      if (!blob) throw new Error("Erro ao gerar imagem.");
+		try {
+			const blob = await getCanvasBlob(canvasRef);
+			if (!blob) throw new Error("Erro ao gerar imagem.");
 
-      // Converte o Blob para File para passar perfeitamente na validação do Zod da Action
-      const file = new File([blob], `image-${imageSize}x${imageSize}.png`, {
-        type: "image/png",
-      });
+			const file = new File([blob], `image-${imageSize}x${imageSize}.png`, {
+				type: "image/png",
+			});
 
-      const formData = new FormData();
-      formData.append("image", file);
+			const formData = new FormData();
+			formData.append("image", file);
+			formData.append("description", imageDescription);
 
-      const { data, error } = await actions.uploadImage(formData);
+			const { data, error } = await actions.uploadImage(formData);
 
-      if (error) {
-        console.error("Erro na Action:", error.message);
-        return;
-      }
+			if (error) {
+				actionError = error.message;
+				return;
+			}
 
-      if (data?.success) {
-        console.log("Upload com sucesso! URL:", data.imageUrl);
-        modalRef?.close();
-
-				console.log({ success: true })
-        
-        window.location.href = `/${data.username}`;
-      }
-    } catch (error) {
-      console.error("Erro inesperado:", error);
-    } finally {
-      loading = false;
-    }
-  }
+			if (data?.success) {
+				modalRef?.close();
+				window.location.href = `/${data.username}`;
+			}
+		} catch (error) {
+			actionError = 'Erro inesperado';
+			console.error("Erro inesperado:", error);
+		} finally {
+			loading = false;
+		}
+	}
 </script>
 
-<label class="header-button flex gap center p w-full justify-center" onclick={handleLabelClick}>
+<label class="header-button flex gap center p w-full justify-center">
 	<input
 		type="file"
 		accept="image/*"
@@ -189,9 +198,14 @@
 <Modal bind:ref={modalRef} onclose={onModalClose}>
 	<div class="title-bar"><p><strong>Subir imagem</strong></p></div>
 	<div class="window-body">
-		<p class="mb">Você pode escolher o tamanho da imagem antes de subi-la.</p>
+		{#if actionError}
+			 <p class="error mb flex center gap ">
+				<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+				{actionError}
+			</p>
+		{/if}
 		<form onsubmit={handleSubmit} bind:this={formRef}>
-			<div class="flex start gap">
+			<div class="flex flex-wrap start gap">
 				<fieldset>
 					<legend>Opções de imagem</legend>
 					<div class="flex flex-col mb">
@@ -207,29 +221,50 @@
 						Redimensionar
 					</label>
 				</fieldset>
-				<div>
-					<p class="mb-sm">Original</p>
-					<div class="image-print mb">
-						<img
-							bind:this={imageRef}
-							src={imageSrc}
-							alt="To be uploaded"
-							width={imageSize || DEFAULT_SIZE}
-							height={imageSize || DEFAULT_SIZE}
-							onload={drawCrop}
-						/>
+				<div class="flex gap">
+					<div>
+						<p class="mb-sm">Zoom</p>
+						<div class="canvas-print">
+							<canvas
+								bind:this={canvasRef}
+								style:transform={`scale(${120 / (imageSize || DEFAULT_SIZE)})`}
+								style:transform-origin="0 0"
+							>
+							</canvas>
+						</div>
 					</div>
-
-					<p class="mb-sm">Zoom</p>
-					<div class="canvas-print">
-						<canvas
-							bind:this={canvasRef}
-							style:transform={`scale(${120 / (imageSize || DEFAULT_SIZE)})`}
-							style:transform-origin="0 0"
-						>
-						</canvas>
+					<div>
+						<p class="mb-sm">Original</p>
+						<div class="image-print mb">
+							<img
+								bind:this={imageRef}
+								src={imageSrc}
+								alt="To be uploaded"
+								width={imageSize || DEFAULT_SIZE}
+								height={imageSize || DEFAULT_SIZE}
+								onload={drawCrop}
+							/>
+						</div>
 					</div>
 				</div>
+				<fieldset class="grow">
+					<legend>Campos opcionais</legend>
+					<label class="label p-sm">
+						Descrição
+						<Textarea
+							name="description"
+							rows={5}
+							class="w-full"
+							maxlength={characterCountLimit}
+							placeholder="Coloque um texto para exibir junto com a foto, campo opcional"
+							bind:value={imageDescription}
+						/>
+						<span class="flex justify-between mt-sm">
+							<span>{imageDescription.length} / {characterCountLimit} caracteres</span>
+							<span>{characterCountLimit - imageDescription.length} restantes</span>
+						</span>
+					</label>
+				</fieldset>
 			</div>
 			<div class="flex justify-between mt">
 				<Button type="button" onclick={downloadOriginal}>Baixar original</Button>
@@ -241,6 +276,7 @@
 
 <style>
 	.image-print {
+		width: 60px;
 		height: 60px;
 		img {
 			vertical-align: top;
@@ -248,6 +284,7 @@
 		}
 	}
 	.canvas-print {
+		width: 120px;
 		height: 120px;
 		canvas {
 			vertical-align: top;

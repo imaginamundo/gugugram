@@ -31,6 +31,7 @@ export const images = createTable("images", {
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
 	image: text("image").notNull(),
+	description: text("description"),
 	authorId: text("author_id")
 		.notNull()
 		.references(() => users.id, { onDelete: "cascade" }),

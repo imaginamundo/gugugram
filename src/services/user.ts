@@ -1,4 +1,4 @@
-import { and, eq, or, count, sql } from "drizzle-orm";
+import { and, eq, or, count } from "drizzle-orm";
 import { db } from "@database/postgres";
 import { users, messages, userFriends, friendshipPossibleStatus } from "@database/schema";
 import { getEmojiById } from "@utils/emoji";

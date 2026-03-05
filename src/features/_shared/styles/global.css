@@ -528,6 +528,9 @@ label:focus-within {
 .mt {
 	margin-top: calc(2 * var(--border-width) + var(--element-spacing));
 }
+.mt-sm {
+	margin-top: calc(2 * var(--border-width));
+}
 .mb {
 	margin-bottom: calc(2 * var(--border-width) + var(--element-spacing));
 }

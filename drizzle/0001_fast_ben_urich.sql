@@ -1,0 +1,1 @@
+ALTER TABLE "gugugram_images" ADD COLUMN "description" text;
