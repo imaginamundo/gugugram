@@ -93,7 +93,7 @@ export async function getImagePost(id: string): Promise<PostWithCommentsType | n
 				columns: { id: true, username: true },
 			},
 			comments: {
-				orderBy: (comments, { asc }) => [asc(comments.createdAt)],
+				orderBy: (comments, { desc }) => [desc(comments.createdAt)],
 				with: {
 					author: {
 						columns: { id: true, username: true },
@@ -123,29 +123,21 @@ export async function getImagePost(id: string): Promise<PostWithCommentsType | n
 }
 
 export async function getImagePostComments(postId: string) {
-	if (!postId) {
-		return [];
-	}
-
-	try {
-		const comments = await db.query.imagePostComments.findMany({
-			where: eq(imagePostComments.imageId, postId),
-			orderBy: [asc(imagePostComments.createdAt)],
-			with: {
-				author: {
-					columns: { id: true, username: true },
-				},
+	const comments = await db.query.imagePostComments.findMany({
+		where: eq(imagePostComments.imageId, postId),
+		orderBy: [desc(imagePostComments.createdAt)],
+		with: {
+			author: {
+				columns: { id: true, username: true },
 			},
-		});
+		},
+	});
 
-		return comments.map((comment) => ({
-			id: comment.id,
-			body: comment.body,
-			createdAt: comment.createdAt,
-			authorId: comment.author.id,
-			authorUsername: comment.author.username,
-		}));
-	} catch (error) {
-		return [];
-	}
+	return comments.map((comment) => ({
+		id: comment.id,
+		body: comment.body,
+		createdAt: comment.createdAt,
+		authorId: comment.author.id,
+		authorUsername: comment.author.username,
+	}));
 }

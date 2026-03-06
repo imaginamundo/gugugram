@@ -4,7 +4,7 @@ import { and, eq, desc } from "drizzle-orm";
 import { imageSize } from "image-size";
 import sanitizeHtml from "sanitize-html";
 import { db } from "@database/postgres";
-import { imagePosts } from "@database/schema";
+import { imagePostComments, imagePosts } from "@database/schema";
 import { utapi } from "@utils/uploadthing";
 import { parseSchema } from "@utils/validation";
 
@@ -137,16 +137,91 @@ export const deleteImagePost = defineAction({
 	},
 });
 
+const SendImagePostCommentSchema = z.object({
+	imageId: z.string().min(1, "ID da imagem é obrigatório"),
+	body: z.string().min(1, "O comentário não pode estar vazio").max(500, "Comentário muito longo"),
+});
+
 export const sendImagePostComment = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
+		const session = context.locals.user;
+		if (!session) throw new Error("Não autenticado.");
+
+		const { fields, success: schemaSuccess } = parseSchema(input, SendImagePostCommentSchema);
+		if (!schemaSuccess) throw new Error("Dados inválidos.");
+
+		const lastComment = await db.query.imagePostComments.findFirst({
+			where: eq(imagePostComments.authorId, session.id),
+			orderBy: [desc(imagePostComments.createdAt)],
+		});
+
+		if (lastComment) {
+			const now = new Date().getTime();
+			const lastCommentTime = lastComment.createdAt.getTime();
+			const timeDiff = now - lastCommentTime;
+
+			if (timeDiff < RATE_LIMIT_MS) {
+				const timeLeft = Math.ceil((RATE_LIMIT_MS - timeDiff) / 1000);
+				throw new Error(
+					`Calma lá! Aguarde mais ${timeLeft} segundo(s) para enviar outro comentário.`,
+				);
+			}
+		}
+
+		const sanitizedBody = sanitizeHtml(fields.body);
+		if (!sanitizedBody) throw new Error("Comentário inválido.");
+
+		const postExists = await db.query.imagePosts.findFirst({
+			where: eq(imagePosts.id, fields.imageId),
+			columns: { id: true },
+		});
+
+		if (!postExists) throw new Error("Post não encontrado.");
+
+		await db.insert(imagePostComments).values({
+			imageId: fields.imageId,
+			authorId: session.id,
+			body: sanitizedBody,
+		});
+
 		return { success: true };
 	},
+});
+
+const DeleteImagePostCommentSchema = z.object({
+	commentId: z.string().min(1, "ID do comentário é obrigatório"),
 });
 
 export const deleteImagePostComment = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
+		const session = context.locals.user;
+		if (!session) throw new Error("Não autenticado.");
+
+		const { fields, success: schemaSuccess } = parseSchema(input, DeleteImagePostCommentSchema);
+		if (!schemaSuccess) throw new Error("Dados inválidos.");
+
+		const commentData = await db.query.imagePostComments.findFirst({
+			where: eq(imagePostComments.id, fields.commentId),
+			with: {
+				post: {
+					columns: { authorId: true },
+				},
+			},
+		});
+
+		if (!commentData) throw new Error("Comentário não encontrado.");
+
+		const isCommentAuthor = commentData.authorId === session.id;
+		const isPhotoOwner = commentData.post.authorId === session.id;
+
+		if (!isCommentAuthor && !isPhotoOwner) {
+			throw new Error("Não autorizado para apagar este comentário");
+		}
+
+		await db.delete(imagePostComments).where(eq(imagePostComments.id, fields.commentId));
+
 		return { success: true };
 	},
 });

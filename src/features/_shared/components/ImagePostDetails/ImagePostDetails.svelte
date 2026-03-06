@@ -35,7 +35,7 @@
 	}
 </script>
 
-<div class="flex flex-wrap gap">
+<div class="flex flex-wrap gap mb">
 	<figure class="post-figure">
 		<img
 			src={post.image}
@@ -71,7 +71,7 @@
 	</figure>
 	<div class="post-comments-wrapper">
 		<ImagePostComments
-			comments={post.comments || []}
+			comments={post.comments}
 			postId={post.id}
 			postAuthorId={post.userId}
 			{session}
@@ -90,9 +90,12 @@
 		border: 1px dashed black;
 	}
 	.post-comments-wrapper {
+		display: flex;
+		flex-direction: column;
 		flex-grow: 999;
 		flex-shrink: 1;
 		flex-basis: 380px;
 		min-width: 0;
+		min-height: 0;
 	}
 </style>
