@@ -16,7 +16,6 @@ const { user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendReq
 	session,
 });
 
-
 if (!user) return new Response(null, { status: 404 });
 
 await updateLastRead(user.id, session, unreadMessagesCount);

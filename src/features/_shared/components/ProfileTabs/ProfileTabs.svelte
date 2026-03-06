@@ -21,6 +21,9 @@
 		children: Snippet;
 	} = $props();
 
+	let unreadMessages = "";
+	if (unreadMessagesCount) unreadMessages = `(${unreadMessagesCount} novos)`;
+
 	const tabs = [
 		{
 			id: "fotos",
@@ -30,7 +33,7 @@
 		},
 		{
 			id: "recados",
-			label: `${messagesCount} recados ${ !!unreadMessagesCount && `(${unreadMessagesCount} novos)`} `,
+			label: `${messagesCount} recados ${unreadMessages} `,
 			href: `/${username}/recados`,
 			icon: "/icons/envelope_closed-1.png",
 		},
