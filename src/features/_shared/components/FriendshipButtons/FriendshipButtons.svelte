@@ -25,7 +25,8 @@
   let modalRef = $state<HTMLDialogElement | null>(null);
   let currentAction = $state<ActionType>(null);
 
-  function openModal(action: ActionType) {
+  function openModal(e: Event, action: ActionType) {
+    e.preventDefault();
     currentAction = action;
     modalRef?.showModal();
   }
@@ -73,37 +74,54 @@
 </script>
 
 {#if isLoggedIn && !isOwnProfile}
-  <div>
+  <div class="flex gap flex-wrap">
     {#if !friendship?.status}
-      <Button onclick={() => openModal("send")}>
-        <img src="/icons/utopia_smiley.png" alt="Ícone de smile" />
-        Iniciar amizade
-      </Button>
+      <form method="POST" action={actions.sendFriendRequest + parameter} onsubmit={(e) => openModal(e, "send")}>
+        <input type="hidden" name="targetUserId" value={targetUserId} />
+        <Button type="submit">
+          <img src="/icons/utopia_smiley.png" alt="Ícone de smile" />
+          Iniciar amizade
+        </Button>
+      </form>
     {/if}
 
     {#if friendship?.status === "accepted"}
-      <Button onclick={() => openModal("remove")}>
-        <img src="/icons/trust1_restric-1.png" alt="Ícone de restrição" />
-        Remover amizade
-      </Button>
+      <form method="POST" action={actions.removeFriendship + parameter} onsubmit={(e) => openModal(e, "remove")}>
+        <input type="hidden" name="targetUserId" value={targetUserId} />
+        <Button type="submit">
+          <img src="/icons/trust1_restric-1.png" alt="Ícone de restrição" />
+          Remover amizade
+        </Button>
+      </form>
     {/if}
 
     {#if friendship?.status === "pending" && friendship?.type === "request"}
-      <Button onclick={() => openModal("cancel")}>
-        Cancelar solicitação
-      </Button>
+      <form method="POST" action={actions.removeFriendship + parameter} onsubmit={(e) => openModal(e, "cancel")}>
+        <input type="hidden" name="targetUserId" value={targetUserId} />
+        <Button type="submit">
+          Cancelar solicitação
+        </Button>
+      </form>
     {/if}
 
     {#if friendship?.status === "pending" && friendship?.type === "target"}
-      <Button onclick={() => openModal("accept")}>
-        <img src="/icons/trust0-1.png" alt="Ícone de check" />
-        Aceitar solicitação
-      </Button>
-      <Button onclick={() => openModal("reject")}>
-        <img src="/icons/trust1_restric-1.png" alt="Ícone de restrição" />
-        Rejeitar solicitação
-      </Button>
+      <form method="POST" action={actions.acceptFriendRequest + parameter} onsubmit={(e) => openModal(e, "accept")}>
+        <input type="hidden" name="targetUserId" value={targetUserId} />
+        <Button type="submit">
+          <img src="/icons/trust0-1.png" alt="Ícone de check" />
+          Aceitar solicitação
+        </Button>
+      </form>
+      
+      <form method="POST" action={actions.removeFriendship + parameter} onsubmit={(e) => openModal(e, "reject")}>
+        <input type="hidden" name="targetUserId" value={targetUserId} />
+        <Button type="submit">
+          <img src="/icons/trust1_restric-1.png" alt="Ícone de restrição" />
+          Rejeitar solicitação
+        </Button>
+      </form>
     {/if}
+    
   </div>
 {/if}
 
@@ -118,7 +136,7 @@
           <input type="hidden" name="targetUserId" value={targetUserId} />
           <Button type="submit">
             {#if modalContent.icon}
-              <img src={modalContent.icon} alt="Ícone da ação" />
+              <img src={modalContent.icon} alt="Ícone da ação" aria-hidden="true" />
             {/if}
             {modalContent.btnText}
           </Button>

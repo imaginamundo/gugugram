@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { auth } from "@auth/auth";
 
-export const GET: APIRoute = async (context) => {
+export const POST: APIRoute = async (context) => {
 	try {
 		await auth.api.signOut({
 			headers: context.request.headers,

@@ -19,7 +19,7 @@
 	let imageResize = $state(true);
 	let imageDescription = $state("");
 	let loading = $state(false);
-	let actionError = $state('');
+	let actionError = $state("");
 
 	let modalRef = $state<HTMLDialogElement | null>(null);
 	let imageRef = $state<HTMLImageElement | null>(null);
@@ -29,12 +29,15 @@
 
 	const characterCountLimit = 500;
 
-	function selectImage(e: Event & { currentTarget: HTMLInputElement }) {
+	function triggerFileInput() {
 		if (!session) {
-			e.preventDefault();
 			window.location.href = "/entrar";
+			return;
 		}
+		inputFileRef?.click();
+	}
 
+	function selectImage(e: Event & { currentTarget: HTMLInputElement }) {
 		const file = e.currentTarget.files?.[0];
 		if (file) {
 			const reader = new FileReader();
@@ -68,22 +71,12 @@
 	};
 
 	$effect(() => {
-		imageSize;
-		imageResize;
-		imageSrc;
-
 		if (imageRef && imageSrc) {
 			if (imageRef.complete && imageRef.naturalWidth > 0) {
 				drawCrop();
 			} else {
-				imageRef.onload = () => drawCrop();
+				imageRef.onload = drawCrop;
 			}
-		}
-	});
-
-	$effect(() => {
-		if (imageDescription.length > characterCountLimit) {
-			imageDescription = imageDescription.slice(0, characterCountLimit);
 		}
 	});
 
@@ -118,8 +111,8 @@
 		imageDescription = "";
 		imageResize = true;
 		loading = false;
-		actionError = '';
-		
+		actionError = "";
+
 		if (inputFileRef) inputFileRef.value = "";
 	}
 
@@ -175,7 +168,7 @@
 				window.location.href = `/${data.username}`;
 			}
 		} catch (error) {
-			actionError = 'Erro inesperado';
+			actionError = "Erro inesperado";
 			console.error("Erro inesperado:", error);
 		} finally {
 			loading = false;
@@ -183,23 +176,25 @@
 	}
 </script>
 
-<label class="header-button flex gap center p w-full justify-center">
-	<input
-		type="file"
-		accept="image/*"
-		onchange={selectImage}
-		bind:this={inputFileRef}
-		class="hidden"
-	/>
+<Button class="button-borderless eader-button flex gap center p w-full justify-center" onclick={triggerFileInput}>
 	<img src="/icons/camera3_plus-3.png" width="32" height="32" alt="Ícone de casa" />
 	Adicionar foto
-</label>
+</Button>
+<input
+	type="file"
+	accept="image/*"
+	onchange={selectImage}
+	bind:this={inputFileRef}
+	class="hidden"
+	tabindex="-1"
+	aria-hidden="true"
+/>
 
 <Modal bind:ref={modalRef} onclose={onModalClose}>
 	<div class="title-bar"><p><strong>Subir imagem</strong></p></div>
 	<div class="window-body">
 		{#if actionError}
-			 <p class="error mb flex center gap ">
+			<p class="error mb flex center gap" role="alert">
 				<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
 				{actionError}
 			</p>
@@ -224,7 +219,11 @@
 				<div class="flex gap">
 					<div>
 						<p class="mb-sm">Zoom</p>
-						<div class="canvas-print">
+						<div
+							class="canvas-print"
+							role="img"
+							aria-label={`Pré-visualização da imagem no tamanho ${imageSize} por ${imageSize} pixels`}
+						>
 							<canvas
 								bind:this={canvasRef}
 								style:transform={`scale(${120 / (imageSize || DEFAULT_SIZE)})`}

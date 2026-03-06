@@ -37,11 +37,16 @@ export const sendFriendRequest = defineAction({
 				return { success: true, status: "accepted" };
 			}
 
-			await db.insert(userFriends).values({
-				requestUserId: session.id,
-				targetUserId: fields.targetUserId,
-				status: "pending",
-			});
+			await db
+				.insert(userFriends)
+				.values({
+					requestUserId: session.id,
+					targetUserId: fields.targetUserId,
+					status: "pending",
+				})
+				.onConflictDoNothing({
+					target: [userFriends.requestUserId, userFriends.targetUserId],
+				});
 			return { success: true };
 		} catch (e) {
 			return { success: false, error: "Erro ao enviar solicitação" };

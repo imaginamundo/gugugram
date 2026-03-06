@@ -9,7 +9,7 @@
 	let {
 		ref = $bindable(null),
 		disabled,
-		tabindex = 0,
+		tabindex,
 		class: className,
 		children,
 		...props

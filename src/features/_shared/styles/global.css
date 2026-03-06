@@ -224,6 +224,9 @@ figure {
 		}
 	}
 }
+.button-borderless {
+	box-shadow: none;
+}
 
 .button::-moz-focus-inner {
 	border: 0;

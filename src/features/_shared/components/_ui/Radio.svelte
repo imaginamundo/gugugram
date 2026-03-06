@@ -8,7 +8,6 @@
 		ref = $bindable(null),
 		value,
 		group = $bindable(),
-		indeterminate = $bindable(false),
 		class: className,
 		...props
 	}: InputProps = $props();
@@ -20,6 +19,5 @@
 	class={["radio", className]}
 	value={value}
 	bind:group
-	bind:indeterminate
 	{...props}
 />

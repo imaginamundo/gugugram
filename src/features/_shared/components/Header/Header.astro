@@ -2,6 +2,7 @@
 import Button from "@components/_ui/Button.svelte";
 import Input from "@components/_ui/Input.svelte";
 import UploadImageModal from "@components/UploadImageModal/UploadImageModal.svelte";
+import LogoutButton from "@components/LogoutButton/LogoutButton.svelte";
 
 const session = Astro.locals.user;
 ---
@@ -40,11 +41,7 @@ const session = Astro.locals.user;
     {session ? (
       <div class="flex flex-col gap-sm">
         <span class="text-sm">Olá, <a href={ `/${session.username}` } class="text-xs underline"><strong>{session.username}</strong></a></span>
-        <form action="/api/logout">
-          <Button type="submit">
-            Sair da conta
-          </Button>
-        </form>
+        <LogoutButton client:idle />
       </div>
     ) : (
       <p class="text-center w-full">
