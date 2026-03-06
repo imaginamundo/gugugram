@@ -1,7 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import { db } from "@database/postgres";
 import { messages, users } from "@database/schema";
-import type { ProfileUser } from "./user";
 
 export async function getMessages(username: string) {
 	const messagesData = await db.query.users.findFirst({
