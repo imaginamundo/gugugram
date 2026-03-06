@@ -374,6 +374,7 @@ label:focus-within {
 
 .modal {
 	width: 500px;
+	max-width: calc(100% - 3em - 6px);
 	border: none;
 	.title-bar {
 		position: sticky;
