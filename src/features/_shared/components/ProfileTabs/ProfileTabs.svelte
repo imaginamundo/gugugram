@@ -3,7 +3,7 @@
 
 	type SelectTabType = "fotos" | "recados" | "amigos";
 
-	const {
+	let {
 		selectedTab,
 		username,
 		messagesCount,
@@ -21,29 +21,30 @@
 		children: Snippet;
 	} = $props();
 
-	let unreadMessages = "";
-	if (unreadMessagesCount) unreadMessages = `(${unreadMessagesCount} novos)`;
+	let unreadMessages = $derived(
+    unreadMessagesCount ? `(${unreadMessagesCount} novos)` : ""
+  );
 
-	const tabs = [
-		{
-			id: "fotos",
-			label: "Fotos",
-			href: `/${username}`,
-			icon: "/icons/camera-3.png",
-		},
-		{
-			id: "recados",
-			label: `${messagesCount} recados ${unreadMessages} `,
-			href: `/${username}/recados`,
-			icon: "/icons/envelope_closed-1.png",
-		},
-		{
-			id: "amigos",
-			label: `${friendsCount} amigos ${pendingFriendRequest ? "*" : ""}`,
-			href: `/${username}/amigos`,
-			icon: "/icons/user_computer_pair-1.png",
-		},
-	] as const;
+	let tabs = $derived([
+    {
+      id: "fotos",
+      label: "Fotos",
+      href: `/${username}`,
+      icon: "/icons/camera-3.png",
+    },
+    {
+      id: "recados",
+      label: `${messagesCount} recados ${unreadMessages}`,
+      href: `/${username}/recados`,
+      icon: "/icons/envelope_closed-1.png",
+    },
+    {
+      id: "amigos",
+      label: `${friendsCount} amigos ${pendingFriendRequest ? "*" : ""}`,
+      href: `/${username}/amigos`,
+      icon: "/icons/user_computer_pair-1.png",
+    },
+  ]);
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
