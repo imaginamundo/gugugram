@@ -141,22 +141,3 @@ export const removeProfileImage = defineAction({
 		}
 	},
 });
-
-async function uploadBase64(base64String: string) {
-	// 1. Remove the data URL prefix to get just the data
-	const base64Data = base64String.replace(/^data:image\/\w+;base64,/, "");
-
-	// 2. Convert Base64 to a Buffer
-	const buffer = Buffer.from(base64Data, "base64");
-
-	// 3. Create a File object (UploadThing requires a name and type)
-	// Note: utapi.uploadFiles expects an array or a single file object
-	const file = new File([buffer], "uploaded_file.png", { type: "image/png" });
-
-	try {
-		const response = await utapi.uploadFiles(file);
-		return response;
-	} catch (error) {
-		console.log(error);
-	}
-}

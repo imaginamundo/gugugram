@@ -1,0 +1,1 @@
+ALTER TABLE "gugugram_users" ADD COLUMN "last_checked_messages_at" timestamp DEFAULT now();

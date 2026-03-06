@@ -7,6 +7,7 @@
 		selectedTab,
 		username,
 		messagesCount,
+		unreadMessagesCount,
 		friendsCount,
 		pendingFriendRequest,
 		children,
@@ -14,6 +15,7 @@
 		selectedTab: SelectTabType;
 		username: string;
 		messagesCount: number;
+		unreadMessagesCount: number | null;
 		friendsCount: number;
 		pendingFriendRequest: boolean;
 		children: Snippet;
@@ -28,7 +30,7 @@
 		},
 		{
 			id: "recados",
-			label: `${messagesCount} recados`,
+			label: `${messagesCount} recados ${ !!unreadMessagesCount && `(${unreadMessagesCount} novos)`} `,
 			href: `/${username}/recados`,
 			icon: "/icons/envelope_closed-1.png",
 		},

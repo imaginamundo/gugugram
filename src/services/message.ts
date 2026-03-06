@@ -1,6 +1,7 @@
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "@database/postgres";
-import { messages } from "@database/schema";
+import { messages, users } from "@database/schema";
+import type { ProfileUser } from "./user";
 
 export async function getMessages(username: string) {
 	const messagesData = await db.query.users.findFirst({
@@ -33,3 +34,18 @@ export async function getMessages(username: string) {
 }
 
 export type MessagesType = Awaited<ReturnType<typeof getMessages>>;
+
+export async function updateLastRead(
+	userId: string,
+	session: App.Locals["user"],
+	unreadMessagesCount: number = 0,
+) {
+	if (!session) return;
+
+	if (session.id === userId && unreadMessagesCount > 0) {
+		await db
+			.update(users)
+			.set({ lastCheckedMessagesAt: new Date() })
+			.where(eq(users.id, session.id));
+	}
+}

@@ -11,10 +11,11 @@ if (!username) return new Response(null, { status: 404 });
 
 const session = Astro.locals.user;
 
-const { user, messagesCount, friendsCount, pendingFriendRequest } = await getProfile({
-	username,
-	session,
-});
+const { user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendRequest } =
+	await getProfile({
+		username,
+		session,
+	});
 
 if (!user) return new Response(null, { status: 404 });
 
@@ -34,6 +35,7 @@ const seo = {
 		{messagesCount}
 		{friendsCount}
 		{pendingFriendRequest}
+		{unreadMessagesCount}
 		client:load
 	>
 		<ImagePostList posts={images} />

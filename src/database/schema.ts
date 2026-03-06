@@ -22,6 +22,7 @@ export const users = createTable("users", {
 	emailVerified: boolean("email_verified").notNull().default(false),
 	image: text("image"),
 	description: text("description"),
+	lastCheckedMessagesAt: timestamp("last_checked_messages_at").defaultNow(),
 	createdAt: timestamp("created_at").notNull(),
 	updatedAt: timestamp("updated_at").notNull(),
 });

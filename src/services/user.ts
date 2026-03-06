@@ -1,4 +1,4 @@
-import { and, eq, or, count } from "drizzle-orm";
+import { and, eq, gt, or, count } from "drizzle-orm";
 import { db } from "@database/postgres";
 import { users, messages, userFriends, friendshipPossibleStatus } from "@database/schema";
 import { getEmojiById } from "@utils/emoji";
@@ -8,7 +8,7 @@ interface BaseUser {
 	image: string | null;
 }
 export type ProfileUser = NonNullable<Awaited<ReturnType<typeof getProfile>>["user"]>;
-export type User = Omit<ProfileUser, "description">;
+export type User = Omit<ProfileUser, "description" | "lastCheckedMessagesAt">;
 export type FriendshipContext = {
 	status: (typeof friendshipPossibleStatus)[number] | null;
 	type: "target" | "request" | null;
@@ -39,6 +39,7 @@ export async function getProfile({
 			username: true,
 			image: true,
 			description: true,
+			lastCheckedMessagesAt: true,
 		},
 	});
 
@@ -79,6 +80,18 @@ export async function getProfile({
 		.from(messages)
 		.where(eq(messages.receiverId, userData.id));
 
+	const [{ unreadMessagesCount }] = await db
+		.select({ unreadMessagesCount: count() })
+		.from(messages)
+		.where(
+			and(
+				eq(messages.receiverId, userData.id),
+				userData.lastCheckedMessagesAt
+					? gt(messages.createdAt, userData.lastCheckedMessagesAt)
+					: undefined,
+			),
+		);
+
 	const [{ friendsCount }] = await db
 		.select({ friendsCount: count() })
 		.from(userFriends)
@@ -108,6 +121,7 @@ export async function getProfile({
 	return {
 		user: profileUser,
 		messagesCount,
+		unreadMessagesCount,
 		friendsCount,
 		pendingFriendRequest,
 	};

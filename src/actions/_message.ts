@@ -1,6 +1,7 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro:schema";
 import { and, eq, or, desc } from "drizzle-orm";
+import { users } from "@database/schema";
 import sanitizeHtml from "sanitize-html";
 import { db } from "@database/postgres";
 import { messages } from "@database/schema";
@@ -80,5 +81,26 @@ export const removeMessage = defineAction({
 			);
 
 		return { success: true };
+	},
+});
+
+export const markMessagesAsRead = defineAction({
+	accept: "json",
+	handler: async (_, context) => {
+		const session = context.locals.user;
+
+		if (!session) throw new Error("Não autorizado");
+
+		try {
+			await db
+				.update(users)
+				.set({ lastCheckedMessagesAt: new Date() })
+				.where(eq(users.id, session.id));
+
+			return { success: true };
+		} catch (e) {
+			console.error("Erro ao marcar mensagens como lidas:", e);
+			return { success: false, error: "Erro interno" };
+		}
 	},
 });

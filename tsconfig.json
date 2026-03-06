@@ -9,7 +9,7 @@
 		"paths": {
 			"@components/*": ["./src/features/_shared/components/*"],
 			"@ui/*": ["./src/features/_shared/components/_ui/*"],
-			"@layout/*": ["./src/features/_shared/components/layout/*"],
+			"@layout/*": ["./src/features/_shared/components/_layout/*"],
 			"@utils/*": ["./src/features/_shared/utils/*"],
 			"@auth/*": ["./src/features/authentication/utils/*"],
 			"@stores/*": ["./src/features/_shared/stores/*"],

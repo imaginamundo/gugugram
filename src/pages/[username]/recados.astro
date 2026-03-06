@@ -1,6 +1,6 @@
 ---
 import { getProfile } from "@services/user";
-import { getMessages } from "@services/message";
+import { getMessages, updateLastRead } from "@services/message";
 import Layout from "@layout/Main.astro";
 import ProfileHeader from "@components/ProfileHeader/ProfileHeader.astro";
 import ProfileTabs from "@components/ProfileTabs/ProfileTabs.svelte";
@@ -11,12 +11,15 @@ if (!username) return new Response(null, { status: 404 });
 
 const session = Astro.locals.user;
 
-const { user, messagesCount, friendsCount, pendingFriendRequest } = await getProfile({
+const { user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendRequest } = await getProfile({
 	username,
 	session,
 });
 
+
 if (!user) return new Response(null, { status: 404 });
+
+await updateLastRead(user.id, session, unreadMessagesCount);
 
 const { messagesReceived } = await getMessages(user.username);
 
@@ -34,6 +37,7 @@ const seo = {
 		{messagesCount}
 		{friendsCount}
 		{pendingFriendRequest}
+		{unreadMessagesCount}
 		client:load
 	>
 		<Messages {user} messages={messagesReceived} />

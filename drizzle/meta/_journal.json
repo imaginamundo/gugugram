@@ -15,6 +15,13 @@
       "when": 1772716884146,
       "tag": "0001_fast_ben_urich",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1772819962422,
+      "tag": "0002_eminent_magik",
+      "breakpoints": true
     }
   ]
 }
