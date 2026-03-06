@@ -39,7 +39,7 @@
   }
 </script>
 
-<Modal bind:ref={imageModalRef} onclose={handleModalClose}>
+<Modal bind:ref={imageModalRef} class="modal-lg" onclose={handleModalClose}>
 	{#if store.post}
 		<div class="title-bar"><p><strong>Detalhes da imagem</strong></p></div>
 		<div class="window-body">

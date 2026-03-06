@@ -5,12 +5,15 @@
     let {
         ref = $bindable(null),
         children,
+        class: className,
         ...props
     }: WithElementRef<HTMLDialogAttributes, HTMLDialogElement> = $props();
+
+    const classes = $derived(["modal window", className]);
 </script>
 
 <dialog
-    class="modal window"
+    class={classes}
     bind:this={ref}
     onclick={(e) => {
         if (e.target === ref) ref?.close();

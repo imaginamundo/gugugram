@@ -373,12 +373,16 @@ label:focus-within {
 }
 
 .modal {
-	width: 900px;
+	width: 500px;
 	border: none;
 	.title-bar {
 		position: sticky;
 		top: 0;
 	}
+}
+
+.modal-lg {
+	width: 900px;
 }
 
 .status-bar {
