@@ -356,6 +356,7 @@ label:focus-within {
 }
 
 .title-bar {
+	text-align: left;
 	background: linear-gradient(90deg, var(--dialog-blue), var(--dialog-blue-light));
 	padding: 3px 2px 3px 3px;
 	&.inactive {

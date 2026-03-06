@@ -1,0 +1,58 @@
+---
+import { actions } from 'astro:actions';
+import Layout from "@layout/Main.astro";
+import ProfileHeader from "@components/ProfileHeader/ProfileHeader.astro";
+import ImagePostDetails from "@components/ImagePostDetails/ImagePostDetails.svelte";
+import DeleteImagePost from "@components/DeleteImagePost/DeleteImagePost.svelte";
+import { getProfile } from "@services/user";
+import { getImagePost } from "@services/image";
+
+const { username, postId } = Astro.params;
+if (!username || !postId) return new Response(null, { status: 404 });
+
+const session = Astro.locals.user;
+
+const result = Astro.getActionResult(actions.deleteImage);
+if (result && !result.error) {
+  return Astro.redirect(`/${username}`);
+}
+
+const post = await getImagePost(postId);
+
+if (!post || post.username !== username) {
+  return new Response(null, { status: 404 });
+}
+
+const { user } = await getProfile({
+  username,
+  session,
+});
+
+if (!user) return new Response(null, { status: 404 });
+
+const seo = {
+  title: `Imagem de ${username}`,
+  description: post.description || `Veja esta imagem de ${username} no Gugugram!`,
+  image: post.image, 
+};
+---
+
+<Layout {...seo}>
+  <ProfileHeader {user} />
+  <div class="image-details mt">
+    <div class="mb">
+      <a href={`/${username}`}>Ver todas as fotos de {username}</a>
+    </div>
+    <ImagePostDetails {post} client:load />
+    <div class="mt">
+      {session?.id === post.userId && <DeleteImagePost {post} client:load />}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .image-details {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+</style>
