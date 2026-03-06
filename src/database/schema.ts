@@ -27,7 +27,7 @@ export const users = createTable("users", {
 	updatedAt: timestamp("updated_at").notNull(),
 });
 
-export const images = createTable("images", {
+export const imagePosts = createTable("images_posts", {
 	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
@@ -79,7 +79,7 @@ export const userFriends = createTable(
 );
 
 export const usersRelations = relations(users, ({ one, many }) => ({
-	images: many(images),
+	imagePosts: many(imagePosts),
 	requestedFriends: many(userFriends, {
 		relationName: "friendship_requester",
 	}),
@@ -107,9 +107,9 @@ export const userFriendsRelations = relations(userFriends, ({ one }) => ({
 	}),
 }));
 
-export const imagesUserAuthorRelations = relations(images, ({ one }) => ({
+export const imagesUserAuthorRelations = relations(imagePosts, ({ one }) => ({
 	author: one(users, {
-		fields: [images.authorId],
+		fields: [imagePosts.authorId],
 		references: [users.id],
 	}),
 }));

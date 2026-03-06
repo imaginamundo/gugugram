@@ -4,7 +4,7 @@ import { and, eq, desc } from "drizzle-orm";
 import { imageSize } from "image-size";
 import sanitizeHtml from "sanitize-html";
 import { db } from "@database/postgres";
-import { images } from "@database/schema";
+import { imagePosts } from "@database/schema";
 import { utapi } from "@utils/uploadthing";
 import { parseSchema } from "@utils/validation";
 
@@ -29,9 +29,9 @@ export const uploadImage = defineAction({
 			throw new Error("Imagem muito grande. O tamanho máximo é 60KB.");
 		}
 
-		const lastImage = await db.query.images.findFirst({
-			where: eq(images.authorId, session.id),
-			orderBy: [desc(images.createdAt)],
+		const lastImage = await db.query.imagePosts.findFirst({
+			where: eq(imagePosts.authorId, session.id),
+			orderBy: [desc(imagePosts.createdAt)],
 		});
 
 		if (lastImage) {
@@ -74,7 +74,7 @@ export const uploadImage = defineAction({
 			const sanitizedDescription = fields.description ? sanitizeHtml(fields.description) : null;
 
 			try {
-				await db.insert(images).values({
+				await db.insert(imagePosts).values({
 					authorId: session.id,
 					description: sanitizedDescription,
 					image: upload.data?.ufsUrl,
@@ -118,8 +118,8 @@ export const deleteImage = defineAction({
 
 		try {
 			const deletedRow = await db
-				.delete(images)
-				.where(and(eq(images.id, fields.id), eq(images.authorId, session.id)))
+				.delete(imagePosts)
+				.where(and(eq(imagePosts.id, fields.id), eq(imagePosts.authorId, session.id)))
 				.returning();
 
 			if (deletedRow.length === 0) {

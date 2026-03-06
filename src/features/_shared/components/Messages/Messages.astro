@@ -22,7 +22,7 @@ const isOwnProfile = session?.id === user.id;
       {session && (session.id === message.author.id || isOwnProfile) && (
         <form method="POST" action={actions.removeMessage}>
           <input type="hidden" name="messageId" value={message.id} />
-          <Button type="submit">Apagar</Button>
+          <Button aria-label={`Apagar mensagem de ${message.author.username}`}>Apagar</Button>
         </form>
       )}
       <div>

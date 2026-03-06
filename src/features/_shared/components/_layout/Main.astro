@@ -10,9 +10,10 @@ interface Props {
 	title?: string;
 	description?: string;
 	robots?: string;
+	shareImage?: string;
 }
 
-const { title, description, robots = 'index,follow' } = Astro.props;
+const { title, description, robots = 'index,follow', shareImage } = Astro.props;
 
 let fullTitle = 'Gugugram';
 if (title) {
@@ -20,7 +21,7 @@ if (title) {
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || Astro.url);
-const shareImageURL = new URL('/seo/1280x640.png', canonicalURL);
+const shareImageURL = shareImage || new URL('/seo/1280x640.png', canonicalURL);
 ---
 
 <html lang="pt-BR">

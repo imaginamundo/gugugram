@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from "svelte";
   import { actions } from "astro:actions";
   import Button from "@components/_ui/Button.svelte";
   import Modal from "@components/_ui/Modal.svelte";
@@ -25,9 +26,10 @@
   let modalRef = $state<HTMLDialogElement | null>(null);
   let currentAction = $state<ActionType>(null);
 
-  function openModal(e: Event, action: ActionType) {
+  async function openModal(e: Event, action: ActionType) {
     e.preventDefault();
     currentAction = action;
+    await tick();
     modalRef?.showModal();
   }
 

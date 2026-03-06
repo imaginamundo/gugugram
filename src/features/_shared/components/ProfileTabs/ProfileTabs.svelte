@@ -15,14 +15,18 @@
 		selectedTab: SelectTabType;
 		username: string;
 		messagesCount: number;
-		unreadMessagesCount: number | null;
+		unreadMessagesCount: number;
+		pendingFriendRequest: number;
 		friendsCount: number;
-		pendingFriendRequest: boolean;
 		children: Snippet;
 	} = $props();
 
 	let unreadMessages = $derived(
     unreadMessagesCount ? `(${unreadMessagesCount} novos)` : ""
+  );
+
+	let pendingFriends = $derived(
+    pendingFriendRequest ? `(${pendingFriendRequest} novos)` : ""
   );
 
 	let tabs = $derived([
@@ -40,7 +44,7 @@
     },
     {
       id: "amigos",
-      label: `${friendsCount} amigos ${pendingFriendRequest ? "*" : ""}`,
+      label: `${friendsCount} amigos ${pendingFriends}`,
       href: `/${username}/amigos`,
       icon: "/icons/user_computer_pair-1.png",
     },

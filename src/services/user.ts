@@ -75,28 +75,6 @@ export async function getProfile({
 		}
 	}
 
-	const [{ messagesCount }] = await db
-		.select({ messagesCount: count() })
-		.from(messages)
-		.where(eq(messages.receiverId, userData.id));
-
-	let unreadMessagesCount: number | null = null;
-
-	if (session && session.id === userData.id) {
-		const [{ unreadMessages }] = await db
-			.select({ unreadMessages: count() })
-			.from(messages)
-			.where(
-				and(
-					eq(messages.receiverId, userData.id),
-					userData.lastCheckedMessagesAt
-						? gt(messages.createdAt, userData.lastCheckedMessagesAt)
-						: undefined,
-				),
-			);
-		unreadMessagesCount = unreadMessages;
-	}
-
 	const [{ friendsCount }] = await db
 		.select({ friendsCount: count() })
 		.from(userFriends)
@@ -107,15 +85,35 @@ export async function getProfile({
 			),
 		);
 
-	let pendingFriendRequest = false;
+	const [{ messagesCount }] = await db
+		.select({ messagesCount: count() })
+		.from(messages)
+		.where(eq(messages.receiverId, userData.id));
+
+	let pendingFriendRequest = 0;
+	let unreadMessagesCount = 0;
 
 	if (session && session.id === userData.id) {
-		const friendRequest = await db
-			.select()
+		const [{ pendingCount }] = await db
+			.select({ pendingCount: count() })
 			.from(userFriends)
-			.where(and(eq(userFriends.status, "pending"), eq(userFriends.targetUserId, userData.id)))
-			.limit(1);
-		pendingFriendRequest = !!friendRequest.length;
+			.where(and(eq(userFriends.status, "pending"), eq(userFriends.targetUserId, userData.id)));
+
+		pendingFriendRequest = pendingCount;
+
+		const [{ unreadCount }] = await db
+			.select({ unreadCount: count() })
+			.from(messages)
+			.where(
+				and(
+					eq(messages.receiverId, userData.id),
+					userData.lastCheckedMessagesAt
+						? gt(messages.createdAt, userData.lastCheckedMessagesAt)
+						: undefined,
+				),
+			);
+
+		unreadMessagesCount = unreadCount;
 	}
 
 	const profileUser = {

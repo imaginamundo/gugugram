@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import { db } from "@database/postgres";
-import { images } from "@database/schema";
+import { imagePosts } from "@database/schema";
 
 export type PostType = {
 	id: string;
@@ -11,8 +11,8 @@ export type PostType = {
 	createdAt: Date;
 };
 
-export function getLatestPosts(): Promise<PostType[]> {
-	return db.query.images
+export function getLatestImagePosts(): Promise<PostType[]> {
+	return db.query.imagePosts
 		.findMany({
 			columns: {
 				id: true,
@@ -23,7 +23,7 @@ export function getLatestPosts(): Promise<PostType[]> {
 			with: {
 				author: { columns: { id: true, username: true } },
 			},
-			orderBy: desc(images.createdAt),
+			orderBy: desc(imagePosts.createdAt),
 			limit: 120,
 		})
 		.then((result) => {
@@ -48,8 +48,8 @@ export async function getImagePosts(username: string): Promise<PostType[]> {
 			username: true,
 		},
 		with: {
-			images: {
-				orderBy: [desc(images.createdAt)],
+			imagePosts: {
+				orderBy: [desc(imagePosts.createdAt)],
 				columns: {
 					id: true,
 					image: true,
@@ -60,11 +60,11 @@ export async function getImagePosts(username: string): Promise<PostType[]> {
 		},
 	});
 
-	if (!user || !user.images) {
+	if (!user || !user.imagePosts) {
 		return [];
 	}
 
-	return user.images.map((img) => ({
+	return user.imagePosts.map((img) => ({
 		id: img.id,
 		image: img.image,
 		description: img.description,
@@ -75,8 +75,8 @@ export async function getImagePosts(username: string): Promise<PostType[]> {
 }
 
 export async function getImagePost(id: string): Promise<PostType | null> {
-	const postRecord = await db.query.images.findFirst({
-		where: eq(images.id, id),
+	const post = await db.query.imagePosts.findFirst({
+		where: eq(imagePosts.id, id),
 		with: {
 			author: {
 				columns: { id: true, username: true },
@@ -84,14 +84,14 @@ export async function getImagePost(id: string): Promise<PostType | null> {
 		},
 	});
 
-	if (!postRecord) return null;
+	if (!post) return null;
 
 	return {
-		id: postRecord.id,
-		image: postRecord.image,
-		description: postRecord.description,
-		userId: postRecord.author.id,
-		username: postRecord.author.username,
-		createdAt: postRecord.createdAt,
+		id: post.id,
+		image: post.image,
+		description: post.description,
+		userId: post.author.id,
+		username: post.author.username,
+		createdAt: post.createdAt,
 	};
 }

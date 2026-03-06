@@ -22,6 +22,13 @@
       "when": 1772819962422,
       "tag": "0002_eminent_magik",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1772829344078,
+      "tag": "0003_glossy_storm",
+      "breakpoints": true
     }
   ]
 }
