@@ -80,17 +80,22 @@ export async function getProfile({
 		.from(messages)
 		.where(eq(messages.receiverId, userData.id));
 
-	const [{ unreadMessagesCount }] = await db
-		.select({ unreadMessagesCount: count() })
-		.from(messages)
-		.where(
-			and(
-				eq(messages.receiverId, userData.id),
-				userData.lastCheckedMessagesAt
-					? gt(messages.createdAt, userData.lastCheckedMessagesAt)
-					: undefined,
-			),
-		);
+	let unreadMessagesCount: number | null = null;
+
+	if (session && session.id === userData.id) {
+		const [{ unreadMessages }] = await db
+			.select({ unreadMessages: count() })
+			.from(messages)
+			.where(
+				and(
+					eq(messages.receiverId, userData.id),
+					userData.lastCheckedMessagesAt
+						? gt(messages.createdAt, userData.lastCheckedMessagesAt)
+						: undefined,
+				),
+			);
+		unreadMessagesCount = unreadMessages;
+	}
 
 	const [{ friendsCount }] = await db
 		.select({ friendsCount: count() })
