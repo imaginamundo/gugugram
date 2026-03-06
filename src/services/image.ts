@@ -1,6 +1,14 @@
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, asc } from "drizzle-orm";
 import { db } from "@database/postgres";
-import { imagePosts } from "@database/schema";
+import { imagePosts, imagePostComments } from "@database/schema";
+
+export type CommentType = {
+	id: string;
+	body: string;
+	createdAt: Date;
+	authorId: string;
+	authorUsername: string;
+};
 
 export type PostType = {
 	id: string;
@@ -9,6 +17,9 @@ export type PostType = {
 	userId: string;
 	username: string;
 	createdAt: Date;
+};
+export type PostWithCommentsType = PostType & {
+	comments: CommentType[];
 };
 
 export function getLatestImagePosts(): Promise<PostType[]> {
@@ -74,12 +85,20 @@ export async function getImagePosts(username: string): Promise<PostType[]> {
 	}));
 }
 
-export async function getImagePost(id: string): Promise<PostType | null> {
+export async function getImagePost(id: string): Promise<PostWithCommentsType | null> {
 	const post = await db.query.imagePosts.findFirst({
 		where: eq(imagePosts.id, id),
 		with: {
 			author: {
 				columns: { id: true, username: true },
+			},
+			comments: {
+				orderBy: (comments, { asc }) => [asc(comments.createdAt)],
+				with: {
+					author: {
+						columns: { id: true, username: true },
+					},
+				},
 			},
 		},
 	});
@@ -93,5 +112,40 @@ export async function getImagePost(id: string): Promise<PostType | null> {
 		userId: post.author.id,
 		username: post.author.username,
 		createdAt: post.createdAt,
+		comments: post.comments.map((comment) => ({
+			id: comment.id,
+			body: comment.body,
+			createdAt: comment.createdAt,
+			authorId: comment.author.id,
+			authorUsername: comment.author.username,
+		})),
 	};
+}
+
+export async function getImagePostComments(postId: string) {
+	if (!postId) {
+		return [];
+	}
+
+	try {
+		const comments = await db.query.imagePostComments.findMany({
+			where: eq(imagePostComments.imageId, postId),
+			orderBy: [asc(imagePostComments.createdAt)],
+			with: {
+				author: {
+					columns: { id: true, username: true },
+				},
+			},
+		});
+
+		return comments.map((comment) => ({
+			id: comment.id,
+			body: comment.body,
+			createdAt: comment.createdAt,
+			authorId: comment.author.id,
+			authorUsername: comment.author.username,
+		}));
+	} catch (error) {
+		return [];
+	}
 }

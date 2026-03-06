@@ -373,7 +373,7 @@ label:focus-within {
 }
 
 .modal {
-	width: 500px;
+	width: 900px;
 	border: none;
 	.title-bar {
 		position: sticky;

@@ -78,6 +78,20 @@ export const userFriends = createTable(
 	],
 );
 
+export const imagePostComments = createTable("image_post_comments", {
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	imageId: text("image_id")
+		.notNull()
+		.references(() => imagePosts.id, { onDelete: "cascade" }),
+	authorId: text("author_id")
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+	body: text("body").notNull(),
+	createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const usersRelations = relations(users, ({ one, many }) => ({
 	imagePosts: many(imagePosts),
 	requestedFriends: many(userFriends, {
@@ -92,6 +106,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
 	messagesReceived: many(messages, {
 		relationName: "messages_receiver",
 	}),
+	imagePostComments: many(imagePostComments),
 }));
 
 export const userFriendsRelations = relations(userFriends, ({ one }) => ({
@@ -107,9 +122,21 @@ export const userFriendsRelations = relations(userFriends, ({ one }) => ({
 	}),
 }));
 
-export const imagesUserAuthorRelations = relations(imagePosts, ({ one }) => ({
+export const imagePostsRelations = relations(imagePosts, ({ one, many }) => ({
 	author: one(users, {
 		fields: [imagePosts.authorId],
+		references: [users.id],
+	}),
+	comments: many(imagePostComments),
+}));
+
+export const imagePostCommentsRelations = relations(imagePostComments, ({ one }) => ({
+	post: one(imagePosts, {
+		fields: [imagePostComments.imageId],
+		references: [imagePosts.id],
+	}),
+	author: one(users, {
+		fields: [imagePostComments.authorId],
 		references: [users.id],
 	}),
 }));

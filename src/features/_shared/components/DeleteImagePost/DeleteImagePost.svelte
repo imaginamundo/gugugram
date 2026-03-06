@@ -22,7 +22,7 @@
 		<div class="window-body">
 			<p>Certeza que quer deletar essa imagem?</p>
 			<div class="flex gap justify-center mt">
-				<form action={actions.deleteImage} method="POST" class="flex gap">
+				<form action={actions.deleteImagePost} method="POST" class="flex gap">
 					<input type="hidden" name="id" value={post.id} />
 					<input type="hidden" name="imageUrl" value={post.image} />
 					<Button>

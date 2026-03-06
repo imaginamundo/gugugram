@@ -16,7 +16,7 @@ const UploadImageSchema = z.object({
 	description: z.string().max(500, "Descrição muito longa.").optional(),
 });
 
-export const uploadImage = defineAction({
+export const uploadImagePost = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
 		const session = context.locals.user;
@@ -104,7 +104,7 @@ const DeleteImageSchema = z.object({
 	imageUrl: z.string(),
 });
 
-export const deleteImage = defineAction({
+export const deleteImagePost = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
 		const session = context.locals.user;
@@ -134,5 +134,19 @@ export const deleteImage = defineAction({
 			if (e instanceof Error) throw e;
 			throw new Error("Erro interno ao tentar deletar a imagem.");
 		}
+	},
+});
+
+export const sendImagePostComment = defineAction({
+	accept: "form",
+	handler: async (input, context) => {
+		return { success: true };
+	},
+});
+
+export const deleteImagePostComment = defineAction({
+	accept: "form",
+	handler: async (input, context) => {
+		return { success: true };
 	},
 });

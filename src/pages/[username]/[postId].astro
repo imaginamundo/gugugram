@@ -12,7 +12,7 @@ if (!username || !postId) return new Response(null, { status: 404 });
 
 const session = Astro.locals.user;
 
-const result = Astro.getActionResult(actions.deleteImage);
+const result = Astro.getActionResult(actions.deleteImagePost);
 if (result && !result.error) {
   return Astro.redirect(`/${username}`);
 }
@@ -43,7 +43,7 @@ const seo = {
     <div class="mt mb">
       <a href={`/${username}`}>Ver todas as fotos de {username}</a>
     </div>
-    <ImagePostDetails {post} client:load />
+    <ImagePostDetails {session} {post} client:load />
     <div class="mt">
       {session?.id === post.userId && <DeleteImagePost {post} client:load />}
     </div>

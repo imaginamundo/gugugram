@@ -43,7 +43,7 @@
 	{#if store.post}
 		<div class="title-bar"><p><strong>Detalhes da imagem</strong></p></div>
 		<div class="window-body">
-			<ImagePostDetails post={store.post} />
+			<ImagePostDetails {session} post={store.post} />
 			<div class="flex gap justify-between row-reverse">
 				<Button bind:ref={closeButtonRef} onclick={() => store.clear()} autofocus>Fechar</Button>
 				{#if session?.id === store.post.userId}

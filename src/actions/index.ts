@@ -1,6 +1,11 @@
 import { login, register } from "./_authentication";
 import { sendFriendRequest, removeFriendship, acceptFriendRequest } from "./_friendshipRelation";
-import { uploadImage, deleteImage } from "./_imagePosts";
+import {
+	uploadImagePost,
+	deleteImagePost,
+	sendImagePostComment,
+	deleteImagePostComment,
+} from "./_imagePosts";
 import { sendMessage, removeMessage } from "./_message";
 import { updateProfile, removeProfileImage } from "./_profile";
 import { requestPasswordReset, resetPassword } from "./_passwordRecovery";
@@ -14,8 +19,10 @@ export const server = {
 	removeFriendship,
 	acceptFriendRequest,
 	// post upload
-	uploadImage,
-	deleteImage,
+	uploadImagePost,
+	deleteImagePost,
+	sendImagePostComment,
+	deleteImagePostComment,
 	// messages
 	sendMessage,
 	removeMessage,

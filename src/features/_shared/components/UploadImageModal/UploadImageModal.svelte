@@ -156,7 +156,7 @@
 			formData.append("image", file);
 			formData.append("description", imageDescription);
 
-			const { data, error } = await actions.uploadImage(formData);
+			const { data, error } = await actions.uploadImagePost(formData);
 
 			if (error) {
 				actionError = error.message;
@@ -290,7 +290,7 @@
 		}
 	}
 
-	.header-button {
+	.button-borderless {
 		cursor: pointer;
 		img {
 			filter: url("#grayscale");
