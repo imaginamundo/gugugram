@@ -30,9 +30,13 @@ const { user } = await getProfile({
 
 if (!user) return new Response(null, { status: 404 });
 
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || Astro.url);
+const shareImageURL = new URL(`/api/og/${post.id}`, canonicalURL);
+
 const seo = {
   title: `Imagem de ${username}`,
   description: post.description || `Veja esta imagem de ${username} no Gugugram!`,
+  shareImage: shareImageURL,
   image: post.image, 
 };
 ---

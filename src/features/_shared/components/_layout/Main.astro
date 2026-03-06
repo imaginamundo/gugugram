@@ -10,7 +10,7 @@ interface Props {
 	title?: string;
 	description?: string;
 	robots?: string;
-	shareImage?: string;
+	shareImage?: string | URL;
 }
 
 const { title, description, robots = 'index,follow', shareImage } = Astro.props;
