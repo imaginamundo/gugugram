@@ -127,9 +127,8 @@
   </div>
 {/if}
 
-<Modal bind:ref={modalRef} onclose={() => currentAction = null}>
+<Modal bind:ref={modalRef} onclose={() => currentAction = null} title={modalContent?.title}>
   {#if modalContent}
-    <div class="title-bar"><p><strong>{modalContent.title}</strong></p></div>
     <div class="window-body">
       <p>{modalContent.text}</p>
       <div class="flex gap justify-center mt">

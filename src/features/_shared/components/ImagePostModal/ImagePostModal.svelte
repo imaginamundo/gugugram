@@ -18,10 +18,6 @@
     if (store.post) {
       if (imageModalRef && !imageModalRef.open) {
 				imageModalRef.showModal();
-				// Reset position on open
-				imageModalRef.style.left = "";
-				imageModalRef.style.top = "";
-				imageModalRef.style.position = "";
 			}
       closeButtonRef?.focus();
     } else if (imageModalRef?.open) {
@@ -53,9 +49,9 @@
 	onclose={handleModalClose}
 	useAction={draggable}
 	actionParams=".title-bar"
+	title="Detalhes da imagem"
 >
 	{#if store.post}
-		<div class="title-bar"><p><strong>Detalhes da imagem</strong></p></div>
 		<div class="window-body">
 			<ImagePostDetails {session} post={store.post} />
 			<div class="flex gap justify-between row-reverse">

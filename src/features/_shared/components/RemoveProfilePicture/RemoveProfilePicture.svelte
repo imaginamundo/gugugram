@@ -17,8 +17,7 @@
   </div>
 </fieldset>
 
-<Modal bind:ref={modalRef}>
-  <div class="title-bar"><p><strong>Atenção</strong></p></div>
+<Modal bind:ref={modalRef} title="Atenção">
   <div class="window-body">
     <p>Certeza que quer deletar essa imagem?</p>
     <div class="flex gap justify-center mt">

@@ -359,6 +359,9 @@ label:focus-within {
 }
 
 .title-bar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 	text-align: left;
 	background: linear-gradient(90deg, var(--dialog-blue), var(--dialog-blue-light));
 	padding: 3px 2px 3px 3px;
@@ -372,10 +375,37 @@ label:focus-within {
 	}
 }
 
+.close-button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0;
+	min-height: 14px;
+	width: 16px;
+	height: 14px;
+	background-color: var(--surface);
+	background-image: svg-load("close.svg");
+	background-repeat: no-repeat;
+	background-position: center;
+	box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+	border: none;
+	cursor: default;
+
+	&:active {
+		box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+		background-position: calc(50% + 1px) calc(50% + 1px);
+	}
+
+	&:focus {
+		outline: none;
+	}
+}
+
 .modal {
 	width: 500px;
 	max-width: calc(100% - 3em - 6px);
 	border: none;
+	margin: auto;
 	.title-bar {
 		position: sticky;
 		top: 0;

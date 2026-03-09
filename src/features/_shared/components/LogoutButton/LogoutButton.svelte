@@ -16,8 +16,7 @@
   </Button>
 </form>
 
-<Modal bind:ref={modalRef}>
-  <div class="title-bar"><p><strong>Sair da conta</strong></p></div>
+<Modal bind:ref={modalRef} title="Sair da conta">
   <div class="window-body">
     <p>Tem certeza que deseja sair da sua conta?</p>
     <div class="flex gap justify-center mt">

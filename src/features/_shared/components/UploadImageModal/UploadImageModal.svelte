@@ -190,8 +190,7 @@
 	aria-hidden="true"
 />
 
-<Modal bind:ref={modalRef} onclose={onModalClose}>
-	<div class="title-bar"><p><strong>Subir imagem</strong></p></div>
+<Modal bind:ref={modalRef} onclose={onModalClose} title="Subir imagem">
 	<div class="window-body">
 		{#if actionError}
 			<p class="error mb flex center gap" role="alert">

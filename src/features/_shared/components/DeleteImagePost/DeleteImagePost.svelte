@@ -16,9 +16,8 @@
 	Apagar imagem
 </Button>
 
-<Modal bind:ref={removeImageModalRef}>
+<Modal bind:ref={removeImageModalRef} title="Atenção">
 	{#if post}
-		<div class="title-bar"><p><strong>Atenção</strong></p></div>
 		<div class="window-body">
 			<p>Certeza que quer deletar essa imagem?</p>
 			<div class="flex gap justify-center mt">
