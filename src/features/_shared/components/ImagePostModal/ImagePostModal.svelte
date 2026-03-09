@@ -5,6 +5,8 @@
 	import { imageModalStore as store } from "@stores/imageModalStore.svelte";
 	import DeleteImagePost from "@components/DeleteImagePost/DeleteImagePost.svelte";
 
+	import { draggable } from "@utils/draggable";
+
 	let closeButtonRef = $state<HTMLButtonElement | null>(null);
 	let imageModalRef = $state<HTMLDialogElement | null>(null);
 
@@ -14,7 +16,13 @@
 
   $effect(() => {
     if (store.post) {
-      if (imageModalRef && !imageModalRef.open) imageModalRef.showModal();
+      if (imageModalRef && !imageModalRef.open) {
+				imageModalRef.showModal();
+				// Reset position on open
+				imageModalRef.style.left = "";
+				imageModalRef.style.top = "";
+				imageModalRef.style.position = "";
+			}
       closeButtonRef?.focus();
     } else if (imageModalRef?.open) {
       imageModalRef.close();
@@ -39,7 +47,13 @@
   }
 </script>
 
-<Modal bind:ref={imageModalRef} class="modal-lg" onclose={handleModalClose}>
+<Modal 
+	bind:ref={imageModalRef} 
+	class="modal-lg" 
+	onclose={handleModalClose}
+	useAction={draggable}
+	actionParams=".title-bar"
+>
 	{#if store.post}
 		<div class="title-bar"><p><strong>Detalhes da imagem</strong></p></div>
 		<div class="window-body">
