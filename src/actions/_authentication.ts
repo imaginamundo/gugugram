@@ -52,7 +52,7 @@ export const login = defineAction({
 				success: true as const,
 				username: data.user.username as string,
 			};
-		} catch (e) {
+		} catch {
 			return {
 				success: false as const,
 				error: authErrors["INTERNAL_SERVER_ERROR"],
@@ -100,7 +100,7 @@ export const register = defineAction({
 				fieldErrors: {},
 				error: authErrors[errorCode] || "Erro ao criar conta",
 			};
-		} catch (e) {
+		} catch {
 			return {
 				success: false as const,
 				fields,

@@ -1,7 +1,7 @@
 ---
 import Layout from "@layout/Main.astro";
 import { getProfile, getFriends } from "@services/user";
-import ProfileHeader from '@components/ProfileHeader/ProfileHeader.astro';
+import ProfileHeader from "@components/ProfileHeader/ProfileHeader.astro";
 import ProfileTabs from "@components/ProfileTabs/ProfileTabs.svelte";
 import FriendsList from "@components/FriendsList/FriendsList.astro";
 
@@ -10,10 +10,11 @@ if (!username) return new Response(null, { status: 404 });
 
 const session = Astro.locals.user;
 
-const { user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendRequest } = await getProfile({
-	username,
-	session,
-});
+const { user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendRequest } =
+	await getProfile({
+		username,
+		session,
+	});
 
 if (!user) return new Response(null, { status: 404 });
 
@@ -21,8 +22,8 @@ const friends = await getFriends(user.id, session);
 
 const seo = {
 	title: `Amigos de ${username}`,
-	description: `Faça parte da rede social Gugugram e adicione ${username} como amigo!`
-}
+	description: `Faça parte da rede social Gugugram e adicione ${username} como amigo!`,
+};
 ---
 
 <Layout {...seo}>

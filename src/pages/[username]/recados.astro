@@ -11,10 +11,11 @@ if (!username) return new Response(null, { status: 404 });
 
 const session = Astro.locals.user;
 
-const { user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendRequest } = await getProfile({
-	username,
-	session,
-});
+const { user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendRequest } =
+	await getProfile({
+		username,
+		session,
+	});
 
 if (!user) return new Response(null, { status: 404 });
 
@@ -24,8 +25,8 @@ const { messagesReceived } = await getMessages(user.username);
 
 const seo = {
 	title: `Recados de ${username}`,
-	description: `Faça parte da rede social Gugugram e envie mensagens para ${username}!`
-}
+	description: `Faça parte da rede social Gugugram e envie mensagens para ${username}!`,
+};
 ---
 
 <Layout {...seo}>

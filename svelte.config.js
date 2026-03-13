@@ -5,6 +5,6 @@ export default {
 	base: "/",
 	preprocess: vitePreprocess(),
 	vitePlugin: {
-		inspector: true
-	}
+		inspector: true,
+	},
 };

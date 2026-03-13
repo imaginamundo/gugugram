@@ -52,7 +52,7 @@ export async function getProfile({
 		};
 	}
 
-	let friendshipStatus: {
+	const friendshipStatus: {
 		status: (typeof friendshipPossibleStatus)[number] | null;
 		type: "target" | "request" | null;
 	} = {

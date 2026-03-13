@@ -9,8 +9,8 @@ import Select from "@ui/Select.svelte";
 
 const seo = {
 	title: `Componentes daqui, rsrs`,
-	description: `Componentes do gugugram, algumas coisas faltam mas a vida`
-}
+	description: `Componentes do gugugram, algumas coisas faltam mas a vida`,
+};
 ---
 
 <Layout {...seo}>
@@ -100,14 +100,16 @@ const seo = {
 	<h2>Window</h2>
 	<div class="window">
 		<div class="title-bar">
-			<p>Title<p>
+			<p>
+				Title<p></p>
+				<div class="window-body">
+					<p>Hello, world!</p>
+				</div>
+				<div class="status-bar">
+					<p>Hello</p>
+					<p>World!</p>
+				</div>
+			</p>
 		</div>
-		<div class="window-body">
-			<p>Hello, world!</p>
-		</div>
-		<div class="status-bar">
-			<p>Hello</p>
-			<p>World!</p>
-		</div>
-	</div>
-</Layout>
+	</div></Layout
+>

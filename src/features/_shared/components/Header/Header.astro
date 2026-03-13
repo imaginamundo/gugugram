@@ -8,81 +8,91 @@ const session = Astro.locals.user;
 ---
 
 <div class="header" role="navigation">
-  <fieldset class="header-button-home flex p-0">
-    <a class="header-button flex gap center p w-full justify-center" href="/">
-      <img src="/icons/home.png" width="19" height="20" alt="Ícone de casa" />
-      Página inicial
-    </a>
-  </fieldset>
+	<fieldset class="header-button-home flex p-0">
+		<a class="header-button flex gap center p w-full justify-center" href="/">
+			<img src="/icons/home.png" width="19" height="20" alt="Ícone de casa" />
+			Página inicial
+		</a>
+	</fieldset>
 
-  <fieldset class="header-button-upload flex p-0">
-    <UploadImageModal {session} client:idle />
-  </fieldset>
+	<fieldset class="header-button-upload flex p-0">
+		<UploadImageModal {session} client:idle />
+	</fieldset>
 
-  <fieldset class="header-search flex center grow p-sm">
-    <form action="/buscar" method="GET" class="flex center w-full">
-      <label class="flex center grow p-sm">
-        Buscar
-        <Input 
-          client:load 
-          name="q"
-          class="w-full ml-sm" 
-          placeholder="Buscar por nome de usuário" 
-        />
-      </label>
-      <Button client:load class="ml-sm">
-        <img src="/icons/search-web.png" width="16" height="16" alt="Ícone de lupa e um globo" />
-        Buscar
-      </Button>
-    </form>
-  </fieldset>
+	<fieldset class="header-search flex center grow p-sm">
+		<form action="/buscar" method="GET" class="flex center w-full">
+			<label class="flex center grow p-sm">
+				Buscar
+				<Input client:load name="q" class="w-full ml-sm" placeholder="Buscar por nome de usuário" />
+			</label>
+			<Button client:load class="ml-sm">
+				<img src="/icons/search-web.png" width="16" height="16" alt="Ícone de lupa e um globo" />
+				Buscar
+			</Button>
+		</form>
+	</fieldset>
 
-  <fieldset class="header-user flex center">
-    {session ? (
-      <div class="flex flex-col gap-sm">
-        <span class="text-sm">Olá, <a href={ `/${session.username}` } class="text-xs underline"><strong>{session.username}</strong></a></span>
-        <LogoutButton client:idle />
-      </div>
-    ) : (
-      <p class="text-center w-full">
-        <a href="/entrar">Entrar</a>
-        ou
-        <a href="/cadastrar">Cadastrar</a>
-      </p>
-    )}
-  </fieldset>
+	<fieldset class="header-user flex center">
+		{
+			session ? (
+				<div class="flex flex-col gap-sm">
+					<span class="text-sm">
+						Olá,{" "}
+						<a href={`/${session.username}`} class="text-xs underline">
+							<strong>{session.username}</strong>
+						</a>
+					</span>
+					<LogoutButton client:idle />
+				</div>
+			) : (
+				<p class="text-center w-full">
+					<a href="/entrar">Entrar</a>
+					ou
+					<a href="/cadastrar">Cadastrar</a>
+				</p>
+			)
+		}
+	</fieldset>
 </div>
 
 <style>
-  .header {
-    display: grid;
-    grid-template-areas:
-      "home upload user"
-      "search search search";
-  }
+	.header {
+		display: grid;
+		grid-template-areas:
+			"home upload user"
+			"search search search";
+	}
 
-  @media (min-width: 600px) {
-    .header {
-      grid-template-areas: "home upload search user";
-      grid-template-columns: auto auto 1fr auto;
-    }
-  }
+	@media (min-width: 600px) {
+		.header {
+			grid-template-areas: "home upload search user";
+			grid-template-columns: auto auto 1fr auto;
+		}
+	}
 
-  .header-button-home { grid-area: home; }
-  .header-button-upload { grid-area: upload; }
-  .header-search { grid-area: search; }
-  .header-user { grid-area: user; }
+	.header-button-home {
+		grid-area: home;
+	}
+	.header-button-upload {
+		grid-area: upload;
+	}
+	.header-search {
+		grid-area: search;
+	}
+	.header-user {
+		grid-area: user;
+	}
 
-  .header-button {
-    color: currentColor;
-    text-decoration: none;
-  }
-  
-  .header-button img {
-    filter: url("#grayscale");
-  }
-  
-  .header-button:hover img {
-    filter: none;
-  }
+	.header-button {
+		color: currentColor;
+		text-decoration: none;
+	}
+
+	.header-button img {
+		filter: url("#grayscale");
+	}
+
+	.header-button:hover img {
+		filter: none;
+	}
 </style>

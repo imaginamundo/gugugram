@@ -13,15 +13,15 @@ interface Props {
 	shareImage?: string | URL;
 }
 
-const { title, description, robots = 'index,follow', shareImage } = Astro.props;
+const { title, description, robots = "index,follow", shareImage } = Astro.props;
 
-let fullTitle = 'Gugugram';
+let fullTitle = "Gugugram";
 if (title) {
 	fullTitle += ` • ${title}`;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || Astro.url);
-const shareImageURL = shareImage || new URL('/seo/1280x640.png', canonicalURL);
+const shareImageURL = shareImage || new URL("/seo/1280x640.png", canonicalURL);
 ---
 
 <html lang="pt-BR">
@@ -43,7 +43,13 @@ const shareImageURL = shareImage || new URL('/seo/1280x640.png', canonicalURL);
 		<link rel="icon" type="image/png" sizes="256x256" href="/seo/256.png" />
 		<link rel="icon" type="image/png" sizes="512x512" href="/seo/512.png" />
 
-		<link rel="preload" href="/fonts/ms-sans-serif-8pt.woff2" as="font" type="font/woff2" crossorigin>
+		<link
+			rel="preload"
+			href="/fonts/ms-sans-serif-8pt.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
 
 		<meta property="og:title" content={fullTitle} />
 		{description && <meta property="og:description" content={description} />}
@@ -54,15 +60,15 @@ const shareImageURL = shareImage || new URL('/seo/1280x640.png', canonicalURL);
 		<meta property="og:image:height" content="640" />
 
 		<meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content={canonicalURL} />
-    <meta name="twitter:title" content={fullTitle} />
-    {description && <meta name="twitter:description" content={description} />}
-    <meta name="twitter:image" content={shareImageURL} />
+		<meta name="twitter:url" content={canonicalURL} />
+		<meta name="twitter:title" content={fullTitle} />
+		{description && <meta name="twitter:description" content={description} />}
+		<meta name="twitter:image" content={shareImageURL} />
 		<script>
 			const url = new URL(window.location.href);
-			if (url.searchParams.has('_action')) {
-				url.searchParams.delete('_action');
-				window.history.replaceState({}, '', url.pathname + url.search);
+			if (url.searchParams.has("_action")) {
+				url.searchParams.delete("_action");
+				window.history.replaceState({}, "", url.pathname + url.search);
 			}
 		</script>
 	</head>

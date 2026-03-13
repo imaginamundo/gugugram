@@ -48,7 +48,7 @@ export const sendFriendRequest = defineAction({
 					target: [userFriends.requestUserId, userFriends.targetUserId],
 				});
 			return { success: true };
-		} catch (e) {
+		} catch {
 			return { success: false, error: "Erro ao enviar solicitação" };
 		}
 	},
@@ -74,7 +74,7 @@ export const acceptFriendRequest = defineAction({
 					),
 				);
 			return { success: true };
-		} catch (e) {
+		} catch {
 			return { success: false, error: "Erro ao aceitar solicitação" };
 		}
 	},
@@ -105,7 +105,7 @@ export const removeFriendship = defineAction({
 					),
 				);
 			return { success: true };
-		} catch (e) {
+		} catch {
 			return { success: false, error: "Erro ao remover amizade" };
 		}
 	},

@@ -21,34 +21,30 @@
 		children: Snippet;
 	} = $props();
 
-	let unreadMessages = $derived(
-    unreadMessagesCount ? `(${unreadMessagesCount} novos)` : ""
-  );
+	let unreadMessages = $derived(unreadMessagesCount ? `(${unreadMessagesCount} novos)` : "");
 
-	let pendingFriends = $derived(
-    pendingFriendRequest ? `(${pendingFriendRequest} novos)` : ""
-  );
+	let pendingFriends = $derived(pendingFriendRequest ? `(${pendingFriendRequest} novos)` : "");
 
 	let tabs = $derived([
-    {
-      id: "fotos",
-      label: "Fotos",
-      href: `/${username}`,
-      icon: "/icons/camera-3.png",
-    },
-    {
-      id: "recados",
-      label: `${messagesCount} recados ${unreadMessages}`,
-      href: `/${username}/recados`,
-      icon: "/icons/envelope_closed-1.png",
-    },
-    {
-      id: "amigos",
-      label: `${friendsCount} amigos ${pendingFriends}`,
-      href: `/${username}/amigos`,
-      icon: "/icons/user_computer_pair-1.png",
-    },
-  ]);
+		{
+			id: "fotos",
+			label: "Fotos",
+			href: `/${username}`,
+			icon: "/icons/camera-3.png",
+		},
+		{
+			id: "recados",
+			label: `${messagesCount} recados ${unreadMessages}`,
+			href: `/${username}/recados`,
+			icon: "/icons/envelope_closed-1.png",
+		},
+		{
+			id: "amigos",
+			label: `${friendsCount} amigos ${pendingFriends}`,
+			href: `/${username}/amigos`,
+			icon: "/icons/user_computer_pair-1.png",
+		},
+	]);
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
@@ -72,7 +68,7 @@
 </script>
 
 <ul class="tablist mt" role="tablist" aria-label="Menu de navegação do perfil">
-	{#each tabs as tab}
+	{#each tabs as tab (tab.id)}
 		<li role="presentation" data-selected={tab.id === selectedTab}>
 			<a
 				href={tab.href}

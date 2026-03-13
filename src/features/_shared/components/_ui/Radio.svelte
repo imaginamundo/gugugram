@@ -13,11 +13,4 @@
 	}: InputProps = $props();
 </script>
 
-<input
-	bind:this={ref}
-	type="radio"
-	class={["radio", className]}
-	value={value}
-	bind:group
-	{...props}
-/>
+<input bind:this={ref} type="radio" class={["radio", className]} {value} bind:group {...props} />

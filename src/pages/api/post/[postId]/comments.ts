@@ -14,7 +14,7 @@ export const GET: APIRoute = async ({ params }) => {
 		return new Response(JSON.stringify(comments), {
 			headers: { "Content-Type": "application/json" },
 		});
-	} catch (error) {
+	} catch {
 		return new Response(JSON.stringify({ error: "Erro ao buscar comentários" }), { status: 500 });
 	}
 };

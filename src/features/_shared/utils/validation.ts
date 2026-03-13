@@ -1,17 +1,24 @@
 import { z } from "astro/zod";
 
-export function formDataToObject(formData: FormData): Record<string, any> {
-	const obj: Record<string, any> = {};
+export function formDataToObject(
+	formData: FormData,
+): Record<string, FormDataEntryValue | FormDataEntryValue[]> {
+	const obj: Record<string, FormDataEntryValue | FormDataEntryValue[]> = {};
+
 	for (const [key, value] of formData.entries()) {
-		if (obj.hasOwnProperty(key)) {
-			if (!Array.isArray(obj[key])) {
-				obj[key] = [obj[key]];
+		if (key in obj) {
+			const currentValue = obj[key];
+
+			if (!Array.isArray(currentValue)) {
+				obj[key] = [currentValue, value];
+			} else {
+				currentValue.push(value);
 			}
-			obj[key].push(value);
 		} else {
 			obj[key] = value;
 		}
 	}
+
 	return obj;
 }
 

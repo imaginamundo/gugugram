@@ -50,7 +50,7 @@
 					({formatDate(post.createdAt)})
 					<a href={`/${post.username}`}>{post.username}</a>
 				</span>
-	
+
 				<Button onclick={handleShare}>
 					<img
 						src="/icons/entire_network_globe-4.png"
@@ -62,7 +62,7 @@
 					{copied ? "Link copiado!" : "Compartilhar"}
 				</Button>
 			</div>
-	
+
 			{#if post.description}
 				Escreveu:
 				<p class="mt p description-content">{post.description}</p>

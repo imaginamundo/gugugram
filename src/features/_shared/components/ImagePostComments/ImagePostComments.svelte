@@ -1,56 +1,58 @@
 <script lang="ts">
-  import { actions } from "astro:actions";
-  import { formatDate } from "@utils/date";
-  import Button from "@components/_ui/Button.svelte";
-  import Input from "@components/_ui/Input.svelte";
-  import type { CommentType } from "@services/image";
+	import { actions } from "astro:actions";
+	import { formatDate } from "@utils/date";
+	import Button from "@components/_ui/Button.svelte";
+	import Input from "@components/_ui/Input.svelte";
+	import type { CommentType } from "@services/image";
 	import { onMount } from "svelte";
 
-  const {
-    comments,
-    postId,
-    postAuthorId,
-    session,
-  }: {
-    comments?: CommentType[];
-    postId: string;
-    postAuthorId: string;
-    session?: App.Locals["user"];
-  } = $props();
+	const {
+		comments,
+		postId,
+		postAuthorId,
+		session,
+	}: {
+		comments?: CommentType[];
+		postId: string;
+		postAuthorId: string;
+		session?: App.Locals["user"];
+	} = $props();
 
-  let fetchedComments = $state<CommentType[]>([]);
+	let fetchedComments = $state<CommentType[]>([]);
 	let hasFetched = $state(false);
 	let isLoading = $derived(comments === undefined && !hasFetched);
-  let displayComments = $derived(comments !== undefined ? comments : fetchedComments);
+	let displayComments = $derived(comments !== undefined ? comments : fetchedComments);
 
-  onMount(() => {
-    if (comments !== undefined) return;
+	onMount(() => {
+		if (comments !== undefined) return;
 
-    fetch(`/api/post/${postId}/comments`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Erro ao buscar comentários");
-        return res.json();
-      })
-      .then((data) => {
-        fetchedComments = data;
-      })
-      .catch((err) => {
-        console.error(err);
-      })
+		fetch(`/api/post/${postId}/comments`)
+			.then((res) => {
+				if (!res.ok) throw new Error("Erro ao buscar comentários");
+				return res.json();
+			})
+			.then((data) => {
+				fetchedComments = data;
+			})
+			.catch((err) => {
+				console.error(err);
+			})
 			.finally(() => {
 				hasFetched = true;
-      });
-  });
+			});
+	});
 </script>
 
 <div class="mb">
-	<p><strong>
-		{#if isLoading}
-			Comentários (...)
-		{:else}
-			Comentários ({displayComments.length})
-		{/if}
-	</strong></p>
+	<p>
+		<strong>
+			{#if isLoading}
+				Comentários (...)
+			{:else}
+				Comentários ({displayComments.length})
+			{/if}
+		</strong>
+	</p>
 </div>
 {#if session}
 	<form method="POST" action={actions.sendImagePostComment} class="flex justify-stretch gap mb">
@@ -71,16 +73,14 @@
 {/if}
 
 {#if isLoading}
-	<p class="text-muted mb p field-border" style="background: #fff;">
-		Carregando comentários...
-	</p>
+	<p class="text-muted mb p field-border" style="background: #fff;">Carregando comentários...</p>
 {:else if displayComments.length === 0}
 	<p class="text-muted mb p field-border" style="background: #fff;">
 		Nenhum comentário ainda. Seja o primeiro a comentar!
 	</p>
 {:else}
 	<div class="comments-list flex flex-col gap field-border p">
-		{#each displayComments as comment}
+		{#each displayComments as comment (comment.id)}
 			<div class="flex center gap mb-sm">
 				{#if session && (session.id === comment.authorId || session.id === postAuthorId)}
 					<form method="POST" action={actions.deleteImagePostComment}>

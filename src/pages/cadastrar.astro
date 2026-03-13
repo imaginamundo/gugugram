@@ -11,42 +11,71 @@ if (result?.data?.success) {
 
 const seo = {
 	title: `Criação de conta`,
-	description: `Crie sua conta no gugugram e faça parte da rede social!`
-}
+	description: `Crie sua conta no gugugram e faça parte da rede social!`,
+};
 ---
 
 <Layout {...seo}>
 	<div class="form p">
-		{!!result?.data?.error && (
-			<p class="error mb flex center gap ">
-				<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
-				{result.data.error}
-			</p>
-		)}
-		<form action={actions.register} method="POST"  class="mb">
+		{
+			!!result?.data?.error && (
+				<p class="error mb flex center gap ">
+					<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+					{result.data.error}
+				</p>
+			)
+		}
+		<form action={actions.register} method="POST" class="mb">
 			<fieldset>
-        <legend>Cadastrar</legend>
+				<legend>Cadastrar</legend>
 				<label class="label">
 					Nome de usuário:
-					<Input name="username" autocomplete="username" class="block" type="text" placeholder="Novo nome de usuário" required />
+					<Input
+						name="username"
+						autocomplete="username"
+						class="block"
+						type="text"
+						placeholder="Novo nome de usuário"
+						required
+					/>
 					<span class="helper-text">Máximo de 14 caracteres, sem caracteres especiais</span>
-					{!!result?.data?.fieldErrors?.username && (
-						<span class="helper-error">{result.data.fieldErrors.username}</span>
-					)}
+					{
+						!!result?.data?.fieldErrors?.username && (
+							<span class="helper-error">{result.data.fieldErrors.username}</span>
+						)
+					}
 				</label>
 				<label class="label">
 					E-mail:
-					<Input name="email" autocomplete="email" class="block" type="email" placeholder="Seu e-mail" required />
-					{!!result?.data?.fieldErrors?.email && (
-						<span class="helper-error">{result.data.fieldErrors.email}</span>
-					)}
+					<Input
+						name="email"
+						autocomplete="email"
+						class="block"
+						type="email"
+						placeholder="Seu e-mail"
+						required
+					/>
+					{
+						!!result?.data?.fieldErrors?.email && (
+							<span class="helper-error">{result.data.fieldErrors.email}</span>
+						)
+					}
 				</label>
 				<label class="label">
 					Senha:
-					<Input name="password" autocomplete="new-password" class="block" type="password" placeholder="Sua senha" required />
-					{!!result?.data?.fieldErrors?.password && (
-						<span class="helper-error">{result.data.fieldErrors.password}</span>
-					)}
+					<Input
+						name="password"
+						autocomplete="new-password"
+						class="block"
+						type="password"
+						placeholder="Sua senha"
+						required
+					/>
+					{
+						!!result?.data?.fieldErrors?.password && (
+							<span class="helper-error">{result.data.fieldErrors.password}</span>
+						)
+					}
 				</label>
 				<Button class="m-sm">Cadastrar</Button>
 			</fieldset>

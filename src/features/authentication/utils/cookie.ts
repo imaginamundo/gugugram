@@ -1,5 +1,4 @@
-// src/utils/cookie.ts (ou onde você deixou)
-import type { AstroCookies } from "astro";
+import type { AstroCookies, AstroCookieSetOptions } from "astro";
 
 export function applySetCookie(headers: Headers, cookies: AstroCookies) {
 	const setCookies = headers.getSetCookie();
@@ -13,14 +12,14 @@ export function applySetCookie(headers: Headers, cookies: AstroCookies) {
 
 		if (!name || value === undefined) return;
 
-		const options: any = {};
+		const options: AstroCookieSetOptions = {};
 		attributes.forEach((attr) => {
 			const [key, val] = attr.split("=");
 			const lowerKey = key.toLowerCase();
 
 			if (lowerKey === "path") options.path = val;
 			else if (lowerKey === "domain") options.domain = val;
-			else if (lowerKey === "max-age") options.maxAge = parseInt(val);
+			else if (lowerKey === "max-age") options.maxAge = parseInt(val, 10);
 			else if (lowerKey === "expires") options.expires = new Date(val);
 			else if (lowerKey === "secure") options.secure = true;
 			else if (lowerKey === "httponly") options.httpOnly = true;

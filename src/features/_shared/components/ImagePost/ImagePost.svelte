@@ -9,9 +9,7 @@
 		store.post = post;
 	}
 
-	const accessibleName = $derived(
-    post.description ? post.description : `Foto de ${post.username}`
-  );
+	const accessibleName = $derived(post.description ? post.description : `Foto de ${post.username}`);
 </script>
 
 <a

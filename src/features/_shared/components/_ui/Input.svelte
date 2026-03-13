@@ -10,7 +10,7 @@
 		ref = $bindable(null),
 		value = $bindable(),
 		files = $bindable(),
-		type = 'text',
+		type = "text",
 		class: className,
 		...props
 	}: InputProps = $props();
@@ -19,7 +19,7 @@
 </script>
 
 {#if type === "file"}
-	<input bind:this={ref} type="file" bind:files  class={classes} {...props} />
+	<input bind:this={ref} type="file" bind:files class={classes} {...props} />
 {:else}
 	<input bind:this={ref} bind:value {type} class={classes} {...props} />
 {/if}

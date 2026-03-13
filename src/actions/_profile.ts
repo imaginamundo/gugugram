@@ -88,8 +88,9 @@ export const updateProfile = defineAction({
 					.deleteFiles(oldImageKeyToDelete)
 					.catch((e) => console.error("Erro ao deletar imagem antiga do UT:", e));
 			}
-		} catch (error: any) {
-			if (error.code === "23505") {
+		} catch (error) {
+			const dbError = error as { code?: string };
+			if (dbError.code === "23505") {
 				return {
 					success: false as const,
 					error: "Este nome de usuário ou e-mail já está em uso.",
@@ -133,7 +134,7 @@ export const removeProfileImage = defineAction({
 			await db.update(users).set({ image: null }).where(eq(users.id, session.id));
 
 			return { success: true };
-		} catch (error) {
+		} catch {
 			return {
 				success: false,
 				error: "Erro interno ao tentar remover a foto de perfil.",

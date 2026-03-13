@@ -1,5 +1,5 @@
 ---
-import { actions } from 'astro:actions';
+import { actions } from "astro:actions";
 import Layout from "@layout/Main.astro";
 import ProfileHeader from "@components/ProfileHeader/ProfileHeader.astro";
 import ImagePostDetails from "@components/ImagePostDetails/ImagePostDetails.svelte";
@@ -14,18 +14,18 @@ const session = Astro.locals.user;
 
 const result = Astro.getActionResult(actions.deleteImagePost);
 if (result && !result.error) {
-  return Astro.redirect(`/${username}`);
+	return Astro.redirect(`/${username}`);
 }
 
 const post = await getImagePost(postId);
 
 if (!post || post.username !== username) {
-  return new Response(null, { status: 404 });
+	return new Response(null, { status: 404 });
 }
 
 const { user } = await getProfile({
-  username,
-  session,
+	username,
+	session,
 });
 
 if (!user) return new Response(null, { status: 404 });
@@ -34,22 +34,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || Astro.url);
 const shareImageURL = new URL(`/api/og/${post.id}`, canonicalURL);
 
 const seo = {
-  title: `Imagem de ${username}`,
-  description: post.description || `Veja esta imagem de ${username} no Gugugram!`,
-  shareImage: shareImageURL,
-  image: post.image, 
+	title: `Imagem de ${username}`,
+	description: post.description || `Veja esta imagem de ${username} no Gugugram!`,
+	shareImage: shareImageURL,
+	image: post.image,
 };
 ---
 
 <Layout {...seo}>
-  <ProfileHeader {user} />
-  <div class="mt">
-    <div class="mt mb">
-      <a href={`/${username}`}>Ver todas as fotos de {username}</a>
-    </div>
-    <ImagePostDetails {session} {post} client:load />
-    <div class="mt">
-      {session?.id === post.userId && <DeleteImagePost {post} client:load />}
-    </div>
-  </div>
+	<ProfileHeader {user} />
+	<div class="mt">
+		<div class="mt mb">
+			<a href={`/${username}`}>Ver todas as fotos de {username}</a>
+		</div>
+		<ImagePostDetails {session} {post} client:load />
+		<div class="mt">
+			{session?.id === post.userId && <DeleteImagePost {post} client:load />}
+		</div>
+	</div>
 </Layout>

@@ -8,21 +8,23 @@ const result = Astro.getActionResult(actions.requestPasswordReset);
 
 const seo = {
 	title: `Recuperação de senha`,
-	robots: 'noindex,nofollow'
-}
+	robots: "noindex,nofollow",
+};
 ---
 
 <Layout {...seo}>
 	<div class="form p">
-		{!!result?.data?.message && (
-			<p class="mb flex center gap ">
-				<img src="/icons/mailbox_world-2.png" alt="'Ícone de erro" />
-				{result.data.message}
-			</p>
-		)}
+		{
+			!!result?.data?.message && (
+				<p class="mb flex center gap ">
+					<img src="/icons/mailbox_world-2.png" alt="'Ícone de erro" />
+					{result.data.message}
+				</p>
+			)
+		}
 		<form class="mb" method="POST" action={actions.requestPasswordReset}>
 			<fieldset>
-        <legend>Esqueci minha senha</legend>
+				<legend>Esqueci minha senha</legend>
 				<label class="label">
 					E-mail:
 					<Input class="block" name="email" type="email" placeholder="Seu e-mail cadastrado" />

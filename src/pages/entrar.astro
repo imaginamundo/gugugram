@@ -11,34 +11,52 @@ if (result?.data?.success) {
 
 const seo = {
 	title: `Entrar na sua conta Gugugram`,
-	description: `Faça sua autenticação e aproveite para enviar mensagem e imagens!`
-}
+	description: `Faça sua autenticação e aproveite para enviar mensagem e imagens!`,
+};
 ---
 
 <Layout {...seo}>
 	<div class="form p">
-		{!!result?.data?.error && (
-			<p class="error mb flex center gap ">
-				<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
-				{result.data.error}
-			</p>
-		)}
+		{
+			!!result?.data?.error && (
+				<p class="error mb flex center gap ">
+					<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+					{result.data.error}
+				</p>
+			)
+		}
 		<form action={actions.login} method="POST" class="mb">
 			<fieldset>
-        <legend>Entrar</legend>
+				<legend>Entrar</legend>
 				<label class="label">
 					Nome de usuário ou e-mail:
-					<Input name="identity" autocomplete="username" type="text" class="block" placeholder="Seu nome de usuário ou e-mail" />
-					{!!result?.data?.fieldErrors?.identity && (
-						<span class="helper-error">{result.data.fieldErrors.identity}</span>
-					)}
+					<Input
+						name="identity"
+						autocomplete="username"
+						type="text"
+						class="block"
+						placeholder="Seu nome de usuário ou e-mail"
+					/>
+					{
+						!!result?.data?.fieldErrors?.identity && (
+							<span class="helper-error">{result.data.fieldErrors.identity}</span>
+						)
+					}
 				</label>
 				<label class="label">
 					Senha:
-					<Input name="password" autocomplete="current-password" class="block" type="password" placeholder="Sua senha" />
-					{!!result?.data?.fieldErrors?.password && (
-						<span class="helper-error">{result.data.fieldErrors.password}</span>
-					)}
+					<Input
+						name="password"
+						autocomplete="current-password"
+						class="block"
+						type="password"
+						placeholder="Sua senha"
+					/>
+					{
+						!!result?.data?.fieldErrors?.password && (
+							<span class="helper-error">{result.data.fieldErrors.password}</span>
+						)
+					}
 				</label>
 				<Button class="m-sm">Entrar</Button>
 			</fieldset>

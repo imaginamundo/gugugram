@@ -14,4 +14,4 @@
 	}: InputProps = $props();
 </script>
 
-<textarea bind:this={ref} bind:value class={['textarea', className]} {...props}></textarea>
+<textarea bind:this={ref} bind:value class={["textarea", className]} {...props}></textarea>

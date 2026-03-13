@@ -49,7 +49,7 @@ export const resetPassword = defineAction({
 			});
 
 			return { success: true };
-		} catch (error) {
+		} catch {
 			return { success: false, error: "Erro ao redefinir senha." };
 		}
 	},

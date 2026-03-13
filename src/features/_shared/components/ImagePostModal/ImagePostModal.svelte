@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { draggableDialog } from '@utils/draggableDialog';
+	import { draggableDialog } from "@utils/draggableDialog";
 	import Button from "@components/_ui/Button.svelte";
 	import Modal from "@components/_ui/Modal.svelte";
 	import ImagePostDetails from "@components/ImagePostDetails/ImagePostDetails.svelte";
@@ -9,40 +9,42 @@
 	let closeButtonRef = $state<HTMLButtonElement | null>(null);
 	let imageModalRef = $state<HTMLDialogElement | null>(null);
 
-	const { session }: { session: App.Locals["user"]; } = $props();
+	const { session }: { session: App.Locals["user"] } = $props();
 
-  let profilePath = $state("");
+	let profilePath = $state("");
 
-  $effect(() => {
-    if (store.post) {
-      if (imageModalRef && !imageModalRef.open) imageModalRef.showModal();
-      closeButtonRef?.focus();
-    } else if (imageModalRef?.open) {
-      imageModalRef.close();
-    }
-  });
+	$effect(() => {
+		if (store.post) {
+			if (imageModalRef && !imageModalRef.open) imageModalRef.showModal();
+			closeButtonRef?.focus();
+		} else if (imageModalRef?.open) {
+			imageModalRef.close();
+		}
+	});
 
-  $effect(() => {
-    if (store.post) {
-      const expectedPath = `/${store.post.username}/${store.post.id}`;
-      if (window.location.pathname !== expectedPath) {
-        profilePath = profilePath || window.location.pathname; 
-        window.history.replaceState({}, "", expectedPath);
-      }
-    } else if (profilePath && window.location.pathname !== profilePath) {
-      window.history.replaceState({}, "", profilePath);
-      profilePath = "";
-    }
-  });
+	$effect(() => {
+		if (store.post) {
+			const expectedPath = `/${store.post.username}/${store.post.id}`;
+			if (window.location.pathname !== expectedPath) {
+				profilePath = profilePath || window.location.pathname;
+				window.history.replaceState({}, "", expectedPath);
+			}
+		} else if (profilePath && window.location.pathname !== profilePath) {
+			window.history.replaceState({}, "", profilePath);
+			profilePath = "";
+		}
+	});
 
-  function handleModalClose() {
-    store.clear();
-  }
+	function handleModalClose() {
+		store.clear();
+	}
 </script>
 
 <Modal bind:ref={imageModalRef} class="modal-lg" onclose={handleModalClose}>
 	{#if store.post}
-		<div class="title-bar" use:draggableDialog><p><strong>Detalhes da imagem</strong></p></div>
+		<div class="title-bar" {@attach draggableDialog}>
+			<p><strong>Detalhes da imagem</strong></p>
+		</div>
 		<div class="window-body">
 			<ImagePostDetails {session} post={store.post} />
 			<div class="flex gap justify-between row-reverse">

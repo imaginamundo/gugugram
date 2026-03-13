@@ -2,7 +2,7 @@
 	import type { HTMLInputAttributes } from "svelte/elements";
 	import type { WithElementRef } from "@ui/utils.ts";
 
-	export type InputProps = WithElementRef<Omit<HTMLInputAttributes, 'type'>, HTMLInputElement>;
+	export type InputProps = WithElementRef<Omit<HTMLInputAttributes, "type">, HTMLInputElement>;
 </script>
 
 <script lang="ts">
@@ -15,4 +15,11 @@
 	}: InputProps = $props();
 </script>
 
-<input bind:this={ref} type="checkbox" class={['checkbox', className]} bind:checked bind:indeterminate {...props} />
+<input
+	bind:this={ref}
+	type="checkbox"
+	class={["checkbox", className]}
+	bind:checked
+	bind:indeterminate
+	{...props}
+/>

@@ -16,7 +16,7 @@
 </form>
 
 <Modal bind:ref={modalRef}>
-	<div class="title-bar" use:draggableDialog><p><strong>Sair da conta</strong></p></div>
+	<div class="title-bar" {@attach draggableDialog}><p><strong>Sair da conta</strong></p></div>
 	<div class="window-body">
 		<p>Tem certeza que deseja sair da sua conta?</p>
 		<div class="flex gap justify-center mt">

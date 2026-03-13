@@ -79,7 +79,7 @@ export const uploadImagePost = defineAction({
 					description: sanitizedDescription,
 					image: upload.data?.ufsUrl,
 				});
-			} catch (dbError) {
+			} catch {
 				const imageKey = upload.data.ufsUrl.split("/").pop();
 				if (imageKey) await utapi.deleteFiles(imageKey);
 

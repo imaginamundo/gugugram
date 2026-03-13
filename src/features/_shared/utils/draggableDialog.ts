@@ -2,7 +2,7 @@ export function draggableDialog(node: HTMLElement) {
 	const dialog = node.closest("dialog");
 	if (!dialog) {
 		console.warn("The draggable action must be used inside a <dialog> element.");
-		return {};
+		return;
 	}
 
 	node.classList.add("draggable");
@@ -47,13 +47,11 @@ export function draggableDialog(node: HTMLElement) {
 	node.addEventListener("pointermove", onPointerMove);
 	node.addEventListener("pointerup", onPointerUp);
 
-	return {
-		destroy() {
-			node.removeEventListener("pointerdown", onPointerDown);
-			node.removeEventListener("pointermove", onPointerMove);
-			node.removeEventListener("pointerup", onPointerUp);
+	return () => {
+		node.removeEventListener("pointerdown", onPointerDown);
+		node.removeEventListener("pointermove", onPointerMove);
+		node.removeEventListener("pointerup", onPointerUp);
 
-			dialog.style.transform = "";
-		},
+		dialog.style.transform = "";
 	};
 }
