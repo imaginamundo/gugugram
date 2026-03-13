@@ -1,5 +1,6 @@
 <script lang="ts">
   import { actions } from "astro:actions";
+  import { draggableDialog } from "@utils/draggableDialog";
   import Button from "@components/_ui/Button.svelte";
   import Modal from "@components/_ui/Modal.svelte";
 	import type { ProfileUser } from "@services/user";
@@ -18,7 +19,7 @@
 </fieldset>
 
 <Modal bind:ref={modalRef}>
-  <div class="title-bar"><p><strong>Atenção</strong></p></div>
+  <div class="title-bar" use:draggableDialog><p><strong>Atenção</strong></p></div>
   <div class="window-body">
     <p>Certeza que quer deletar essa imagem?</p>
     <div class="flex gap justify-center mt">

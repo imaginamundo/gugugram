@@ -1,5 +1,5 @@
 import { defineAction } from "astro:actions";
-import { z } from "astro:schema";
+import { z } from "astro/zod";
 import { and, eq, desc } from "drizzle-orm";
 import { imageSize } from "image-size";
 import sanitizeHtml from "sanitize-html";
@@ -48,7 +48,7 @@ export const uploadImagePost = defineAction({
 		const file = fields.image;
 
 		const arrayBuffer = await file.arrayBuffer();
-		const dimensions = await imageSize(Buffer.from(arrayBuffer));
+		const dimensions = imageSize(Buffer.from(arrayBuffer));
 
 		if (!dimensions || dimensions.width === undefined || dimensions.height === undefined) {
 			throw new Error("Arquivo de imagem inválido ou corrompido.");

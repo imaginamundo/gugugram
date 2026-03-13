@@ -9,19 +9,19 @@
 		"dev": "astro dev",
 		"build": "astro build",
 		"preview": "astro preview",
+		"check": "astro check",
 		"astro": "astro",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio"
 	},
 	"dependencies": {
-		"@astrojs/svelte": "^7.2.5",
-		"@astrojs/vercel": "^9.0.4",
+		"@astrojs/svelte": "^8.0.0",
+		"@astrojs/vercel": "^10.0.0",
 		"@resvg/resvg-js": "^2.6.2",
-		"@sentry/astro": "^10.40.0",
 		"@vercel/postgres": "^0.10.0",
-		"astro": "^5.18.0",
-		"better-auth": "^1.4.20",
+		"astro": "^6.0.4",
+		"better-auth": "^1.5.5",
 		"dotenv": "^17.3.1",
 		"drizzle-orm": "^0.45.1",
 		"image-size": "^2.0.2",
@@ -31,10 +31,10 @@
 		"satori": "^0.25.0",
 		"satori-html": "^0.3.2",
 		"svelte": "^5.53.6",
-		"typescript": "^5.9.3",
 		"uploadthing": "^7.7.4"
 	},
 	"devDependencies": {
+		"@astrojs/check": "^0.9.7",
 		"@types/nodemailer": "^7.0.11",
 		"@types/pg": "^8.18.0",
 		"@types/sanitize-html": "^2.16.0",
@@ -46,7 +46,8 @@
 		"postcss-inline-svg": "^6.0.0",
 		"prettier": "3.8.1",
 		"prettier-plugin-astro": "0.14.1",
-		"prettier-plugin-svelte": "3.5.0",
-		"tsx": "^4.21.0"
+		"prettier-plugin-svelte": "^3.5.1",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.3"
 	}
 }

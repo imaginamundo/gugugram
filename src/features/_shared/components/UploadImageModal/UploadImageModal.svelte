@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { actions } from "astro:actions";
+	import { draggableDialog } from '@utils/draggableDialog';
 	import Button from "@components/_ui/Button.svelte";
 	import Checkbox from "@components/_ui/Checkbox.svelte";
 	import Modal from "@components/_ui/Modal.svelte";
@@ -176,7 +177,7 @@
 	}
 </script>
 
-<Button class="button-borderless eader-button flex gap center p w-full justify-center" onclick={triggerFileInput}>
+<Button class="button-grayscale button-borderless eader-button flex gap center p w-full justify-center" onclick={triggerFileInput}>
 	<img src="/icons/camera3_plus-3.png" width="32" height="32" alt="Ícone de casa" />
 	Adicionar foto
 </Button>
@@ -191,7 +192,7 @@
 />
 
 <Modal bind:ref={modalRef} onclose={onModalClose}>
-	<div class="title-bar"><p><strong>Subir imagem</strong></p></div>
+	<div class="title-bar" use:draggableDialog><p><strong>Subir imagem</strong></p></div>
 	<div class="window-body">
 		{#if actionError}
 			<p class="error mb flex center gap" role="alert">
@@ -287,18 +288,6 @@
 		height: 120px;
 		canvas {
 			vertical-align: top;
-		}
-	}
-
-	.button-borderless {
-		cursor: pointer;
-		img {
-			filter: url("#grayscale");
-		}
-		&:hover {
-			img {
-				filter: none;
-			}
 		}
 	}
 </style>

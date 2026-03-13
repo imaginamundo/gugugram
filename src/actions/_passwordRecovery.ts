@@ -1,10 +1,10 @@
 import { defineAction } from "astro:actions";
-import { z } from "astro:schema";
+import { z } from "astro/zod";
 import { auth } from "@auth/auth";
 import { parseSchema } from "@utils/validation";
 
 const RequestPasswordResetSchema = z.object({
-	email: z.string().email("E-mail inválido"),
+	email: z.email("E-mail inválido"),
 });
 
 export const requestPasswordReset = defineAction({

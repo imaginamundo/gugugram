@@ -224,6 +224,19 @@ figure {
 		}
 	}
 }
+
+.button-grayscale {
+	cursor: pointer;
+	img {
+		filter: url("#grayscale");
+	}
+	&:hover {
+		img {
+			filter: none;
+		}
+	}
+}
+
 .button-borderless {
 	box-shadow: none;
 }
@@ -379,6 +392,14 @@ label:focus-within {
 	.title-bar {
 		position: sticky;
 		top: 0;
+	}
+}
+
+.draggable {
+	cursor: grab;
+	touch-action: none;
+	&:active {
+		cursor: grabbing;
 	}
 }
 

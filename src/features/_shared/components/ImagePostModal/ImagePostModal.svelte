@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { draggableDialog } from '@utils/draggableDialog';
 	import Button from "@components/_ui/Button.svelte";
 	import Modal from "@components/_ui/Modal.svelte";
 	import ImagePostDetails from "@components/ImagePostDetails/ImagePostDetails.svelte";
@@ -41,7 +42,7 @@
 
 <Modal bind:ref={imageModalRef} class="modal-lg" onclose={handleModalClose}>
 	{#if store.post}
-		<div class="title-bar"><p><strong>Detalhes da imagem</strong></p></div>
+		<div class="title-bar" use:draggableDialog><p><strong>Detalhes da imagem</strong></p></div>
 		<div class="window-body">
 			<ImagePostDetails {session} post={store.post} />
 			<div class="flex gap justify-between row-reverse">

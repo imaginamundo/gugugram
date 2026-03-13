@@ -1,6 +1,7 @@
 <script lang="ts">
   import { tick } from "svelte";
   import { actions } from "astro:actions";
+  import { draggableDialog } from '@utils/draggableDialog';
   import Button from "@components/_ui/Button.svelte";
   import Modal from "@components/_ui/Modal.svelte";
   import type { FriendshipContext } from "@services/user"; 
@@ -129,7 +130,7 @@
 
 <Modal bind:ref={modalRef} onclose={() => currentAction = null}>
   {#if modalContent}
-    <div class="title-bar"><p><strong>{modalContent.title}</strong></p></div>
+    <div class="title-bar" use:draggableDialog><p><strong>{modalContent.title}</strong></p></div>
     <div class="window-body">
       <p>{modalContent.text}</p>
       <div class="flex gap justify-center mt">

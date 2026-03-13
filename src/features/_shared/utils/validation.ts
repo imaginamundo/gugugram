@@ -1,4 +1,4 @@
-import { z } from "astro:schema";
+import { z } from "astro/zod";
 
 export function formDataToObject(formData: FormData): Record<string, any> {
 	const obj: Record<string, any> = {};

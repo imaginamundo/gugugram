@@ -1,5 +1,5 @@
 import { defineAction } from "astro:actions";
-import { z } from "astro:schema";
+import { z } from "astro/zod";
 import { and, eq, or, desc } from "drizzle-orm";
 import { users } from "@database/schema";
 import sanitizeHtml from "sanitize-html";

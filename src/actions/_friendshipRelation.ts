@@ -1,5 +1,5 @@
 import { defineAction } from "astro:actions";
-import { z } from "astro:schema";
+import { z } from "astro/zod";
 import { db } from "@database/postgres";
 import { userFriends } from "@database/schema";
 import { and, eq, or } from "drizzle-orm";

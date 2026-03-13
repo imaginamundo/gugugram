@@ -1,4 +1,4 @@
-import { desc, eq, asc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "@database/postgres";
 import { imagePosts, imagePostComments } from "@database/schema";
 
@@ -22,7 +22,7 @@ export type PostWithCommentsType = PostType & {
 	comments: CommentType[];
 };
 
-export function getLatestImagePosts(): Promise<PostType[]> {
+export async function getLatestImagePosts(): Promise<PostType[]> {
 	return db.query.imagePosts
 		.findMany({
 			columns: {

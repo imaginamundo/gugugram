@@ -1,5 +1,5 @@
 import { defineAction } from "astro:actions";
-import { z } from "astro:schema";
+import { z } from "astro/zod";
 import { eq } from "drizzle-orm";
 import { db } from "@database/postgres";
 import { users } from "@database/schema";
@@ -10,7 +10,7 @@ const UpdateProfileSchema = z.object({
 	profileImage: z.string().optional(),
 	description: z.string().max(500).optional(),
 	username: z.string().min(3),
-	email: z.string().email(),
+	email: z.email(),
 });
 
 export const updateProfile = defineAction({

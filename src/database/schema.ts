@@ -92,7 +92,7 @@ export const imagePostComments = createTable("image_post_comments", {
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const usersRelations = relations(users, ({ one, many }) => ({
+export const usersRelations = relations(users, ({ many }) => ({
 	imagePosts: many(imagePosts),
 	requestedFriends: many(userFriends, {
 		relationName: "friendship_requester",

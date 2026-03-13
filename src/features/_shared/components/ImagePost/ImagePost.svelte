@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Button from "@components/_ui/Button.svelte";
 	import { imageModalStore as store } from "@stores/imageModalStore.svelte";
 	import type { PostType } from "@services/image";
 
@@ -10,9 +9,9 @@
 		store.post = post;
 	}
 
-	const accessibleName = post.description 
-    ? post.description 
-    : `Foto de ${post.username}`;
+	const accessibleName = $derived(
+    post.description ? post.description : `Foto de ${post.username}`
+  );
 </script>
 
 <a

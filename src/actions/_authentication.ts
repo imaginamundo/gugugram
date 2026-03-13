@@ -85,7 +85,6 @@ export const register = defineAction({
 
 			if (response.ok) {
 				applySetCookie(response.headers, context.cookies);
-				const data = await response.json();
 				return {
 					success: true as const,
 					username: fields.username,
