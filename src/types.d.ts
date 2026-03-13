@@ -8,7 +8,6 @@ type UserType = {
 
 declare module "@auth/core/types" {
 	interface User extends DefaultUser, UserType {}
-
 	interface Session extends DefaultSession, UserType {}
 }
 
