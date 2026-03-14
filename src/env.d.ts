@@ -12,13 +12,3 @@ declare namespace App {
 interface ImportMeta {
 	readonly env: ImportMetaEnv;
 }
-
-interface ImportMetaEnv {
-	readonly POSTGRES_URL: string;
-	readonly AUTH_SECRET: string;
-	readonly UPLOADTHING_TOKEN: string;
-	readonly MAILER_SERVICE: string;
-	readonly MAILER_HOST: string;
-	readonly MAILER_USER: string;
-	readonly MAILER_PASSWORD: string;
-}

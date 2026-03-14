@@ -17,7 +17,7 @@ export const requestPasswordReset = defineAction({
 			headers: context.request.headers,
 			body: {
 				email: fields.email,
-				redirectTo: `${import.meta.env.PUBLIC_BASE_URL}/nova-senha`,
+				redirectTo: `${import.meta.env.SITE}/nova-senha`,
 			},
 		});
 

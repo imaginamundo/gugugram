@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 import svelte from "@astrojs/svelte";
 import vercel from "@astrojs/vercel";
 
@@ -11,5 +11,16 @@ export default defineConfig({
 	output: "server",
 	security: {
 		checkOrigin: false,
+	},
+	env: {
+		schema: {
+			POSTGRES_URL: envField.string({ context: "server", access: "secret" }),
+			AUTH_SECRET: envField.string({ context: "server", access: "secret" }),
+			UPLOADTHING_TOKEN: envField.string({ context: "server", access: "secret" }),
+			MAILER_SERVICE: envField.string({ context: "server", access: "secret" }),
+			MAILER_HOST: envField.string({ context: "server", access: "secret" }),
+			MAILER_USER: envField.string({ context: "server", access: "secret" }),
+			MAILER_PASSWORD: envField.string({ context: "server", access: "secret" }),
+		},
 	},
 });

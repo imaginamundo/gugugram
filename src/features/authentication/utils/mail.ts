@@ -1,19 +1,20 @@
 import nodemailer from "nodemailer";
+import { MAILER_SERVICE, MAILER_HOST, MAILER_USER, MAILER_PASSWORD } from "astro:env/server";
 
 const transporter = nodemailer.createTransport({
-	service: process.env.MAILER_SERVICE,
-	host: process.env.MAILER_HOST,
+	service: MAILER_SERVICE,
+	host: MAILER_HOST,
 	port: 587,
 	secure: false,
 	auth: {
-		user: process.env.MAILER_USER,
-		pass: process.env.MAILER_PASSWORD,
+		user: MAILER_USER,
+		pass: MAILER_PASSWORD,
 	},
 });
 
 export async function sendEmail(to: string, url: string, token: string) {
 	const options = {
-		from: `Diogo do Gugugram<${process.env.MAILER_USER}>`,
+		from: `Diogo do Gugugram<${MAILER_USER}>`,
 		to: to,
 		subject: "Gugugram - Cadastrar nova senha",
 		text: textTemplate(url, token),

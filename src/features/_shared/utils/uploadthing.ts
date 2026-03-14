@@ -1,5 +1,6 @@
 import { UTApi } from "uploadthing/server";
+import { UPLOADTHING_TOKEN } from "astro:env/server";
 
 export const utapi = new UTApi({
-	token: import.meta.env.UPLOADTHING_TOKEN,
+	token: UPLOADTHING_TOKEN,
 });
