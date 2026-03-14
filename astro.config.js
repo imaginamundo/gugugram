@@ -14,7 +14,12 @@ export default defineConfig({
 	},
 	env: {
 		schema: {
-			POSTGRES_URL: envField.string({ context: "server", access: "secret" }),
+			POSTGRES_URL: envField.string({
+				context: "server",
+				access: "secret",
+				url: true,
+				startsWith: "postgresql://",
+			}),
 			AUTH_SECRET: envField.string({ context: "server", access: "secret" }),
 			UPLOADTHING_TOKEN: envField.string({ context: "server", access: "secret" }),
 			MAILER_SERVICE: envField.string({ context: "server", access: "secret" }),
