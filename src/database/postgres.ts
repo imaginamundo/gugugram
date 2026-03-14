@@ -1,11 +1,7 @@
-import { createPool } from "@vercel/postgres";
-import { drizzle } from "drizzle-orm/vercel-postgres";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 
 import * as schema from "./schema";
 
-export const db = drizzle(
-	createPool({
-		connectionString: import.meta.env.POSTGRES_URL,
-	}),
-	{ schema },
-);
+const client = neon(import.meta.env.POSTGRES_URL!);
+export const db = drizzle({ client, schema });
