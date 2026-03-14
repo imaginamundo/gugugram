@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { auth } from "@auth/auth";
+import { auth } from "@lib/auth.ts";
 
 export const POST: APIRoute = async (context) => {
 	try {

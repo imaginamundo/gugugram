@@ -1,10 +1,10 @@
 ---
-import { getProfile } from "@services/user";
+import { getProfile } from "@services/user/profile.ts";
 import { getMessages, updateLastRead } from "@services/message";
 import Layout from "@layout/Main.astro";
-import ProfileHeader from "@components/ProfileHeader/ProfileHeader.astro";
-import ProfileTabs from "@components/ProfileTabs/ProfileTabs.svelte";
-import Messages from "@components/Messages/Messages.astro";
+import ProfileHeader from "@components/profile/ProfileHeader/ProfileHeader.astro";
+import ProfileTabs from "@components/profile/ProfileTabs/ProfileTabs.svelte";
+import Messages from "@components/profile/Messages/Messages.astro";
 
 const { username } = Astro.params;
 if (!username) return new Response(null, { status: 404 });

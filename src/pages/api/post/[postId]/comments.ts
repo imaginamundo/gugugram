@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getImagePostComments } from "@services/image";
+import { getImagePostComments } from "@services/imagePost";
 
 export const GET: APIRoute = async ({ params }) => {
 	const { postId } = params;

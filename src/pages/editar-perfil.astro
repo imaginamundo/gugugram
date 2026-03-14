@@ -1,12 +1,12 @@
 ---
 import { actions } from "astro:actions";
-import { getProfile } from "@services/user";
+import { getProfile } from "@services/user/profile";
 import Layout from "@layout/Main.astro";
 import Input from "@ui/Input.svelte";
 import Button from "@ui/Button.svelte";
-import RemoveProfilePicture from "@components/RemoveProfilePicture/RemoveProfilePicture.svelte";
-import Textarea from "@components/_ui/Textarea.svelte";
-import InputImage from "@components/InputImage/InputImage.svelte";
+import Textarea from "@ui/Textarea.svelte";
+import InputImage from "@components/_shared/InputImage/InputImage.svelte";
+import RemoveProfilePicture from "@components/profile/RemoveProfilePicture/RemoveProfilePicture.svelte";
 
 const session = Astro.locals.user;
 if (!session || !session.username) return Astro.redirect("/");

@@ -1,10 +1,8 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
-import { eq } from "drizzle-orm";
-import { db } from "@database/postgres";
-import { users } from "@database/schema";
-import { utapi } from "@utils/uploadthing";
 import { parseSchema } from "@utils/validation";
+
+import { updateProfileData, removeProfileImageFromUser } from "@services/user/profile";
 
 const UpdateProfileSchema = z.object({
 	profileImage: z.string().optional(),
@@ -16,93 +14,40 @@ const UpdateProfileSchema = z.object({
 export const updateProfile = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
-		console.log({ input, context });
 		const session = context.locals.user;
-		if (!session) {
-			return {
-				success: false,
-				error: "Não autorizado.",
-			};
-		}
+		if (!session) return { success: false as const, error: "Não autorizado." };
+
 		const { fields, success: schemaSuccess } = parseSchema(input, UpdateProfileSchema);
-		if (!schemaSuccess) {
-			return {
-				success: false as const,
-				error: "Erro ao validar dados.",
-			};
-		}
-
-		const currentUser = await db.query.users.findFirst({
-			where: eq(users.id, session.id),
-		});
-
-		const updateData: Partial<typeof users.$inferInsert> = {
-			description: fields.description,
-			username: fields.username,
-			displayUsername: fields.username,
-			email: fields.email,
-		};
-
-		let oldImageKeyToDelete: string | null = null;
-
-		if (fields.profileImage && fields.profileImage.includes(",")) {
-			try {
-				const base64Data = fields.profileImage.replace(/^data:image\/\w+;base64,/, "");
-				const buffer = Buffer.from(base64Data, "base64");
-
-				const originalName = fields.username || "avatar";
-				const newFilename = `${originalName}_30x30.png`;
-
-				const file = new File([buffer], newFilename, { type: "image/png" });
-
-				const upload = await utapi.uploadFiles(file);
-
-				if (!upload.data?.ufsUrl) {
-					return {
-						success: false as const,
-						error: "Erro ao subir a nova imagem de perfil.",
-					};
-				}
-
-				updateData.image = upload.data.ufsUrl;
-
-				if (currentUser?.image) {
-					oldImageKeyToDelete = currentUser.image.split("/").pop() || null;
-				}
-			} catch (processingError) {
-				console.error(processingError);
-
-				return {
-					success: false as const,
-					error:
-						"Erro ao processar a imagem de perfil. Certifique-se de que é um arquivo de imagem válido.",
-				};
-			}
-		}
+		if (!schemaSuccess) return { success: false as const, error: "Erro ao validar dados." };
 
 		try {
-			await db.update(users).set(updateData).where(eq(users.id, session.id));
+			await updateProfileData(session.id, {
+				username: fields.username,
+				email: fields.email,
+				description: fields.description,
+				profileImage: fields.profileImage,
+			});
 
-			if (oldImageKeyToDelete) {
-				utapi
-					.deleteFiles(oldImageKeyToDelete)
-					.catch((e) => console.error("Erro ao deletar imagem antiga do UT:", e));
-			}
+			return { success: true as const };
 		} catch (error) {
-			const dbError = error as { code?: string };
-			if (dbError.code === "23505") {
-				return {
-					success: false as const,
-					error: "Este nome de usuário ou e-mail já está em uso.",
-				};
+			if (error instanceof Error) {
+				switch (error.message) {
+					case "IMAGE_UPLOAD_FAILED":
+						return { success: false as const, error: "Erro ao subir a nova imagem de perfil." };
+					case "IMAGE_PROCESSING_FAILED":
+						return {
+							success: false as const,
+							error: "Erro ao processar a imagem. Certifique-se de que é válida.",
+						};
+					case "UNIQUE_CONSTRAINT_VIOLATION":
+						return {
+							success: false as const,
+							error: "Este nome de usuário ou e-mail já está em uso.",
+						};
+				}
 			}
-			return {
-				success: false as const,
-				error: "Erro interno ao atualizar o perfil.",
-			};
+			return { success: false as const, error: "Erro interno ao atualizar o perfil." };
 		}
-
-		return { success: true as const };
 	},
 });
 
@@ -112,33 +57,17 @@ export const removeProfileImage = defineAction({
 		const session = context.locals.user;
 		if (!session) throw new Error("Não autorizado");
 
-		const currentUser = await db.query.users.findFirst({
-			where: eq(users.id, session.id),
-			columns: { image: true },
-		});
-
-		if (!currentUser?.image) {
-			return {
-				success: false,
-				error: "Você não possui uma foto de perfil para remover.",
-			};
-		}
-
-		const imageKey = currentUser.image.split("/").pop();
-
 		try {
-			if (imageKey) {
-				await utapi.deleteFiles(imageKey);
+			await removeProfileImageFromUser(session.id);
+			return { success: true as const };
+		} catch (error) {
+			if (error instanceof Error && error.message === "NO_IMAGE_TO_REMOVE") {
+				return {
+					success: false as const,
+					error: "Você não possui uma foto de perfil para remover.",
+				};
 			}
-
-			await db.update(users).set({ image: null }).where(eq(users.id, session.id));
-
-			return { success: true };
-		} catch {
-			return {
-				success: false,
-				error: "Erro interno ao tentar remover a foto de perfil.",
-			};
+			return { success: false as const, error: "Erro interno ao tentar remover a foto de perfil." };
 		}
 	},
 });

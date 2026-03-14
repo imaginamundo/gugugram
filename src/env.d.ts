@@ -4,7 +4,7 @@
 
 declare namespace App {
 	interface Locals {
-		user: typeof import("@auth/auth").auth.$Infer.Session.user | null;
+		user: typeof import("@lib/auth").auth.$Infer.Session.user | null;
 		session: import("better-auth").Session | null;
 	}
 }

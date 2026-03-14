@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 import { html } from "satori-html";
-import { getImagePost } from "@services/image";
+import { getImagePost } from "@services/imagePost.ts";
 
 const fontFile = await fetch("https://og-playground.vercel.app/inter-latin-ext-700-normal.woff");
 const fontData = await fontFile.arrayBuffer();

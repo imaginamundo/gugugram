@@ -1,9 +1,10 @@
 ---
 import Layout from "@layout/Main.astro";
-import { getProfile, getFriends } from "@services/user";
-import ProfileHeader from "@components/ProfileHeader/ProfileHeader.astro";
-import ProfileTabs from "@components/ProfileTabs/ProfileTabs.svelte";
-import FriendsList from "@components/FriendsList/FriendsList.astro";
+import { getProfile } from "@services/user/profile.ts";
+import { getFriends } from "@services/user/friends.ts";
+import ProfileHeader from "@components/profile/ProfileHeader/ProfileHeader.astro";
+import ProfileTabs from "@components/profile/ProfileTabs/ProfileTabs.svelte";
+import FriendsList from "@components/profile/FriendsList/FriendsList.astro";
 
 const { username } = Astro.params;
 if (!username) return new Response(null, { status: 404 });

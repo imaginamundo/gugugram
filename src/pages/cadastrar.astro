@@ -1,8 +1,9 @@
 ---
+import { actions } from "astro:actions";
 import Layout from "@layout/Main.astro";
 import Input from "@ui/Input.svelte";
 import Button from "@ui/Button.svelte";
-import { actions } from "astro:actions";
+
 const result = Astro.getActionResult(actions.register);
 
 if (result?.data?.success) {

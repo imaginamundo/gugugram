@@ -1,11 +1,11 @@
 ---
 import { actions } from "astro:actions";
+import { getProfile } from "@services/user/profile.ts";
+import { getImagePost } from "@services/imagePost.ts";
 import Layout from "@layout/Main.astro";
-import ProfileHeader from "@components/ProfileHeader/ProfileHeader.astro";
-import ImagePostDetails from "@components/ImagePostDetails/ImagePostDetails.svelte";
-import DeleteImagePost from "@components/DeleteImagePost/DeleteImagePost.svelte";
-import { getProfile } from "@services/user";
-import { getImagePost } from "@services/image";
+import ProfileHeader from "@components/profile/ProfileHeader/ProfileHeader.astro";
+import ImagePostDetails from "@components/post/ImagePostDetails/ImagePostDetails.svelte";
+import DeleteImagePost from "@components/post/DeleteImagePost/DeleteImagePost.svelte";
 
 const { username, postId } = Astro.params;
 if (!username || !postId) return new Response(null, { status: 404 });

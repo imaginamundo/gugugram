@@ -1,9 +1,8 @@
 import { defineAction } from "astro:actions";
-import { auth } from "@auth/auth";
-import { authErrors, type AuthErrorCode } from "@auth/client";
+import { authenticateUser, registerNewUser } from "@services/auth";
 import { parseSchema } from "@utils/validation";
-import { LoginSchema, RegisterSchema } from "@features/authentication/schemas/authentication";
-import { applySetCookie } from "@auth/cookie";
+import { LoginSchema, RegisterSchema } from "@schemas/authentication";
+import { applySetCookie } from "@utils/cookie";
 
 export const login = defineAction({
 	accept: "form",
@@ -19,43 +18,28 @@ export const login = defineAction({
 			};
 		}
 
-		const isEmail = fields.identity.includes("@") && fields.identity.includes(".");
-
 		try {
-			const response = isEmail
-				? await auth.api.signInEmail({
-						body: { email: fields.identity, password: fields.password },
-						asResponse: true,
-					})
-				: await auth.api.signInUsername({
-						body: { username: fields.identity, password: fields.password },
-						asResponse: true,
-					});
+			const { data, headers } = await authenticateUser(fields.identity, fields.password);
 
-			if (!response.ok) {
-				const errorData = await response.json();
-				const errorCode = errorData.code as AuthErrorCode;
-
-				return {
-					success: false as const,
-					fields,
-					fieldErrors: {},
-					error: authErrors[errorCode] || authErrors["INVALID_USERNAME_OR_PASSWORD"],
-				};
-			}
-
-			applySetCookie(response.headers, context.cookies);
-
-			const data = await response.json();
+			applySetCookie(headers, context.cookies);
 
 			return {
 				success: true as const,
 				username: data.user.username as string,
 			};
-		} catch {
+		} catch (error) {
+			if (error instanceof Error) {
+				return {
+					success: false as const,
+					fields,
+					fieldErrors: {},
+					error: error.message,
+				};
+			}
+
 			return {
 				success: false as const,
-				error: authErrors["INTERNAL_SERVER_ERROR"],
+				error: "Erro desconhecido. :(",
 				fields,
 				fieldErrors: {},
 			};
@@ -73,39 +57,29 @@ export const register = defineAction({
 		}
 
 		try {
-			const response = await auth.api.signUpEmail({
-				body: {
-					email: fields.email,
-					name: "",
-					username: fields.username,
-					password: fields.password,
-				},
-				asResponse: true,
-			});
+			const { headers } = await registerNewUser(fields.email, fields.username, fields.password);
 
-			if (response.ok) {
-				applySetCookie(response.headers, context.cookies);
+			applySetCookie(headers, context.cookies);
+
+			return {
+				success: true as const,
+				username: fields.username,
+			};
+		} catch (error) {
+			if (error instanceof Error) {
 				return {
-					success: true as const,
-					username: fields.username,
+					success: false as const,
+					fields,
+					fieldErrors: {},
+					error: error.message,
 				};
 			}
 
-			const errorData = await response.json();
-			const errorCode = errorData.code as AuthErrorCode;
-
 			return {
 				success: false as const,
 				fields,
 				fieldErrors: {},
-				error: authErrors[errorCode] || "Erro ao criar conta",
-			};
-		} catch {
-			return {
-				success: false as const,
-				fields,
-				fieldErrors: {},
-				error: authErrors["INTERNAL_SERVER_ERROR"],
+				error: "Erro desconhecido. :(",
 			};
 		}
 	},

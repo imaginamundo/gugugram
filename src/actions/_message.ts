@@ -1,13 +1,8 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
-import { and, eq, or, desc } from "drizzle-orm";
-import { users } from "@database/schema";
-import sanitizeHtml from "sanitize-html";
-import { db } from "@database/postgres";
-import { messages } from "@database/schema";
 import { parseSchema } from "@utils/validation";
 
-const RATE_LIMIT_MS = 5000;
+import { processAndSendMessage, deleteMessage, updateLastCheckedMessages } from "@services/message";
 
 const SendMessageSchema = z.object({
 	receiverId: z.string(),
@@ -18,43 +13,20 @@ export const sendMessage = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
 		const session = context.locals.user;
-		if (!session) throw new Error("Não autenticado");
+		if (!session) return { success: false as const, error: "Não autenticado" };
 
 		const { fields, success: schemaSuccess } = parseSchema(input, SendMessageSchema);
-		if (!schemaSuccess) throw new Error("Dados inválidos.");
+		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
-		const lastMessage = await db.query.messages.findFirst({
-			where: eq(messages.authorId, session.id),
-			orderBy: [desc(messages.createdAt)],
-		});
-
-		if (lastMessage) {
-			const now = new Date().getTime();
-			const lastMessageTime = lastMessage.createdAt.getTime();
-			const timeDiff = now - lastMessageTime;
-
-			if (timeDiff < RATE_LIMIT_MS) {
-				const timeLeft = Math.ceil((RATE_LIMIT_MS - timeDiff) / 1000);
-				throw new Error(
-					`Calma lá! Aguarde mais ${timeLeft} segundo(s) para enviar outra mensagem.`,
-				);
+		try {
+			await processAndSendMessage(session.id, fields.receiverId, fields.body);
+			return { success: true as const };
+		} catch (error) {
+			if (error instanceof Error) {
+				return { success: false as const, error: error.message };
 			}
+			return { success: false as const, error: "Erro interno ao enviar mensagem." };
 		}
-
-		const sanitizedBody = sanitizeHtml(fields.body);
-		if (!sanitizedBody) throw new Error("Mensagem vazia");
-
-		if (session.id === fields.receiverId) {
-			throw new Error("Não pode enviar mensagem para si");
-		}
-
-		await db.insert(messages).values({
-			authorId: session.id,
-			receiverId: fields.receiverId,
-			body: sanitizedBody,
-		});
-
-		return { success: true };
 	},
 });
 
@@ -65,22 +37,18 @@ const RemoveMessageSchema = z.object({
 export const removeMessage = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
-		const user = context.locals.user;
-		if (!user) throw new Error("Não autenticado");
+		const session = context.locals.user;
+		if (!session) return { success: false as const, error: "Não autenticado" };
 
 		const { fields, success: schemaSuccess } = parseSchema(input, RemoveMessageSchema);
-		if (!schemaSuccess) throw new Error("Dados inválidos.");
+		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
-		await db
-			.delete(messages)
-			.where(
-				and(
-					eq(messages.id, fields.messageId),
-					or(eq(messages.receiverId, user.id), eq(messages.authorId, user.id)),
-				),
-			);
-
-		return { success: true };
+		try {
+			await deleteMessage(session.id, fields.messageId);
+			return { success: true as const };
+		} catch {
+			return { success: false as const, error: "Erro interno ao remover mensagem." };
+		}
 	},
 });
 
@@ -88,19 +56,14 @@ export const markMessagesAsRead = defineAction({
 	accept: "json",
 	handler: async (_, context) => {
 		const session = context.locals.user;
-
-		if (!session) throw new Error("Não autorizado");
+		if (!session) return { success: false as const, error: "Não autorizado" };
 
 		try {
-			await db
-				.update(users)
-				.set({ lastCheckedMessagesAt: new Date() })
-				.where(eq(users.id, session.id));
-
-			return { success: true };
-		} catch (e) {
-			console.error("Erro ao marcar mensagens como lidas:", e);
-			return { success: false, error: "Erro interno" };
+			await updateLastCheckedMessages(session.id);
+			return { success: true as const };
+		} catch (error) {
+			console.error("Erro ao marcar mensagens como lidas:", error);
+			return { success: false as const, error: "Erro interno" };
 		}
 	},
 });

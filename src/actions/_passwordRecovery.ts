@@ -1,7 +1,7 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
-import { auth } from "@auth/auth";
 import { parseSchema } from "@utils/validation";
+import { sendPasswordResetEmail, performPasswordReset } from "@services/auth";
 
 const RequestPasswordResetSchema = z.object({
 	email: z.email("E-mail inválido"),
@@ -13,18 +13,20 @@ export const requestPasswordReset = defineAction({
 		const { fields, success: schemaSuccess } = parseSchema(input, RequestPasswordResetSchema);
 		if (!schemaSuccess) throw new Error("Dados inválidos.");
 
-		await auth.api.requestPasswordReset({
-			headers: context.request.headers,
-			body: {
-				email: fields.email,
-				redirectTo: `${import.meta.env.SITE}/nova-senha`,
-			},
-		});
+		try {
+			await sendPasswordResetEmail(
+				fields.email,
+				`${import.meta.env.SITE}/nova-senha`,
+				context.request.headers,
+			);
 
-		return {
-			success: true,
-			message: "Se o e-mail existir, um link foi enviado para você cadastrar uma nova senha.",
-		};
+			return {
+				success: true as const,
+				message: "Se o e-mail existir, um link foi enviado para você cadastrar uma nova senha.",
+			};
+		} catch {
+			return { success: false as const, error: "Erro ao solicitar redefinição." };
+		}
 	},
 });
 
@@ -37,20 +39,13 @@ export const resetPassword = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, ResetPasswordSchema);
-		if (!schemaSuccess) return { success: false, error: "Token inválido." };
+		if (!schemaSuccess) return { success: false as const, error: "Token inválido." };
 
 		try {
-			await auth.api.resetPassword({
-				headers: context.request.headers,
-				body: {
-					newPassword: fields.newPassword,
-					token: fields.token,
-				},
-			});
-
-			return { success: true };
+			await performPasswordReset(fields.newPassword, fields.token, context.request.headers);
+			return { success: true as const };
 		} catch {
-			return { success: false, error: "Erro ao redefinir senha." };
+			return { success: false as const, error: "Erro ao redefinir senha." };
 		}
 	},
 });

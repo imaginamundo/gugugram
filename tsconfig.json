@@ -7,17 +7,20 @@
 		"moduleResolution": "Bundler",
 		"baseUrl": ".",
 		"paths": {
-			"@components/*": ["./src/features/_shared/components/*"],
-			"@ui/*": ["./src/features/_shared/components/_ui/*"],
-			"@layout/*": ["./src/features/_shared/components/_layout/*"],
-			"@utils/*": ["./src/features/_shared/utils/*"],
-			"@auth/*": ["./src/features/authentication/utils/*"],
-			"@stores/*": ["./src/features/_shared/stores/*"],
-			"@shared/*": ["./src/features/_shared/*"],
-			"@actions/*": ["./src/actions/*"],
-			"@services/*": ["./src/services/*"],
+			"@ui/*": ["./src/components/_ui/*"],
+			"@layout/*": ["./src/components/_layout/*"],
+			"@icons/*": ["./src/assets/icons/*"],
+			"@lib/*": ["./src/lib/*"],
+			"@assets/*": ["./src/assets/*"],
+			"@schemas/*": ["./src/schemas/*"],
 			"@database/*": ["./src/database/*"],
-			"@features/*": ["./src/features/*"]
+			"@repositories/*": ["src/repositories/*"],
+			"@services/*": ["./src/services/*"],
+			"@features/*": ["./src/features/*"],
+			"@styles/*": ["./src/styles/*"],
+			"@utils/*": ["./src/utils/*"],
+			"@stores/*": ["./src/stores/*"],
+			"@components/*": ["./src/components/*"]
 		}
 	}
 }

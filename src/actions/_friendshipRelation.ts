@@ -1,9 +1,12 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
-import { db } from "@database/postgres";
-import { userFriends } from "@database/schema";
-import { and, eq, or } from "drizzle-orm";
 import { parseSchema } from "@utils/validation";
+
+import {
+	processFriendRequest,
+	acceptPendingFriendRequest,
+	deleteFriendship,
+} from "@services/user/friends";
 
 const FriendshipSchema = z.object({
 	targetUserId: z.string().min(1),
@@ -13,43 +16,23 @@ export const sendFriendRequest = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
 		const session = context.locals.user;
-		if (!session) throw new Error("Não autorizado");
+		if (!session) return { success: false as const, error: "Não autorizado" };
 
 		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
-		if (!schemaSuccess) throw new Error("Dados inválidos.");
-
-		if (session.id === fields.targetUserId) throw new Error("Ação inválida");
+		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
 		try {
-			const existingReverseRequest = await db.query.userFriends.findFirst({
-				where: and(
-					eq(userFriends.requestUserId, fields.targetUserId),
-					eq(userFriends.targetUserId, session.id),
-				),
-			});
+			const resultingStatus = await processFriendRequest(session.id, fields.targetUserId);
 
-			if (existingReverseRequest) {
-				await db
-					.update(userFriends)
-					.set({ status: "accepted" })
-					.where(eq(userFriends.id, existingReverseRequest.id));
-
-				return { success: true, status: "accepted" };
+			return { success: true as const, status: resultingStatus };
+		} catch (error) {
+			if (error instanceof Error && error.message === "INVALID_ACTION") {
+				return {
+					success: false as const,
+					error: "Você não pode enviar uma solicitação para si mesmo.",
+				};
 			}
-
-			await db
-				.insert(userFriends)
-				.values({
-					requestUserId: session.id,
-					targetUserId: fields.targetUserId,
-					status: "pending",
-				})
-				.onConflictDoNothing({
-					target: [userFriends.requestUserId, userFriends.targetUserId],
-				});
-			return { success: true };
-		} catch {
-			return { success: false, error: "Erro ao enviar solicitação" };
+			return { success: false as const, error: "Erro ao enviar solicitação" };
 		}
 	},
 });
@@ -58,24 +41,16 @@ export const acceptFriendRequest = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
 		const session = context.locals.user;
-		if (!session) throw new Error("Não autorizado");
+		if (!session) return { success: false as const, error: "Não autorizado" };
 
 		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
-		if (!schemaSuccess) throw new Error("Dados inválidos.");
+		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
 		try {
-			await db
-				.update(userFriends)
-				.set({ status: "accepted" })
-				.where(
-					and(
-						eq(userFriends.requestUserId, fields.targetUserId),
-						eq(userFriends.targetUserId, session.id),
-					),
-				);
-			return { success: true };
+			await acceptPendingFriendRequest(session.id, fields.targetUserId);
+			return { success: true as const };
 		} catch {
-			return { success: false, error: "Erro ao aceitar solicitação" };
+			return { success: false as const, error: "Erro ao aceitar solicitação" };
 		}
 	},
 });
@@ -84,29 +59,16 @@ export const removeFriendship = defineAction({
 	accept: "form",
 	handler: async (input, context) => {
 		const session = context.locals.user;
-		if (!session) throw new Error("Não autorizado");
+		if (!session) return { success: false as const, error: "Não autorizado" };
 
 		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
-		if (!schemaSuccess) throw new Error("Dados inválidos.");
+		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
 		try {
-			await db
-				.delete(userFriends)
-				.where(
-					or(
-						and(
-							eq(userFriends.requestUserId, session.id),
-							eq(userFriends.targetUserId, fields.targetUserId),
-						),
-						and(
-							eq(userFriends.requestUserId, fields.targetUserId),
-							eq(userFriends.targetUserId, session.id),
-						),
-					),
-				);
-			return { success: true };
+			await deleteFriendship(session.id, fields.targetUserId);
+			return { success: true as const };
 		} catch {
-			return { success: false, error: "Erro ao remover amizade" };
+			return { success: false as const, error: "Erro ao remover amizade" };
 		}
 	},
 });

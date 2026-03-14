@@ -1,14 +1,14 @@
-import { login, register } from "./_authentication";
-import { sendFriendRequest, removeFriendship, acceptFriendRequest } from "./_friendshipRelation";
+import { login, register } from "./_authentication.ts";
+import { sendFriendRequest, removeFriendship, acceptFriendRequest } from "./_friendshipRelation.ts";
 import {
 	uploadImagePost,
 	deleteImagePost,
 	sendImagePostComment,
 	deleteImagePostComment,
-} from "./_imagePosts";
-import { sendMessage, removeMessage } from "./_message";
-import { updateProfile, removeProfileImage } from "./_profile";
-import { requestPasswordReset, resetPassword } from "./_passwordRecovery";
+} from "./_imagePost.ts";
+import { sendMessage, removeMessage } from "./_message.ts";
+import { updateProfile, removeProfileImage } from "./_profile.ts";
+import { requestPasswordReset, resetPassword } from "./_passwordRecovery.ts";
 
 export const server = {
 	// auth

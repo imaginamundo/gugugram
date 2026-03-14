@@ -1,0 +1,176 @@
+<script lang="ts">
+	import { tick } from "svelte";
+	import { actions } from "astro:actions";
+	import { draggableDialog } from "@utils/draggableDialog.ts";
+	import type { FriendshipContext } from "@utils/user";
+	import Button from "@ui/Button.svelte";
+	import Modal from "@ui/Modal.svelte";
+
+	let {
+		targetUserId,
+		friendship,
+		isLoggedIn = false,
+		isOwnProfile = false,
+		additionalParameter,
+	}: {
+		targetUserId: string;
+		friendship?: FriendshipContext | null;
+		isLoggedIn: boolean;
+		isOwnProfile: boolean;
+		additionalParameter?: string;
+	} = $props();
+
+	let parameter = $derived(additionalParameter ? `&${additionalParameter}` : "");
+
+	type ActionType = "send" | "remove" | "cancel" | "accept" | "reject" | null;
+
+	let modalRef = $state<HTMLDialogElement | null>(null);
+	let currentAction = $state<ActionType>(null);
+
+	async function openModal(e: Event, action: ActionType) {
+		e.preventDefault();
+		currentAction = action;
+		await tick();
+		modalRef?.showModal();
+	}
+
+	let modalContent = $derived.by(() => {
+		switch (currentAction) {
+			case "send":
+				return {
+					title: "Iniciar amizade",
+					text: "Deseja enviar uma solicitação de amizade?",
+					action: actions.sendFriendRequest,
+					icon: "/icons/utopia_smiley.png",
+					btnText: "Enviar solicitação",
+				};
+			case "remove":
+				return {
+					title: "Remover amizade",
+					text: "Tem certeza que deseja remover esta pessoa das suas amizades?",
+					action: actions.removeFriendship,
+					icon: "/icons/trust1_restric-1.png",
+					btnText: "Remover amizade",
+				};
+			case "cancel":
+				return {
+					title: "Cancelar solicitação",
+					text: "Deseja cancelar a solicitação de amizade enviada?",
+					action: actions.removeFriendship,
+					icon: null,
+					btnText: "Cancelar solicitação",
+				};
+			case "accept":
+				return {
+					title: "Aceitar solicitação",
+					text: "Deseja aceitar esta solicitação de amizade?",
+					action: actions.acceptFriendRequest,
+					icon: "/icons/trust0-1.png",
+					btnText: "Aceitar solicitação",
+				};
+			case "reject":
+				return {
+					title: "Rejeitar solicitação",
+					text: "Deseja rejeitar esta solicitação de amizade?",
+					action: actions.removeFriendship,
+					icon: "/icons/trust1_restric-1.png",
+					btnText: "Rejeitar",
+				};
+			default:
+				return null;
+		}
+	});
+</script>
+
+{#if isLoggedIn && !isOwnProfile}
+	<div class="flex gap flex-wrap">
+		{#if !friendship?.status}
+			<form
+				method="POST"
+				action={actions.sendFriendRequest + parameter}
+				onsubmit={(e) => openModal(e, "send")}
+			>
+				<input type="hidden" name="targetUserId" value={targetUserId} />
+				<Button type="submit">
+					<img src="/icons/utopia_smiley.png" alt="Ícone de smile" />
+					Iniciar amizade
+				</Button>
+			</form>
+		{/if}
+
+		{#if friendship?.status === "accepted"}
+			<form
+				method="POST"
+				action={actions.removeFriendship + parameter}
+				onsubmit={(e) => openModal(e, "remove")}
+			>
+				<input type="hidden" name="targetUserId" value={targetUserId} />
+				<Button type="submit">
+					<img src="/icons/trust1_restric-1.png" alt="Ícone de restrição" />
+					Remover amizade
+				</Button>
+			</form>
+		{/if}
+
+		{#if friendship?.status === "pending" && friendship?.type === "request"}
+			<form
+				method="POST"
+				action={actions.removeFriendship + parameter}
+				onsubmit={(e) => openModal(e, "cancel")}
+			>
+				<input type="hidden" name="targetUserId" value={targetUserId} />
+				<Button type="submit">Cancelar solicitação</Button>
+			</form>
+		{/if}
+
+		{#if friendship?.status === "pending" && friendship?.type === "target"}
+			<form
+				method="POST"
+				action={actions.acceptFriendRequest + parameter}
+				onsubmit={(e) => openModal(e, "accept")}
+			>
+				<input type="hidden" name="targetUserId" value={targetUserId} />
+				<Button type="submit">
+					<img src="/icons/trust0-1.png" alt="Ícone de check" />
+					Aceitar solicitação
+				</Button>
+			</form>
+
+			<form
+				method="POST"
+				action={actions.removeFriendship + parameter}
+				onsubmit={(e) => openModal(e, "reject")}
+			>
+				<input type="hidden" name="targetUserId" value={targetUserId} />
+				<Button type="submit">
+					<img src="/icons/trust1_restric-1.png" alt="Ícone de restrição" />
+					Rejeitar solicitação
+				</Button>
+			</form>
+		{/if}
+	</div>
+{/if}
+
+<Modal bind:ref={modalRef} onclose={() => (currentAction = null)}>
+	{#if modalContent}
+		<div class="title-bar" {@attach draggableDialog}>
+			<p><strong>{modalContent.title}</strong></p>
+		</div>
+		<div class="window-body">
+			<p>{modalContent.text}</p>
+			<div class="flex gap justify-center mt">
+				<form method="POST" action={modalContent.action + parameter} class="flex gap">
+					<input type="hidden" name="targetUserId" value={targetUserId} />
+					<Button type="submit">
+						{#if modalContent.icon}
+							<img src={modalContent.icon} alt="Ícone da ação" aria-hidden="true" />
+						{/if}
+						{modalContent.btnText}
+					</Button>
+				</form>
+
+				<Button onclick={() => modalRef?.close()} autofocus>Cancelar</Button>
+			</div>
+		</div>
+	{/if}
+</Modal>
