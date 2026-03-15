@@ -14,6 +14,7 @@
 		"lint:fix": "eslint . --fix",
 		"check": "astro check",
 		"astro": "astro",
+		"sync": "astro sync",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio"
@@ -23,6 +24,7 @@
 		"@astrojs/vercel": "^10.0.0",
 		"@neondatabase/serverless": "^1.0.2",
 		"@resvg/resvg-js": "^2.6.2",
+		"@sentry/astro": "^10.43.0",
 		"astro": "^6.0.4",
 		"better-auth": "^1.5.5",
 		"dotenv": "^17.3.1",
