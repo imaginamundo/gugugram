@@ -13,6 +13,7 @@ export default defineConfig({
 	integrations: [
 		svelte(),
 		sentry({
+			telemetry: false,
 			sourceMapsUploadOptions: {
 				project: env.SENTRY_PROJECT,
 				authToken: env.SENTRY_AUTH_TOKEN,
