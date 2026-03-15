@@ -3,6 +3,7 @@ import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
 
 import { processAndSendMessage, deleteMessage, updateLastCheckedMessages } from "@services/message";
+import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
 
 const SendMessageSchema = z.object({
 	receiverId: z.string(),
@@ -20,6 +21,13 @@ export const sendMessage = defineAction({
 
 		try {
 			await processAndSendMessage(session.id, fields.receiverId, fields.body);
+			trackServerEvent({
+				distinctId: session.username ?? session.id,
+				event: "message_sent",
+			});
+
+			await flushServerEvents();
+
 			return { success: true as const };
 		} catch (error) {
 			if (error instanceof Error) {

@@ -2,6 +2,7 @@ import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
 import { sendPasswordResetEmail, performPasswordReset } from "@services/auth";
+import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
 
 const RequestPasswordResetSchema = z.object({
 	email: z.email("E-mail inválido"),
@@ -19,6 +20,13 @@ export const requestPasswordReset = defineAction({
 				`${import.meta.env.SITE}/nova-senha`,
 				context.request.headers,
 			);
+
+			trackServerEvent({
+				distinctId: fields.email,
+				event: "password_reset_requested",
+			});
+
+			await flushServerEvents();
 
 			return {
 				success: true as const,
@@ -43,6 +51,13 @@ export const resetPassword = defineAction({
 
 		try {
 			await performPasswordReset(fields.newPassword, fields.token, context.request.headers);
+			trackServerEvent({
+				distinctId: "anonymous",
+				event: "password_reset_completed",
+			});
+
+			await flushServerEvents();
+
 			return { success: true as const };
 		} catch {
 			return { success: false as const, error: "Erro ao redefinir senha." };

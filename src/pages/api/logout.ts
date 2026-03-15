@@ -1,11 +1,20 @@
 import type { APIRoute } from "astro";
 import { auth } from "@lib/auth.ts";
+import { getPostHogServer } from "@lib/posthog-server";
 
 export const POST: APIRoute = async (context) => {
 	try {
+		const session = context.locals.user;
 		await auth.api.signOut({
 			headers: context.request.headers,
 		});
+
+		if (session) {
+			getPostHogServer().capture({
+				distinctId: session.username ?? session.id,
+				event: "user_logged_out",
+			});
+		}
 
 		return context.redirect("/");
 	} catch (error) {

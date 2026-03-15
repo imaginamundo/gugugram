@@ -1,0 +1,17 @@
+export type AppTrackingEvent =
+	| "user_signup"
+	| "user_login"
+	| "user_logged_out"
+	| "image_uploaded"
+	| "image_post_deleted"
+	| "friend_request_sent"
+	| "friend_request_accepted"
+	| "friend_request_rejected"
+	| "friend_request_cancelled"
+	| "friendship_removed"
+	| "send_comment"
+	| "delete_comment"
+	| "message_sent"
+	| "profile_updated"
+	| "password_reset_requested"
+	| "password_reset_completed";

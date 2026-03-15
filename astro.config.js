@@ -26,6 +26,8 @@ export default defineConfig({
 			MAILER_HOST: envField.string({ context: "server", access: "secret" }),
 			MAILER_USER: envField.string({ context: "server", access: "secret" }),
 			MAILER_PASSWORD: envField.string({ context: "server", access: "secret" }),
+			POSTHOG_KEY: envField.string({ access: "public", context: "client" }),
+			POSTHOG_HOST: envField.string({ access: "public", context: "client", url: true }),
 		},
 	},
 });

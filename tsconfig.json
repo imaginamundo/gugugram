@@ -11,6 +11,7 @@
 			"@layout/*": ["./src/components/_layout/*"],
 			"@icons/*": ["./src/assets/icons/*"],
 			"@lib/*": ["./src/lib/*"],
+			"@customTypes/*": ["./src/types/*"],
 			"@assets/*": ["./src/assets/*"],
 			"@schemas/*": ["./src/schemas/*"],
 			"@database/*": ["./src/database/*"],

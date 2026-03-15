@@ -7,6 +7,7 @@ import {
 	addImageComment,
 	removeImageComment,
 } from "@services/imagePost";
+import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
 
 const UploadImageSchema = z.object({
 	image: z.instanceof(File),
@@ -28,6 +29,14 @@ export const uploadImagePost = defineAction({
 				fields.image,
 				fields.description,
 			);
+			trackServerEvent({
+				distinctId: session.username ?? session.id,
+				event: "image_uploaded",
+				properties: { has_description: !!fields.description },
+			});
+
+			await flushServerEvents();
+
 			return {
 				success: true as const,
 				username: session.username,
@@ -58,6 +67,14 @@ export const deleteImagePost = defineAction({
 
 		try {
 			await removeImagePost(session.id, fields.id, fields.imageUrl);
+			trackServerEvent({
+				distinctId: session.username ?? session.id,
+				event: "image_post_deleted",
+				properties: { post_id: fields.id },
+			});
+
+			await flushServerEvents();
+
 			return { success: true as const };
 		} catch (error) {
 			if (error instanceof Error) {
@@ -84,6 +101,14 @@ export const sendImagePostComment = defineAction({
 
 		try {
 			await addImageComment(session.id, fields.imageId, fields.body);
+			trackServerEvent({
+				distinctId: session.username ?? session.id,
+				event: "send_comment",
+				properties: { image_id: fields.imageId },
+			});
+
+			await flushServerEvents();
+
 			return { success: true as const };
 		} catch (error) {
 			if (error instanceof Error) {
@@ -109,6 +134,14 @@ export const deleteImagePostComment = defineAction({
 
 		try {
 			await removeImageComment(session.id, fields.commentId);
+			trackServerEvent({
+				distinctId: session.username ?? session.id,
+				event: "delete_comment",
+				properties: { comment_id: fields.commentId },
+			});
+
+			await flushServerEvents();
+
 			return { success: true as const };
 		} catch (error) {
 			if (error instanceof Error) {

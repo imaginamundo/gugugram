@@ -3,6 +3,7 @@ import "@styles/global.css";
 import SVGFilters from "@icons/_filter.svg";
 import Header from "./Header.astro";
 import ImagePostModal from "@components/post/ImagePostModal/ImagePostModal.svelte";
+import PostHog from "./PostHog.astro";
 
 const session = Astro.locals.user;
 
@@ -64,6 +65,7 @@ const shareImageURL = shareImage || new URL("/seo/1280x640.png", canonicalURL);
 		<meta name="twitter:title" content={fullTitle} />
 		{description && <meta name="twitter:description" content={description} />}
 		<meta name="twitter:image" content={shareImageURL} />
+		<PostHog />
 		<script>
 			const url = new URL(window.location.href);
 			if (url.searchParams.has("_action")) {
@@ -71,6 +73,13 @@ const shareImageURL = shareImage || new URL("/seo/1280x640.png", canonicalURL);
 				window.history.replaceState({}, "", url.pathname + url.search);
 			}
 		</script>
+		{
+			session && (
+				<script is:inline define:vars={{ username: session.username, email: session.email }}>
+					window.posthog?.identify(username, {email});
+				</script>
+			)
+		}
 	</head>
 	<body>
 		<SVGFilters />

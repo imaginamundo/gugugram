@@ -3,6 +3,7 @@ import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
 
 import { updateProfileData, removeProfileImageFromUser } from "@services/user/profile";
+import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
 
 const UpdateProfileSchema = z.object({
 	profileImage: z.string().optional(),
@@ -27,6 +28,18 @@ export const updateProfile = defineAction({
 				description: fields.description,
 				profileImage: fields.profileImage,
 			});
+
+			trackServerEvent({
+				distinctId: session.username ?? session.id,
+				event: "profile_updated",
+				properties: {
+					changed_username: fields.username !== session.username,
+					has_description: !!fields.description,
+					has_profile_image: !!fields.profileImage,
+				},
+			});
+
+			await flushServerEvents();
 
 			return { success: true as const };
 		} catch (error) {

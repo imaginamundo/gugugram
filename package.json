@@ -30,6 +30,8 @@
 		"image-size": "^2.0.2",
 		"nodemailer": "^8.0.1",
 		"pg": "^8.19.0",
+		"posthog-js": "^1.360.2",
+		"posthog-node": "^5.28.2",
 		"sanitize-html": "^2.17.1",
 		"satori": "^0.25.0",
 		"satori-html": "^0.3.2",
