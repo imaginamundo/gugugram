@@ -4,7 +4,7 @@ import { SENTRY_DSN } from "astro:env/client";
 Sentry.init({
 	dsn: SENTRY_DSN,
 	integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
-	tunnel: "/log/sentry",
+	tunnel: "/api/log/sentry",
 	tracesSampleRate: 0.1,
 	replaysSessionSampleRate: 0.1,
 	replaysOnErrorSampleRate: 1.0,

@@ -94,6 +94,9 @@
 	}
 
 	$effect(() => {
+		const currentSize = imageSize;
+		const currentResize = imageResize;
+
 		if (canvasRef && imageRef && imageSrc) {
 			const canvas = canvasRef;
 			const img = imageRef;
@@ -102,8 +105,8 @@
 				drawImageToCanvas({
 					canvas: canvas,
 					imageElement: img,
-					imageSize,
-					imageResize,
+					imageSize: currentSize,
+					imageResize: currentResize,
 				});
 			};
 
