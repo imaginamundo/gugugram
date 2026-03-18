@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tick } from "svelte";
 	import { actions } from "astro:actions";
 	import { draggableDialog } from "@utils/draggableDialog.ts";
 	import { drawImageToCanvas, downloadImageFromSrc, getCanvasBlob } from "src/utils/image";
@@ -43,6 +44,7 @@
 			const reader = new FileReader();
 			reader.onload = async () => {
 				modalRef?.showModal();
+				await tick();
 				imageSrc = reader.result?.toString() || "";
 			};
 			reader.readAsDataURL(file);
@@ -101,7 +103,11 @@
 			const canvas = canvasRef;
 			const img = imageRef;
 
-			const drawCrop = () => {
+			const drawCrop = async () => {
+				try {
+					await img.decode();
+				} catch {}
+
 				drawImageToCanvas({
 					canvas: canvas,
 					imageElement: img,
