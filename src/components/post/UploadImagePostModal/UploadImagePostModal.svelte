@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tick } from "svelte";
 	import { actions } from "astro:actions";
 	import { draggableDialog } from "@utils/draggableDialog.ts";
 	import { drawImageToCanvas, downloadImageFromSrc, getCanvasBlob } from "src/utils/image";
@@ -41,23 +40,19 @@
 	function selectImage(e: Event & { currentTarget: HTMLInputElement }) {
 		const file = e.currentTarget.files?.[0];
 		if (file) {
-			const reader = new FileReader();
-			reader.onload = async () => {
-				modalRef?.showModal();
-				await tick();
-				imageSrc = reader.result?.toString() || "";
-			};
-			reader.readAsDataURL(file);
+			if (imageSrc) URL.revokeObjectURL(imageSrc);
+			modalRef?.showModal();
+			imageSrc = URL.createObjectURL(file);
 		}
 	}
 
 	function onModalClose() {
 		imageSize = DEFAULT_SIZE;
-		imageSrc = "";
 		imageDescription = "";
 		imageResize = true;
 		loading = false;
 		actionError = "";
+		if (imageSrc) URL.revokeObjectURL(imageSrc);
 		if (inputFileRef) inputFileRef.value = "";
 	}
 
@@ -95,33 +90,26 @@
 		}
 	}
 
-	$effect(() => {
+	async function drawCanvas() {
 		const currentSize = imageSize;
 		const currentResize = imageResize;
 
-		if (canvasRef && imageRef && imageSrc) {
-			const canvas = canvasRef;
-			const img = imageRef;
+		if (!canvasRef || !imageRef || !imageSrc || !imageRef.complete) return;
 
-			const drawCrop = async () => {
-				try {
-					await img.decode();
-				} catch {}
+		try {
+			await imageRef.decode();
+		} catch {}
 
-				drawImageToCanvas({
-					canvas: canvas,
-					imageElement: img,
-					imageSize: currentSize,
-					imageResize: currentResize,
-				});
-			};
+		drawImageToCanvas({
+			canvas: canvasRef,
+			imageElement: imageRef,
+			imageSize: currentSize,
+			imageResize: currentResize,
+		});
+	}
 
-			if (img.complete && img.naturalWidth > 0) {
-				drawCrop();
-			} else {
-				img.onload = drawCrop;
-			}
-		}
+	$effect(() => {
+		drawCanvas();
 	});
 </script>
 
@@ -189,6 +177,7 @@
 								alt="To be uploaded"
 								width={imageSize || DEFAULT_SIZE}
 								height={imageSize || DEFAULT_SIZE}
+								onload={drawCanvas}
 							/>
 						</div>
 					</div>
