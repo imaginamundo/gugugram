@@ -44,7 +44,7 @@ export default defineConfig({
 			MAILER_PASSWORD: envField.string({ context: "server", access: "secret" }),
 
 			POSTHOG_KEY: envField.string({ access: "public", context: "client" }),
-			POSTHOG_HOST: envField.string({ access: "public", context: "client", url: true }),
+			POSTHOG_HOST: envField.string({ access: "public", context: "server", url: true }),
 
 			SENTRY_AUTH_TOKEN: envField.string({ access: "secret", context: "server" }),
 			SENTRY_ORG: envField.string({ access: "secret", context: "server" }),

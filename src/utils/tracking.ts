@@ -1,6 +1,6 @@
 import type { AppTrackingEvent } from "@customTypes/tracking.ts";
 import posthog from "posthog-js";
-import { POSTHOG_HOST, POSTHOG_KEY } from "astro:env/client";
+import { POSTHOG_KEY } from "astro:env/client";
 
 declare global {
 	interface Window {
@@ -15,7 +15,8 @@ declare global {
 export function initTracking() {
 	if (typeof window !== "undefined" && !posthog.__loaded) {
 		posthog.init(POSTHOG_KEY, {
-			api_host: POSTHOG_HOST,
+			api_host: "/ingest",
+			ui_host: "https://us.posthog.com",
 			disable_session_recording: false,
 		});
 	}

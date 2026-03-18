@@ -1,5 +1,6 @@
 import { PostHog } from "posthog-node";
-import { POSTHOG_HOST, POSTHOG_KEY } from "astro:env/client";
+import { POSTHOG_KEY } from "astro:env/client";
+import { POSTHOG_HOST } from "astro:env/server";
 
 let posthogClient: PostHog | null = null;
 
