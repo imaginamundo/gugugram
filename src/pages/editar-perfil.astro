@@ -25,6 +25,10 @@ const seo = {
 	title: `Editar perfil`,
 	robots: "noindex,nofollow,",
 };
+
+if (!user) return Astro.redirect("/entrar");
+
+const hasImage = user.image && !user.image.includes("/emojis/");
 ---
 
 <Layout {...seo}>
@@ -37,7 +41,7 @@ const seo = {
 				</p>
 			)
 		}
-		{user?.image && <RemoveProfilePicture {user} client:load />}
+		{hasImage && <RemoveProfilePicture {user} client:load />}
 		<form action={actions.updateProfile} method="POST" enctype="multipart/form-data" class="mb">
 			<fieldset>
 				<legend>Editar perfil</legend>
