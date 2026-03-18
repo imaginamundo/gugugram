@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tick } from "svelte";
 	import { actions } from "astro:actions";
 	import { draggableDialog } from "@utils/draggableDialog.ts";
 	import { drawImageToCanvas, downloadImageFromSrc, getCanvasBlob } from "src/utils/image";
@@ -30,7 +31,14 @@
 	let canvasRef = $state<HTMLCanvasElement | null>(null);
 	let inputFileRef: HTMLInputElement;
 
-	function handleImageLoad() {
+	async function handleImageLoad() {
+		if (imageRef) {
+			try {
+				await imageRef.decode();
+			} catch (error) {
+				console.warn("Erro ao decodificar a imagem:", error);
+			}
+		}
 		imageLoaded = true;
 	}
 
@@ -46,10 +54,11 @@
 		const file = e.currentTarget.files?.[0];
 		if (file) {
 			const reader = new FileReader();
-			reader.onload = () => {
+			reader.onload = async () => {
+				modalRef?.showModal();
+				await tick();
 				imageSrc = reader.result?.toString() || "";
 				imageLoaded = false;
-				modalRef?.showModal();
 			};
 			reader.readAsDataURL(file);
 		}
