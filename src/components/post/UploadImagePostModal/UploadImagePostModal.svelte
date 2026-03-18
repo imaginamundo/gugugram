@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { actions } from "astro:actions";
 	import { draggableDialog } from "@utils/draggableDialog.ts";
-	import { imageCropper, downloadImageFromSrc, getCanvasBlob } from "src/utils/image";
+	import { drawImageToCanvas, downloadImageFromSrc, getCanvasBlob } from "src/utils/image";
 	import Button from "@ui/Button.svelte";
 	import Checkbox from "@ui/Checkbox.svelte";
 	import Modal from "@ui/Modal.svelte";
@@ -23,11 +23,16 @@
 	let imageDescription = $state("");
 	let loading = $state(false);
 	let actionError = $state("");
+	let imageLoaded = $state(false);
 
 	let modalRef = $state<HTMLDialogElement | null>(null);
 	let imageRef = $state<HTMLImageElement | null>(null);
 	let canvasRef = $state<HTMLCanvasElement | null>(null);
 	let inputFileRef: HTMLInputElement;
+
+	function handleImageLoad() {
+		imageLoaded = true;
+	}
 
 	function triggerFileInput() {
 		if (!session) {
@@ -43,6 +48,7 @@
 			const reader = new FileReader();
 			reader.onload = () => {
 				imageSrc = reader.result?.toString() || "";
+				imageLoaded = false;
 				modalRef?.showModal();
 			};
 			reader.readAsDataURL(file);
@@ -92,6 +98,17 @@
 			loading = false;
 		}
 	}
+
+	$effect(() => {
+		if (canvasRef && imageRef && imageLoaded && imageSrc) {
+			drawImageToCanvas({
+				canvas: canvasRef,
+				imageElement: imageRef,
+				imageSize,
+				imageResize,
+			});
+		}
+	});
 </script>
 
 <Button
@@ -146,16 +163,7 @@
 							role="img"
 							aria-label={`Pré-visualização ${imageSize}x${imageSize}`}
 						>
-							<canvas
-								bind:this={canvasRef}
-								style:transform={`scale(${120 / (imageSize || DEFAULT_SIZE)})`}
-								style:transform-origin="0 0"
-								{@attach imageCropper({
-									imageElement: imageRef,
-									imageSize,
-									imageResize,
-								})}
-							></canvas>
+							<canvas bind:this={canvasRef}></canvas>
 						</div>
 					</div>
 					<div>
@@ -167,6 +175,7 @@
 								alt="To be uploaded"
 								width={imageSize || DEFAULT_SIZE}
 								height={imageSize || DEFAULT_SIZE}
+								onload={handleImageLoad}
 							/>
 						</div>
 					</div>
@@ -211,9 +220,9 @@
 		}
 	}
 	.canvas-print {
-		width: 120px;
-		height: 120px;
 		canvas {
+			width: 120px;
+			height: 120px;
 			vertical-align: top;
 		}
 	}

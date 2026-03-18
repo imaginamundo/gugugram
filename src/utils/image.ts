@@ -11,53 +11,40 @@ type CanvasOptions = [
 ];
 
 export interface CropperConfig {
-	imageElement: HTMLImageElement | null;
+	canvas: HTMLCanvasElement;
+	imageElement: HTMLImageElement;
 	imageSize: number;
 	imageResize: boolean;
 }
 
-export function imageCropper(config: CropperConfig) {
-	return (canvas: HTMLCanvasElement) => {
-		const { imageElement, imageSize, imageResize } = config;
+export function drawImageToCanvas({ canvas, imageElement, imageSize, imageResize }: CropperConfig) {
+	if (!imageElement.complete || imageElement.naturalWidth === 0) return;
 
-		if (!imageElement) return;
+	const ctx = canvas.getContext("2d");
+	if (!ctx) return;
 
-		function drawCrop() {
-			if (!imageElement || !imageElement.complete || imageElement.naturalWidth === 0) return;
+	canvas.width = imageSize;
+	canvas.height = imageSize;
+	ctx.imageSmoothingEnabled = false;
 
-			const ctx = canvas.getContext("2d");
-			if (!ctx) return;
+	const nw = imageElement.naturalWidth;
+	const nh = imageElement.naturalHeight;
 
-			canvas.width = imageSize;
-			canvas.height = imageSize;
-			ctx.imageSmoothingEnabled = false;
+	let options: CanvasOptions;
 
-			const nw = imageElement.naturalWidth;
-			const nh = imageElement.naturalHeight;
+	if (imageResize) {
+		const smallest = Math.min(nw, nh);
+		const sx = (nw - smallest) / 2;
+		const sy = (nh - smallest) / 2;
+		options = [sx, sy, smallest, smallest, 0, 0, imageSize, imageSize];
+	} else {
+		const sx = Math.floor((nw - imageSize) / 2);
+		const sy = Math.floor((nh - imageSize) / 2);
+		options = [sx, sy, imageSize, imageSize, 0, 0, imageSize, imageSize];
+	}
 
-			let options: CanvasOptions;
-
-			if (imageResize) {
-				const smallest = Math.min(nw, nh);
-				const sx = (nw - smallest) / 2;
-				const sy = (nh - smallest) / 2;
-				options = [sx, sy, smallest, smallest, 0, 0, imageSize, imageSize];
-			} else {
-				const sx = Math.floor((nw - imageSize) / 2);
-				const sy = Math.floor((nh - imageSize) / 2);
-				options = [sx, sy, imageSize, imageSize, 0, 0, imageSize, imageSize];
-			}
-
-			ctx.clearRect(0, 0, imageSize, imageSize);
-			ctx.drawImage(imageElement, ...options);
-		}
-
-		if (imageElement.complete) {
-			drawCrop();
-		} else {
-			imageElement.onload = drawCrop;
-		}
-	};
+	ctx.clearRect(0, 0, imageSize, imageSize);
+	ctx.drawImage(imageElement, ...options);
 }
 
 export function downloadImageFromSrc(imageSrc: string) {
