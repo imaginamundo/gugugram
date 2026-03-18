@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tick } from "svelte";
 	import { actions } from "astro:actions";
 	import { draggableDialog } from "@utils/draggableDialog.ts";
 	import { drawImageToCanvas, downloadImageFromSrc, getCanvasBlob } from "src/utils/image";
@@ -24,23 +23,11 @@
 	let imageDescription = $state("");
 	let loading = $state(false);
 	let actionError = $state("");
-	let imageLoaded = $state(false);
 
 	let modalRef = $state<HTMLDialogElement | null>(null);
 	let imageRef = $state<HTMLImageElement | null>(null);
 	let canvasRef = $state<HTMLCanvasElement | null>(null);
 	let inputFileRef: HTMLInputElement;
-
-	async function handleImageLoad() {
-		if (imageRef) {
-			try {
-				await imageRef.decode();
-			} catch (error) {
-				console.warn("Erro ao decodificar a imagem:", error);
-			}
-		}
-		imageLoaded = true;
-	}
 
 	function triggerFileInput() {
 		if (!session) {
@@ -56,9 +43,7 @@
 			const reader = new FileReader();
 			reader.onload = async () => {
 				modalRef?.showModal();
-				await tick();
 				imageSrc = reader.result?.toString() || "";
-				imageLoaded = false;
 			};
 			reader.readAsDataURL(file);
 		}
@@ -109,13 +94,24 @@
 	}
 
 	$effect(() => {
-		if (canvasRef && imageRef && imageLoaded && imageSrc) {
-			drawImageToCanvas({
-				canvas: canvasRef,
-				imageElement: imageRef,
-				imageSize,
-				imageResize,
-			});
+		if (canvasRef && imageRef && imageSrc) {
+			const canvas = canvasRef;
+			const img = imageRef;
+
+			const drawCrop = () => {
+				drawImageToCanvas({
+					canvas: canvas,
+					imageElement: img,
+					imageSize,
+					imageResize,
+				});
+			};
+
+			if (img.complete && img.naturalWidth > 0) {
+				drawCrop();
+			} else {
+				img.onload = drawCrop;
+			}
 		}
 	});
 </script>
@@ -184,7 +180,6 @@
 								alt="To be uploaded"
 								width={imageSize || DEFAULT_SIZE}
 								height={imageSize || DEFAULT_SIZE}
-								onload={handleImageLoad}
 							/>
 						</div>
 					</div>
