@@ -420,7 +420,14 @@ label:focus-within {
 }
 
 .button-image {
+	position: relative;
 	padding: 0;
+}
+.image-comment-counter {
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	background: rgba(255, 255, 255, 0.8);
 }
 
 .image-border {

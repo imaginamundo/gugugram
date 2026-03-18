@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from "svelte";
 	import { actions } from "astro:actions";
 	import { draggableDialog } from "@utils/draggableDialog.ts";
 	import { drawImageToCanvas, downloadImageFromSrc, getCanvasBlob } from "src/utils/image";
@@ -110,6 +111,10 @@
 
 	$effect(() => {
 		drawCanvas();
+	});
+
+	onDestroy(() => {
+		if (imageSrc) URL.revokeObjectURL(imageSrc);
 	});
 </script>
 

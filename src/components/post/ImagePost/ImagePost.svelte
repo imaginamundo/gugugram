@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { imageModalStore as store } from "@components/post/ImagePostModal/imagePostModalStore.svelte";
+	import { imageModalStore as store } from "@stores/imagePostModalStore.svelte";
 	import type { PostType } from "@services/imagePost.ts";
 
 	const { post, index }: { post: PostType; index?: number } = $props();
@@ -18,6 +18,9 @@
 	onclick={handleOpenPostDetails}
 	class="button button-image"
 >
+	{#if post.commentsCount > 0}
+		<span class="image-comment-counter p">{post.commentsCount}</span>
+	{/if}
 	<img
 		class="image-border"
 		src={post.image}

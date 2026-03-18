@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { draggableDialog } from "@utils/draggableDialog.ts";
+	import { imageModalStore as store } from "@stores/imagePostModalStore.svelte";
 	import Button from "@ui/Button.svelte";
 	import Modal from "@ui/Modal.svelte";
-	import { imageModalStore as store } from "./imagePostModalStore.svelte";
 	import ImagePostDetails from "@components/post/ImagePostDetails/ImagePostDetails.svelte";
 	import DeleteImagePost from "@components/post/DeleteImagePost/DeleteImagePost.svelte";
 

@@ -16,12 +16,13 @@ export type PostType = {
 	id: string;
 	image: string;
 	description: string | null;
+	commentsCount: number;
 	userId: string;
 	username: string;
 	createdAt: Date;
 };
 
-export type PostWithCommentsType = PostType & {
+export type PostWithCommentsType = Omit<PostType, "commentsCount"> & {
 	comments: CommentType[];
 };
 
@@ -34,6 +35,7 @@ export async function getLatestImagePosts(): Promise<PostType[]> {
 		id: item.id,
 		image: item.image,
 		description: item.description,
+		commentsCount: item.commentsCount,
 		userId: item.author.id,
 		username: item.author.username,
 		createdAt: item.createdAt,
@@ -49,6 +51,7 @@ export async function getImagePosts(username: string): Promise<PostType[]> {
 		id: img.id,
 		image: img.image,
 		description: img.description,
+		commentsCount: img.commentsCount,
 		userId: user.id,
 		username: user.username,
 		createdAt: img.createdAt,
