@@ -262,6 +262,7 @@ figure {
 	height: var(--checkbox-width);
 	background: var(--button-highlight);
 	box-shadow: var(--border-field);
+	border-radius: 0;
 	&:checked::before {
 		content: "";
 		display: block;
