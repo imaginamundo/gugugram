@@ -3,10 +3,10 @@ import { z } from "astro/zod";
 export function formDataToObject(
 	formData: FormData,
 ): Record<string, FormDataEntryValue | FormDataEntryValue[]> {
-	const obj: Record<string, FormDataEntryValue | FormDataEntryValue[]> = {};
+	const obj = Object.create(null) as Record<string, FormDataEntryValue | FormDataEntryValue[]>;
 
 	for (const [key, value] of formData.entries()) {
-		if (key in obj) {
+		if (Object.hasOwn(obj, key)) {
 			const currentValue = obj[key];
 
 			if (!Array.isArray(currentValue)) {
