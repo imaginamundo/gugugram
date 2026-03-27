@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { auth } from "@lib/auth.ts";
-import { getPostHogServer } from "@lib/posthog-server";
+import { posthogServer } from "@lib/posthog-server";
 
 export const POST: APIRoute = async (context) => {
 	try {
@@ -10,7 +10,7 @@ export const POST: APIRoute = async (context) => {
 		});
 
 		if (session) {
-			getPostHogServer().capture({
+			posthogServer.capture({
 				distinctId: session.username ?? session.id,
 				event: "user_logged_out",
 			});

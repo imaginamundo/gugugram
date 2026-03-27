@@ -2,21 +2,20 @@ import { db } from "@lib/database";
 import { and, eq, desc, sql } from "drizzle-orm";
 import { imagePosts, imagePostComments } from "@schemas/database";
 
+const commentsCountExtra = {
+	commentsCount:
+		sql<number>`(SELECT count(*) FROM ${imagePostComments} AS c WHERE c.image_id = ${imagePosts.id})`
+			.mapWith(Number)
+			.as("commentsCount"),
+};
+
 export const imagePostRepository = {
 	// --- POST QUERIES ---
 	getLatestPosts: async (limit = 120) => {
 		return db.query.imagePosts.findMany({
 			columns: { id: true, image: true, description: true, createdAt: true },
 			with: { author: { columns: { id: true, username: true } } },
-			extras: {
-				commentsCount: sql<number>`(
-          SELECT count(*) 
-          FROM ${imagePostComments} AS c 
-          WHERE c.image_id = ${imagePosts.id}
-        )`
-					.mapWith(Number)
-					.as("commentsCount"),
-			},
+			extras: commentsCountExtra,
 			orderBy: desc(imagePosts.createdAt),
 			limit,
 		});
@@ -30,15 +29,7 @@ export const imagePostRepository = {
 				imagePosts: {
 					orderBy: [desc(imagePosts.createdAt)],
 					columns: { id: true, image: true, description: true, createdAt: true },
-					extras: {
-						commentsCount: sql<number>`(
-              SELECT count(*) 
-              FROM ${imagePostComments} AS c 
-              WHERE c.image_id = ${imagePosts.id}
-            )`
-							.mapWith(Number)
-							.as("commentsCount"),
-					},
+					extras: commentsCountExtra,
 				},
 			},
 		});

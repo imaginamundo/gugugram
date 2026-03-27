@@ -1,5 +1,5 @@
 import type { AppTrackingEvent } from "@customTypes/tracking";
-import { getPostHogServer } from "@lib/posthog-server.ts";
+import { posthogServer } from "@lib/posthog-server.ts";
 
 interface TrackPayload {
 	distinctId: string;
@@ -15,7 +15,7 @@ export function identifyUserServer({
 	properties?: Record<string, unknown>;
 }) {
 	try {
-		getPostHogServer().identify({ distinctId, properties });
+		posthogServer.identify({ distinctId, properties });
 	} catch (error) {
 		console.error("[Tracking Error] Failed to identify user:", error);
 	}
@@ -23,8 +23,7 @@ export function identifyUserServer({
 
 export function trackServerEvent({ distinctId, event, properties }: TrackPayload) {
 	try {
-		const posthog = getPostHogServer();
-		posthog.capture({
+		posthogServer.capture({
 			distinctId,
 			event,
 			properties,
@@ -34,10 +33,14 @@ export function trackServerEvent({ distinctId, event, properties }: TrackPayload
 	}
 }
 
+/**
+ * Flushes buffered PostHog events by calling `posthog.shutdown()`.
+ * This permanently terminates the PostHog client — call only at the
+ * end of a serverless invocation, never in a persistent-server context.
+ */
 export async function flushServerEvents() {
 	try {
-		const posthog = getPostHogServer();
-		await posthog.shutdown();
+		await posthogServer.shutdown();
 	} catch (error) {
 		console.error("[Tracking Error] Failed to flush events:", error);
 	}

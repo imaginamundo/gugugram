@@ -1,6 +1,7 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
+import { withAuth } from "@utils/action-guard";
 import {
 	processAndUploadImagePost,
 	removeImagePost,
@@ -8,6 +9,7 @@ import {
 	removeImageComment,
 } from "@services/imagePost";
 import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
+import { ImagePostErrors } from "@customTypes/errors";
 
 const UploadImageSchema = z.object({
 	image: z.instanceof(File),
@@ -16,10 +18,7 @@ const UploadImageSchema = z.object({
 
 export const uploadImagePost = defineAction({
 	accept: "form",
-	handler: async (input, context) => {
-		const session = context.locals.user;
-		if (!session) return { success: false as const, error: "Não autenticado." };
-
+	handler: withAuth(async (input: FormData, context, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, UploadImageSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -44,11 +43,32 @@ export const uploadImagePost = defineAction({
 			};
 		} catch (error) {
 			if (error instanceof Error) {
-				return { success: false as const, error: error.message };
+				let message: string;
+				switch (error.message) {
+					case ImagePostErrors.FILE_TOO_LARGE:
+						message = "Imagem muito grande. O tamanho máximo é 60KB.";
+						break;
+					case ImagePostErrors.INVALID_IMAGE_FILE:
+						message = "Arquivo de imagem inválido ou corrompido.";
+						break;
+					case ImagePostErrors.INVALID_IMAGE_DIMENSIONS:
+						message =
+							"Tamanho de imagem incompatível. Use dimensões quadradas: 5, 10, 15, 30 ou 60px.";
+						break;
+					case ImagePostErrors.UPLOAD_FAILED:
+						message = "Erro ao enviar a imagem para o servidor.";
+						break;
+					case ImagePostErrors.DB_INSERT_FAILED:
+						message = "Erro ao salvar a imagem. Tente novamente.";
+						break;
+					default:
+						message = error.message;
+				}
+				return { success: false as const, error: message };
 			}
-			return { success: false as const, error: "Erro interno ao processar a imagem." };
+			return { success: false as const, error: "Erro interno." };
 		}
-	},
+	}),
 });
 
 const DeleteImageSchema = z.object({
@@ -58,10 +78,7 @@ const DeleteImageSchema = z.object({
 
 export const deleteImagePost = defineAction({
 	accept: "form",
-	handler: async (input, context) => {
-		const session = context.locals.user;
-		if (!session) return { success: false as const, error: "Não autorizado." };
-
+	handler: withAuth(async (input: FormData, context, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, DeleteImageSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -78,11 +95,22 @@ export const deleteImagePost = defineAction({
 			return { success: true as const };
 		} catch (error) {
 			if (error instanceof Error) {
-				return { success: false as const, error: error.message };
+				let message: string;
+				switch (error.message) {
+					case ImagePostErrors.INVALID_IMAGE_URL:
+						message = "URL de imagem inválida.";
+						break;
+					case ImagePostErrors.POST_NOT_FOUND_OR_FORBIDDEN:
+						message = "Imagem não encontrada ou sem permissão para exclusão.";
+						break;
+					default:
+						message = error.message;
+				}
+				return { success: false as const, error: message };
 			}
-			return { success: false as const, error: "Erro interno ao tentar deletar a imagem." };
+			return { success: false as const, error: "Erro interno." };
 		}
-	},
+	}),
 });
 
 const SendImagePostCommentSchema = z.object({
@@ -92,10 +120,7 @@ const SendImagePostCommentSchema = z.object({
 
 export const sendImagePostComment = defineAction({
 	accept: "form",
-	handler: async (input, context) => {
-		const session = context.locals.user;
-		if (!session) return { success: false as const, error: "Não autenticado." };
-
+	handler: withAuth(async (input: FormData, context, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, SendImagePostCommentSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -112,11 +137,22 @@ export const sendImagePostComment = defineAction({
 			return { success: true as const };
 		} catch (error) {
 			if (error instanceof Error) {
-				return { success: false as const, error: error.message };
+				let message: string;
+				switch (error.message) {
+					case ImagePostErrors.COMMENT_INVALID:
+						message = "Comentário inválido.";
+						break;
+					case ImagePostErrors.POST_NOT_FOUND:
+						message = "Post não encontrado.";
+						break;
+					default:
+						message = error.message;
+				}
+				return { success: false as const, error: message };
 			}
-			return { success: false as const, error: "Erro interno ao enviar comentário." };
+			return { success: false as const, error: "Erro interno." };
 		}
-	},
+	}),
 });
 
 const DeleteImagePostCommentSchema = z.object({
@@ -125,10 +161,7 @@ const DeleteImagePostCommentSchema = z.object({
 
 export const deleteImagePostComment = defineAction({
 	accept: "form",
-	handler: async (input, context) => {
-		const session = context.locals.user;
-		if (!session) return { success: false as const, error: "Não autenticado." };
-
+	handler: withAuth(async (input: FormData, context, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, DeleteImagePostCommentSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -145,9 +178,20 @@ export const deleteImagePostComment = defineAction({
 			return { success: true as const };
 		} catch (error) {
 			if (error instanceof Error) {
-				return { success: false as const, error: error.message };
+				let message: string;
+				switch (error.message) {
+					case ImagePostErrors.COMMENT_NOT_FOUND:
+						message = "Comentário não encontrado.";
+						break;
+					case ImagePostErrors.COMMENT_NOT_AUTHORIZED:
+						message = "Você não tem permissão para apagar este comentário.";
+						break;
+					default:
+						message = error.message;
+				}
+				return { success: false as const, error: message };
 			}
-			return { success: false as const, error: "Erro interno ao apagar comentário." };
+			return { success: false as const, error: "Erro interno." };
 		}
-	},
+	}),
 });

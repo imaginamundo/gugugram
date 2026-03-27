@@ -1,0 +1,9 @@
+export const POSTGRES_URL = "postgres://test:test@localhost/test";
+export const AUTH_SECRET = "test-secret";
+export const UPLOADTHING_TOKEN = "test-uploadthing-token";
+export const MAILER_SERVICE = "test";
+export const MAILER_HOST = "localhost";
+export const MAILER_USER = "test@test.com";
+export const MAILER_PASSWORD = "test-password";
+export const POSTHOG_HOST = "https://app.posthog.com";
+export const SENTRY_AUTH_TOKEN = "test-sentry-token";

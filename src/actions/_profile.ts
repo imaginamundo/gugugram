@@ -1,9 +1,11 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
+import { withAuth } from "@utils/action-guard";
 
 import { updateProfileData, removeProfileImageFromUser } from "@services/user/profile";
 import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
+import { ProfileErrors } from "@customTypes/errors";
 
 const UpdateProfileSchema = z.object({
 	profileImage: z.string().optional(),
@@ -14,10 +16,7 @@ const UpdateProfileSchema = z.object({
 
 export const updateProfile = defineAction({
 	accept: "form",
-	handler: async (input, context) => {
-		const session = context.locals.user;
-		if (!session) return { success: false as const, error: "Não autorizado." };
-
+	handler: withAuth(async (input: FormData, context, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, UpdateProfileSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Erro ao validar dados." };
 
@@ -45,14 +44,14 @@ export const updateProfile = defineAction({
 		} catch (error) {
 			if (error instanceof Error) {
 				switch (error.message) {
-					case "IMAGE_UPLOAD_FAILED":
+					case ProfileErrors.IMAGE_UPLOAD_FAILED:
 						return { success: false as const, error: "Erro ao subir a nova imagem de perfil." };
-					case "IMAGE_PROCESSING_FAILED":
+					case ProfileErrors.IMAGE_PROCESSING_FAILED:
 						return {
 							success: false as const,
 							error: "Erro ao processar a imagem. Certifique-se de que é válida.",
 						};
-					case "UNIQUE_CONSTRAINT_VIOLATION":
+					case ProfileErrors.UNIQUE_CONSTRAINT_VIOLATION:
 						return {
 							success: false as const,
 							error: "Este nome de usuário ou e-mail já está em uso.",
@@ -61,20 +60,17 @@ export const updateProfile = defineAction({
 			}
 			return { success: false as const, error: "Erro interno ao atualizar o perfil." };
 		}
-	},
+	}),
 });
 
 export const removeProfileImage = defineAction({
 	accept: "form",
-	handler: async (_, context) => {
-		const session = context.locals.user;
-		if (!session) throw new Error("Não autorizado");
-
+	handler: withAuth(async (_, context, session) => {
 		try {
 			await removeProfileImageFromUser(session.id);
 			return { success: true as const };
 		} catch (error) {
-			if (error instanceof Error && error.message === "NO_IMAGE_TO_REMOVE") {
+			if (error instanceof Error && error.message === ProfileErrors.NO_IMAGE_TO_REMOVE) {
 				return {
 					success: false as const,
 					error: "Você não possui uma foto de perfil para remover.",
@@ -82,5 +78,5 @@ export const removeProfileImage = defineAction({
 			}
 			return { success: false as const, error: "Erro interno ao tentar remover a foto de perfil." };
 		}
-	},
+	}),
 });

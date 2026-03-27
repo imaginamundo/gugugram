@@ -1,8 +1,9 @@
-// src/services/imagePost.ts
 import sanitizeHtml from "sanitize-html";
 import { imageSize } from "image-size";
-import { utapi } from "@lib/uploadthing";
+import { storage } from "@lib/storage";
 import { imagePostRepository } from "@repositories/imagePost.ts";
+import { ImagePostErrors } from "@customTypes/errors";
+import { checkRateLimit } from "@utils/rate-limit";
 
 export type CommentType = {
 	id: string;
@@ -22,7 +23,7 @@ export type PostType = {
 	createdAt: Date;
 };
 
-export type PostWithCommentsType = Omit<PostType, "commentsCount"> & {
+export type PostWithCommentsType = PostType & {
 	comments: CommentType[];
 };
 
@@ -66,6 +67,7 @@ export async function getImagePost(id: string): Promise<PostWithCommentsType | n
 		id: post.id,
 		image: post.image,
 		description: post.description,
+		commentsCount: post.comments.length,
 		userId: post.author.id,
 		username: post.author.username,
 		createdAt: post.createdAt,
@@ -92,24 +94,17 @@ export async function getImagePostComments(postId: string): Promise<CommentType[
 
 export async function processAndUploadImagePost(userId: string, file: File, description?: string) {
 	if (file.size > 60000) {
-		throw new Error("Imagem muito grande. O tamanho máximo é 60KB.");
+		throw new Error(ImagePostErrors.FILE_TOO_LARGE);
 	}
 
 	const lastImage = await imagePostRepository.getLatestPostByAuthor(userId);
-
-	if (lastImage) {
-		const timeDiff = new Date().getTime() - lastImage.createdAt.getTime();
-		if (timeDiff < RATE_LIMIT_MS) {
-			const timeLeft = Math.ceil((RATE_LIMIT_MS - timeDiff) / 1000);
-			throw new Error(`Aguarde mais ${timeLeft} segundo(s) antes de enviar outra imagem.`);
-		}
-	}
+	checkRateLimit(lastImage?.createdAt, RATE_LIMIT_MS, "Aguarde mais");
 
 	const arrayBuffer = await file.arrayBuffer();
 	const dimensions = imageSize(Buffer.from(arrayBuffer));
 
 	if (!dimensions || dimensions.width === undefined || dimensions.height === undefined) {
-		throw new Error("Arquivo de imagem inválido ou corrompido.");
+		throw new Error(ImagePostErrors.INVALID_IMAGE_FILE);
 	}
 
 	const isSquare = dimensions.width === dimensions.height;
@@ -117,24 +112,24 @@ export async function processAndUploadImagePost(userId: string, file: File, desc
 		ALLOWED_DIMENSIONS.includes(dimensions.width) && ALLOWED_DIMENSIONS.includes(dimensions.height);
 
 	if (!isSquare || !isAllowedDimension) {
-		throw new Error("Tamanho de imagem incompatível.");
+		throw new Error(ImagePostErrors.INVALID_IMAGE_DIMENSIONS);
 	}
 
 	const fileToUpload = new File([arrayBuffer], file.name, { type: file.type });
-	const upload = await utapi.uploadFiles(fileToUpload);
+	const upload = await storage.upload(fileToUpload);
 
 	if (!upload.data?.ufsUrl) {
-		throw new Error("Erro ao subir a imagem para o servidor.");
+		throw new Error(ImagePostErrors.UPLOAD_FAILED);
 	}
 
-	const sanitizedDescription = description ? sanitizeHtml(description) : null;
+	const sanitizedDescription = description ? sanitizeHtml(description, { allowedTags: [] }) : null;
 
 	try {
 		await imagePostRepository.insertPost(userId, upload.data.ufsUrl, sanitizedDescription);
 	} catch {
 		const imageKey = upload.data.ufsUrl.split("/").pop();
-		if (imageKey) await utapi.deleteFiles(imageKey);
-		throw new Error("Erro ao salvar no banco de dados. Upload cancelado.");
+		if (imageKey) await storage.delete(imageKey);
+		throw new Error(ImagePostErrors.DB_INSERT_FAILED);
 	}
 
 	return upload.data.ufsUrl;
@@ -142,48 +137,39 @@ export async function processAndUploadImagePost(userId: string, file: File, desc
 
 export async function removeImagePost(userId: string, postId: string, imageUrl: string) {
 	const imageKey = imageUrl.split("/").pop();
-	if (!imageKey) throw new Error("URL de imagem inválida.");
+	if (!imageKey) throw new Error(ImagePostErrors.INVALID_IMAGE_URL);
 
 	const deletedRow = await imagePostRepository.deletePost(postId, userId);
 
 	if (deletedRow.length === 0) {
-		throw new Error("Imagem não encontrada ou sem permissão para exclusão.");
+		throw new Error(ImagePostErrors.POST_NOT_FOUND_OR_FORBIDDEN);
 	}
 
-	await utapi.deleteFiles(imageKey);
+	await storage.delete(imageKey);
 }
 
 export async function addImageComment(userId: string, imageId: string, body: string) {
 	const lastComment = await imagePostRepository.getLatestCommentByAuthor(userId);
+	checkRateLimit(lastComment?.createdAt, RATE_LIMIT_MS, "Calma lá! Aguarde mais");
 
-	if (lastComment) {
-		const timeDiff = new Date().getTime() - lastComment.createdAt.getTime();
-		if (timeDiff < RATE_LIMIT_MS) {
-			const timeLeft = Math.ceil((RATE_LIMIT_MS - timeDiff) / 1000);
-			throw new Error(
-				`Calma lá! Aguarde mais ${timeLeft} segundo(s) para enviar outro comentário.`,
-			);
-		}
-	}
-
-	const sanitizedBody = sanitizeHtml(body);
-	if (!sanitizedBody) throw new Error("Comentário inválido.");
+	const sanitizedBody = sanitizeHtml(body, { allowedTags: [] });
+	if (!sanitizedBody) throw new Error(ImagePostErrors.COMMENT_INVALID);
 
 	const postExists = await imagePostRepository.getPostById(imageId);
-	if (!postExists) throw new Error("Post não encontrado.");
+	if (!postExists) throw new Error(ImagePostErrors.POST_NOT_FOUND);
 
 	await imagePostRepository.insertComment(imageId, userId, sanitizedBody);
 }
 
 export async function removeImageComment(userId: string, commentId: string) {
 	const commentData = await imagePostRepository.getCommentWithPostAuthor(commentId);
-	if (!commentData) throw new Error("Comentário não encontrado.");
+	if (!commentData) throw new Error(ImagePostErrors.COMMENT_NOT_FOUND);
 
 	const isCommentAuthor = commentData.authorId === userId;
 	const isPhotoOwner = commentData.post.authorId === userId;
 
 	if (!isCommentAuthor && !isPhotoOwner) {
-		throw new Error("Não autorizado para apagar este comentário.");
+		throw new Error(ImagePostErrors.COMMENT_NOT_AUTHORIZED);
 	}
 
 	await imagePostRepository.deleteComment(commentId);

@@ -1,6 +1,7 @@
-// src/services/message.ts
 import sanitizeHtml from "sanitize-html";
 import { messageRepository } from "@repositories/message";
+import { MessageErrors } from "@customTypes/errors";
+import { checkRateLimit } from "@utils/rate-limit";
 
 const RATE_LIMIT_MS = 5000;
 
@@ -32,17 +33,7 @@ export async function processAndSendMessage(authorId: string, receiverId: string
 	}
 
 	const lastMessage = await messageRepository.getLatestMessageByAuthor(authorId);
-
-	if (lastMessage) {
-		const now = new Date().getTime();
-		const lastMessageTime = lastMessage.createdAt.getTime();
-		const timeDiff = now - lastMessageTime;
-
-		if (timeDiff < RATE_LIMIT_MS) {
-			const timeLeft = Math.ceil((RATE_LIMIT_MS - timeDiff) / 1000);
-			throw new Error(`Calma lá! Aguarde mais ${timeLeft} segundo(s) para enviar outra mensagem.`);
-		}
-	}
+	checkRateLimit(lastMessage?.createdAt, RATE_LIMIT_MS, "Calma lá! Aguarde mais");
 
 	const sanitizedBody = sanitizeHtml(body);
 	if (!sanitizedBody) {
@@ -53,7 +44,11 @@ export async function processAndSendMessage(authorId: string, receiverId: string
 }
 
 export async function deleteMessage(userId: string, messageId: string) {
-	await messageRepository.deleteMessageByIdAndUser(messageId, userId);
+	const msg = await messageRepository.getMessageById(messageId);
+	if (!msg) throw new Error(MessageErrors.MESSAGE_NOT_FOUND);
+	if (msg.authorId !== userId && msg.receiverId !== userId)
+		throw new Error(MessageErrors.FORBIDDEN);
+	await messageRepository.deleteMessageById(messageId);
 }
 
 export async function updateLastCheckedMessages(userId: string) {

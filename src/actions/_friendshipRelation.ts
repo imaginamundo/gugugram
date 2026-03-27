@@ -1,6 +1,7 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
+import { withAuth } from "@utils/action-guard";
 
 import {
 	processFriendRequest,
@@ -15,10 +16,7 @@ const FriendshipSchema = z.object({
 
 export const sendFriendRequest = defineAction({
 	accept: "form",
-	handler: async (input, context) => {
-		const session = context.locals.user;
-		if (!session) return { success: false as const, error: "Não autorizado" };
-
+	handler: withAuth(async (input: FormData, context, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -35,23 +33,23 @@ export const sendFriendRequest = defineAction({
 
 			return { success: true as const, status: resultingStatus };
 		} catch (error) {
-			if (error instanceof Error && error.message === "INVALID_ACTION") {
-				return {
-					success: false as const,
-					error: "Você não pode enviar uma solicitação para si mesmo.",
-				};
+			if (error instanceof Error) {
+				if (error.message === "INVALID_ACTION") {
+					return {
+						success: false as const,
+						error: "Você não pode enviar uma solicitação para si mesmo.",
+					};
+				}
+				return { success: false as const, error: error.message };
 			}
-			return { success: false as const, error: "Erro ao enviar solicitação" };
+			return { success: false as const, error: "Erro interno." };
 		}
-	},
+	}),
 });
 
 export const acceptFriendRequest = defineAction({
 	accept: "form",
-	handler: async (input, context) => {
-		const session = context.locals.user;
-		if (!session) return { success: false as const, error: "Não autorizado" };
-
+	handler: withAuth(async (input: FormData, context, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -69,15 +67,12 @@ export const acceptFriendRequest = defineAction({
 		} catch {
 			return { success: false as const, error: "Erro ao aceitar solicitação" };
 		}
-	},
+	}),
 });
 
 export const removeFriendship = defineAction({
 	accept: "form",
-	handler: async (input, context) => {
-		const session = context.locals.user;
-		if (!session) return { success: false as const, error: "Não autorizado" };
-
+	handler: withAuth(async (input: FormData, context, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -95,5 +90,5 @@ export const removeFriendship = defineAction({
 		} catch {
 			return { success: false as const, error: "Erro ao remover amizade" };
 		}
-	},
+	}),
 });

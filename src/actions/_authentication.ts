@@ -56,7 +56,7 @@ export const login = defineAction({
 
 			return {
 				success: false as const,
-				error: "Erro desconhecido. :(",
+				error: "Erro interno.",
 				fields,
 				fieldErrors: {},
 			};
@@ -109,7 +109,7 @@ export const register = defineAction({
 				success: false as const,
 				fields,
 				fieldErrors: {},
-				error: "Erro desconhecido. :(",
+				error: "Erro interno.",
 			};
 		}
 	},

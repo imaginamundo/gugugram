@@ -1,5 +1,6 @@
 import { auth } from "@lib/auth";
 import { APIError } from "better-auth/api";
+import { AuthErrors } from "@customTypes/errors";
 
 const authTranslations = {
 	USER_NOT_FOUND: "Usuário não encontrado.",
@@ -24,8 +25,10 @@ const authTranslations = {
 	PASSWORD_TOO_LONG: "Senha muito longa.",
 } as const;
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function authenticateUser(identity: string, password: string) {
-	const isEmail = identity.includes("@") && identity.includes(".");
+	const isEmail = EMAIL_RE.test(identity);
 
 	try {
 		const response = isEmail
@@ -65,7 +68,6 @@ export async function registerNewUser(email: string, username: string, password:
 		if (!response.ok) {
 			const errorData = await response.json();
 			const code = errorData.code as keyof typeof authTranslations;
-			console.log({ code });
 			throw new Error(authTranslations[code] || "Erro desconhecido. :(");
 		}
 
@@ -74,7 +76,6 @@ export async function registerNewUser(email: string, username: string, password:
 	} catch (error) {
 		if (error instanceof APIError) {
 			const code = error.body?.code as keyof typeof authTranslations;
-			console.log({ code });
 			throw new Error(authTranslations[code] || "Erro desconhecido. :(");
 		}
 		throw error;
@@ -92,7 +93,7 @@ export async function sendPasswordResetEmail(
 		asResponse: true,
 	});
 
-	if (!response.ok) throw new Error("RESET_REQUEST_FAILED");
+	if (!response.ok) throw new Error(AuthErrors.RESET_REQUEST_FAILED);
 }
 
 export async function performPasswordReset(
@@ -106,5 +107,5 @@ export async function performPasswordReset(
 		asResponse: true,
 	});
 
-	if (!response.ok) throw new Error("RESET_FAILED");
+	if (!response.ok) throw new Error(AuthErrors.RESET_FAILED);
 }

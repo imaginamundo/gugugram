@@ -1,8 +1,8 @@
-// src/services/user/profile.ts
-import { utapi } from "@lib/uploadthing";
+import { storage } from "@lib/storage";
 import { parseUser } from "@utils/user";
 import { userProfileRepository, type UpdateUserPayload } from "@repositories/userProfile";
 import { friendshipPossibleStatus } from "@schemas/database";
+import { ProfileErrors } from "@customTypes/errors";
 
 type UpdateProfileData = {
 	username: string;
@@ -79,7 +79,7 @@ export async function getProfile({
 
 export async function updateProfileData(userId: string, data: UpdateProfileData) {
 	const currentUser = await userProfileRepository.getUserById(userId);
-	if (!currentUser) throw new Error("USER_NOT_FOUND");
+	if (!currentUser) throw new Error(ProfileErrors.USER_NOT_FOUND);
 
 	const updateData: UpdateUserPayload = {
 		description: data.description,
@@ -99,10 +99,10 @@ export async function updateProfileData(userId: string, data: UpdateProfileData)
 			const newFilename = `${originalName}_30x30.png`;
 			const file = new File([buffer], newFilename, { type: "image/png" });
 
-			const upload = await utapi.uploadFiles(file);
+			const upload = await storage.upload(file);
 
 			if (!upload.data?.ufsUrl) {
-				throw new Error("IMAGE_UPLOAD_FAILED");
+				throw new Error(ProfileErrors.IMAGE_UPLOAD_FAILED);
 			}
 
 			updateData.image = upload.data.ufsUrl;
@@ -111,8 +111,8 @@ export async function updateProfileData(userId: string, data: UpdateProfileData)
 				oldImageKeyToDelete = currentUser.image.split("/").pop() || null;
 			}
 		} catch (e) {
-			if (e instanceof Error && e.message === "IMAGE_UPLOAD_FAILED") throw e;
-			throw new Error("IMAGE_PROCESSING_FAILED");
+			if (e instanceof Error && e.message === ProfileErrors.IMAGE_UPLOAD_FAILED) throw e;
+			throw new Error(ProfileErrors.IMAGE_PROCESSING_FAILED);
 		}
 	}
 
@@ -120,16 +120,16 @@ export async function updateProfileData(userId: string, data: UpdateProfileData)
 		await userProfileRepository.updateUser(userId, updateData);
 
 		if (oldImageKeyToDelete) {
-			utapi
-				.deleteFiles(oldImageKeyToDelete)
+			storage
+				.delete(oldImageKeyToDelete)
 				.catch((e) => console.error("Erro ao deletar imagem antiga do UT:", e));
 		}
 	} catch (error) {
 		const dbError = error as { code?: string };
 		if (dbError.code === "23505") {
-			throw new Error("UNIQUE_CONSTRAINT_VIOLATION");
+			throw new Error(ProfileErrors.UNIQUE_CONSTRAINT_VIOLATION);
 		}
-		throw new Error("DB_UPDATE_FAILED");
+		throw new Error(ProfileErrors.DB_UPDATE_FAILED);
 	}
 }
 
@@ -137,17 +137,17 @@ export async function removeProfileImageFromUser(userId: string) {
 	const currentUser = await userProfileRepository.getUserById(userId);
 
 	if (!currentUser?.image) {
-		throw new Error("NO_IMAGE_TO_REMOVE");
+		throw new Error(ProfileErrors.NO_IMAGE_TO_REMOVE);
 	}
 
 	const imageKey = currentUser.image.split("/").pop();
 
 	try {
 		if (imageKey) {
-			await utapi.deleteFiles(imageKey);
+			await storage.delete(imageKey);
 		}
 		await userProfileRepository.updateUser(userId, { image: null });
 	} catch {
-		throw new Error("DB_UPDATE_FAILED");
+		throw new Error(ProfileErrors.DB_UPDATE_FAILED);
 	}
 }

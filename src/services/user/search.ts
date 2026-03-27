@@ -1,4 +1,3 @@
-// src/services/user/search.ts
 import { friendshipPossibleStatus } from "@schemas/database";
 import { parseUser } from "@utils/user";
 import { userSearchRepository } from "@repositories/userSearch";

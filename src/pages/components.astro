@@ -7,116 +7,250 @@ import Input from "@ui/Input.svelte";
 import Textarea from "@ui/Textarea.svelte";
 import InputImage from "@ui/InputImage.svelte";
 import Select from "@ui/Select.svelte";
+import Modal from "@ui/Modal.svelte";
 
 const seo = {
 	title: `Componentes daqui, rsrs`,
 	description: `Componentes do gugugram, algumas coisas faltam mas a vida`,
 };
+
+const sections = [
+	{ id: "button", label: "Button" },
+	{ id: "checkbox", label: "Checkbox" },
+	{ id: "radio", label: "Radio" },
+	{ id: "input", label: "Input" },
+	{ id: "textarea", label: "Textarea" },
+	{ id: "select", label: "Select" },
+	{ id: "input-image", label: "Input Image" },
+	{ id: "title-bar", label: "Title Bar" },
+	{ id: "window", label: "Window" },
+	{ id: "modal", label: "Modal" },
+	{ id: "tablist", label: "Tablist" },
+	{ id: "status-bar", label: "Status Bar" },
+	{ id: "bordas", label: "Bordas" },
+	{ id: "avatar", label: "Avatar / User Image" },
+];
 ---
 
 <Layout {...seo}>
-	<h1>Core components</h1>
+	<div style="display: flex; gap: 2rem; align-items: flex-start;">
+		<nav id="sidebar" style="position: sticky; top: 1rem; min-width: 160px; flex-shrink: 0;">
+			{
+				sections.map(({ id, label }) => (
+					<a
+						href={`#${id}`}
+						style="display: block; padding: 2px 4px; text-decoration: none; color: inherit;"
+					>
+						{label}
+					</a>
+				))
+			}
+		</nav>
 
-	<h2>Button</h2>
-	<Button>Button</Button>
-	<Button disabled>Disabled</Button>
+		<main style="flex: 1; min-width: 0;">
+			<h1>Core components</h1>
 
-	<h2>Checkbox</h2>
-	<fieldset>
-		<legend>Examples</legend>
-		<label class="inline-label">
-			<Checkbox />
-			This is a checkbox
-		</label>
-		<label class="inline-label">
-			<Checkbox disabled />
-			Disabled
-		</label>
-	</fieldset>
+			<h2 id="button">Button</h2>
+			<Button>Button</Button>
+			<Button disabled>Disabled</Button>
+			<button class="button">
+				<img src="/icons/camera-2.png" width="16" height="16" alt="" />
+				Com ícone
+			</button>
+			<button class="button button-borderless">Borderless</button>
+			<button class="button button-grayscale">
+				<img src="/icons/camera-2.png" width="16" height="16" alt="" />
+				Grayscale
+			</button>
 
-	<h2>Radio</h2>
-	<fieldset>
-		<legend>Examples</legend>
-		<label class="inline-label">
-			<Radio name="test" />
-			This is a radio
-		</label>
-		<label class="inline-label">
-			<Radio name="test" />
-			Other radio
-		</label>
-		<label class="inline-label">
-			<Radio name="test" disabled />
-			Disabled
-		</label>
-	</fieldset>
+			<h2 id="checkbox">Checkbox</h2>
+			<fieldset>
+				<legend>Examples</legend>
+				<label class="inline-label">
+					<Checkbox />
+					This is a checkbox
+				</label>
+				<label class="inline-label">
+					<Checkbox disabled />
+					Disabled
+				</label>
+				<label class="inline-label">
+					<Checkbox indeterminate={true} client:load />
+					Indeterminate
+				</label>
+			</fieldset>
 
-	<h2>Input</h2>
-	<label class="label">
-		Input:
-		<Input />
-	</label>
-	<label class="label">
-		Disabled:
-		<Input disabled />
-	</label>
+			<h2 id="radio">Radio</h2>
+			<fieldset>
+				<legend>Examples</legend>
+				<label class="inline-label">
+					<Radio name="test" />
+					This is a radio
+				</label>
+				<label class="inline-label">
+					<Radio name="test" />
+					Other radio
+				</label>
+				<label class="inline-label">
+					<Radio name="test" disabled />
+					Disabled
+				</label>
+			</fieldset>
 
-	<h2>Textarea</h2>
-	<label class="label">
-		Textarea:
-		<Textarea />
-	</label>
-	<label class="label">
-		Disabled:
-		<Textarea disabled />
-	</label>
+			<h2 id="input">Input</h2>
+			<label class="label">
+				Input:
+				<Input />
+			</label>
+			<label class="label">
+				Disabled:
+				<Input disabled />
+			</label>
 
-	<h2>Select</h2>
-	<Select>
-		<option value="98">98</option>
-		<optgroup label="Tech">
-			<option value="svelte">Svelte</option>
-			<option value="astro">Astro</option>
-		</optgroup>
-	</Select>
+			<h2 id="textarea">Textarea</h2>
+			<label class="label">
+				Textarea:
+				<Textarea />
+			</label>
+			<label class="label">
+				Disabled:
+				<Textarea disabled />
+			</label>
 
-	<Select disabled>
-		<option value="98">98</option>
-		<optgroup label="Tech">
-			<option value="svelte">Svelte</option>
-			<option value="astro">Astro</option>
-		</optgroup>
-	</Select>
+			<h2 id="select">Select</h2>
+			<Select>
+				<option value="98">98</option>
+				<optgroup label="Tech">
+					<option value="svelte">Svelte</option>
+					<option value="astro">Astro</option>
+				</optgroup>
+			</Select>
 
-	<h2>Input file for image with preview</h2>
-	<label class="label">
-		Image:
-		<InputImage name="profileImage" client:load />
-	</label>
+			<Select disabled>
+				<option value="98">98</option>
+				<optgroup label="Tech">
+					<option value="svelte">Svelte</option>
+					<option value="astro">Astro</option>
+				</optgroup>
+			</Select>
 
-	<h2>Title bar</h2>
-	<h3>Active:</h3>
-	<div class="title-bar">
-		<p>Title bar!</p>
+			<h2 id="input-image">Input file for image with preview</h2>
+			<label class="label">
+				Image:
+				<InputImage name="profileImage" client:load />
+			</label>
+
+			<h2 id="title-bar">Title bar</h2>
+			<h3>Active:</h3>
+			<div class="title-bar">
+				<p>Title bar!</p>
+			</div>
+			<h3>Inactive:</h3>
+			<div class="title-bar inactive">
+				<p>Title bar inactive</p>
+			</div>
+
+			<h2 id="window">Window</h2>
+			<div class="window">
+				<div class="title-bar">
+					<p>Title</p>
+				</div>
+				<div class="window-body">
+					<p>Hello, world!</p>
+				</div>
+				<div class="status-bar">
+					<p>Hello</p>
+					<p>World!</p>
+				</div>
+			</div>
+
+			<h2 id="modal">Modal</h2>
+			<button id="open-modal-btn" class="button">Abrir Modal</button>
+			<Modal id="example-modal" client:load>
+				<div class="title-bar">
+					<p>Exemplo de Modal</p>
+				</div>
+				<div class="window-body">
+					<p>Conteúdo do modal de exemplo.</p>
+				</div>
+			</Modal>
+
+			<h2 id="tablist">Tablist</h2>
+			<div class="window">
+				<div class="window-body">
+					<ul class="tablist">
+						<li data-selected="true"><a href="#">Aba 1</a></li>
+						<li><a href="#">Aba 2</a></li>
+						<li><a href="#">Aba 3</a></li>
+					</ul>
+					<div class="window" style="margin-top: 0;">
+						<div class="window-body">
+							<p>Conteúdo da aba selecionada.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<h2 id="status-bar">Status Bar</h2>
+			<div class="window">
+				<div class="window-body">
+					<p>Conteúdo da janela</p>
+				</div>
+				<div class="status-bar">
+					<p>Segmento 1</p>
+					<p>Segmento 2</p>
+				</div>
+			</div>
+
+			<h2 id="bordas">Bordas</h2>
+			<div class="image-border" style="display: inline-block; padding: 4px; margin: 4px;">
+				.image-border
+			</div>
+			<div class="field-border" style="display: inline-block; padding: 4px; margin: 4px;">
+				.field-border
+			</div>
+			<div class="field-status-border" style="display: inline-block; padding: 4px; margin: 4px;">
+				.field-status-border
+			</div>
+
+			<h2 id="avatar">Avatar / User Image</h2>
+			<img
+				class="user-image image-border"
+				width="30"
+				height="30"
+				src="/icons/user_computer_pair-1.png"
+				alt="Avatar de exemplo"
+			/>
+		</main>
 	</div>
-	<h3>Inactive:</h3>
-	<div class="title-bar inactive">
-		<p>Title bar inactive</p>
-	</div>
+</Layout>
 
-	<h2>Window</h2>
-	<div class="window">
-		<div class="title-bar">
-			<p>
-				Title<p></p>
-			</p>
-		</div>
-		<div class="window-body">
-			<p>Hello, world!</p>
-		</div>
-		<div class="status-bar">
-			<p>Hello</p>
-			<p>World!</p>
-		</div>
-	</div></Layout
->
+<script>
+	document.getElementById("open-modal-btn")?.addEventListener("click", () => {
+		(document.getElementById("example-modal") as HTMLDialogElement)?.showModal();
+	});
+
+	const navLinks = Array.from(
+		document.querySelectorAll<HTMLAnchorElement>("#sidebar a[href^='#']"),
+	);
+
+	const observer = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (entry.isIntersecting) {
+					const id = entry.target.id;
+					for (const link of navLinks) {
+						if (link.getAttribute("href") === `#${id}`) {
+							link.setAttribute("aria-current", "true");
+						} else {
+							link.removeAttribute("aria-current");
+						}
+					}
+				}
+			}
+		},
+		{ rootMargin: "0px 0px -60% 0px", threshold: 0 },
+	);
+
+	document.querySelectorAll<HTMLHeadingElement>("h2[id]").forEach((h2) => observer.observe(h2));
+</script>
