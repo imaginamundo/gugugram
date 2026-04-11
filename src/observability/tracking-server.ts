@@ -1,5 +1,5 @@
 import type { AppTrackingEvent } from "@customTypes/tracking";
-import { posthogServer } from "@lib/posthog-server.ts";
+import { posthogServer } from "@observability/posthog-server.ts";
 
 interface TrackPayload {
 	distinctId: string;

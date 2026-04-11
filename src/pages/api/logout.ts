@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { auth } from "@lib/auth.ts";
-import { posthogServer } from "@lib/posthog-server";
+import { auth } from "@auth";
+import { posthogServer } from "@observability/posthog-server";
 
 export const POST: APIRoute = async (context) => {
 	try {

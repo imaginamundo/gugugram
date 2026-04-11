@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as fc from "fast-check";
 
-vi.mock("../../lib/uploadthing", () => ({
+vi.mock("../../infra/uploadthing", () => ({
 	utapi: {
 		uploadFiles: vi.fn().mockResolvedValue({ data: { ufsUrl: "https://example.com/img.png" } }),
 		deleteFiles: vi.fn().mockResolvedValue(undefined),

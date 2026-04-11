@@ -5,7 +5,7 @@ import { withAuth } from "@utils/action-guard";
 
 import { processAndSendMessage, deleteMessage, updateLastCheckedMessages } from "@services/message";
 import { MessageErrors } from "@customTypes/errors";
-import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
+import { trackServerEvent, flushServerEvents } from "@observability/tracking-server";
 
 const SendMessageSchema = z.object({
 	receiverId: z.string(),

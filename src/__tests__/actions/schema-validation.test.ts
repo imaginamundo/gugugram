@@ -21,7 +21,7 @@ vi.mock("../../services/message", () => ({
 	deleteMessage: vi.fn(),
 	updateLastCheckedMessages: vi.fn(),
 }));
-vi.mock("../../lib/tracking-server", () => ({
+vi.mock("../../observability/tracking-server", () => ({
 	trackServerEvent: vi.fn(),
 	flushServerEvents: vi.fn().mockResolvedValue(undefined),
 	identifyUserServer: vi.fn(),

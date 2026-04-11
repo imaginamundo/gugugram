@@ -1,4 +1,4 @@
-import { auth } from "@lib/auth";
+import { auth } from "@auth";
 import { APIError } from "better-auth/api";
 import { AuthErrors } from "@customTypes/errors";
 

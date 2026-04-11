@@ -4,7 +4,7 @@ import { parseSchema } from "@utils/validation";
 import { withAuth } from "@utils/action-guard";
 
 import { updateProfileData, removeProfileImageFromUser } from "@services/user/profile";
-import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
+import { trackServerEvent, flushServerEvents } from "@observability/tracking-server";
 import { ProfileErrors } from "@customTypes/errors";
 
 const UpdateProfileSchema = z.object({

@@ -1,4 +1,4 @@
-import { db } from "@lib/database";
+import { db } from "@infra/database";
 import { users, messages, userFriends } from "@schemas/database";
 import { and, eq, gt, or, count } from "drizzle-orm";
 

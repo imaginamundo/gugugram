@@ -3,7 +3,11 @@ import { authenticateUser, registerNewUser } from "@services/auth";
 import { parseSchema } from "@utils/validation";
 import { LoginSchema, RegisterSchema } from "@schemas/authentication";
 import { applySetCookie } from "@utils/cookie";
-import { trackServerEvent, identifyUserServer, flushServerEvents } from "@lib/tracking-server";
+import {
+	trackServerEvent,
+	identifyUserServer,
+	flushServerEvents,
+} from "@observability/tracking-server";
 
 export const login = defineAction({
 	accept: "form",

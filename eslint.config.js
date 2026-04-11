@@ -47,7 +47,10 @@ export default [
 				{ type: "components", pattern: "src/components/**" },
 				{ type: "pages", pattern: "src/pages/**" },
 				{ type: "stores", pattern: "src/stores/**" },
-				{ type: "lib", pattern: "src/lib/**" },
+				{ type: "infra", pattern: "src/infra/**" },
+				{ type: "observability", pattern: "src/observability/**" },
+				{ type: "auth", pattern: "src/auth.ts" },
+				{ type: "email", pattern: "src/email/**" },
 				{ type: "schemas", pattern: "src/schemas/**" },
 				{ type: "types", pattern: "src/types/**" },
 				{ type: "utils", pattern: "src/utils/**" },
@@ -58,7 +61,10 @@ export default [
 				"@ui/*": ["./src/components/_ui/$1"],
 				"@layout/*": ["./src/components/_layout/$1"],
 				"@components/*": ["./src/components/$1"],
-				"@lib/*": ["./src/lib/$1"],
+				"@infra/*": ["./src/infra/$1"],
+				"@observability/*": ["./src/observability/$1"],
+				"@auth": ["./src/auth.ts"],
+				"@email/*": ["./src/email/$1"],
 				"@schemas/*": ["./src/schemas/$1"],
 				"@repositories/*": ["./src/repositories/$1"],
 				"@services/*": ["./src/services/$1"],
@@ -82,7 +88,7 @@ export default [
 						{
 							from: { type: "repositories" },
 							allow: [
-								{ to: { type: "lib" } },
+								{ to: { type: "infra" } },
 								{ to: { type: "schemas" } },
 								{ to: { type: "types" } },
 								{ to: { type: "utils" } },
@@ -92,7 +98,7 @@ export default [
 							from: { type: "services" },
 							allow: [
 								{ to: { type: "repositories" } },
-								{ to: { type: "lib" } },
+								{ to: { type: "infra" } },
 								{ to: { type: "schemas" } },
 								{ to: { type: "types" } },
 								{ to: { type: "utils" } },
@@ -102,7 +108,7 @@ export default [
 							from: { type: "actions" },
 							allow: [
 								{ to: { type: "services" } },
-								{ to: { type: "lib" } },
+								{ to: { type: "observability" } },
 								{ to: { type: "schemas" } },
 								{ to: { type: "types" } },
 								{ to: { type: "utils" } },
@@ -116,7 +122,6 @@ export default [
 								{ to: { type: "utils" } },
 								{ to: { type: "types" } },
 								{ to: { type: "schemas" } },
-								{ to: { type: "lib" } },
 								{ to: { type: "assets" } },
 							],
 						},
@@ -125,7 +130,8 @@ export default [
 							allow: [
 								{ to: { type: "services" } },
 								{ to: { type: "components" } },
-								{ to: { type: "lib" } },
+								{ to: { type: "auth" } },
+								{ to: { type: "observability" } },
 								{ to: { type: "schemas" } },
 								{ to: { type: "types" } },
 								{ to: { type: "utils" } },
@@ -141,19 +147,36 @@ export default [
 							],
 						},
 						{
-							from: { type: "lib" },
+							from: { type: "infra" },
 							allow: [
-								{ to: { type: "lib" } },
 								{ to: { type: "schemas" } },
 								{ to: { type: "types" } },
 								{ to: { type: "utils" } },
 							],
 						},
 						{
+							from: { type: "observability" },
+							allow: [{ to: { type: "types" } }, { to: { type: "utils" } }],
+						},
+						{
+							from: { type: "auth" },
+							allow: [
+								{ to: { type: "infra" } },
+								{ to: { type: "email" } },
+								{ to: { type: "schemas" } },
+								{ to: { type: "types" } },
+								{ to: { type: "utils" } },
+							],
+						},
+						{
+							from: { type: "email" },
+							allow: [{ to: { type: "types" } }, { to: { type: "utils" } }],
+						},
+						{
 							from: { type: "middleware" },
 							allow: [
 								{ to: { type: "middleware" } },
-								{ to: { type: "lib" } },
+								{ to: { type: "auth" } },
 								{ to: { type: "types" } },
 								{ to: { type: "utils" } },
 							],

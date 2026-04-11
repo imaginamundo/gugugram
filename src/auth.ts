@@ -1,14 +1,14 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { username } from "better-auth/plugins";
-import { db } from "@lib/database";
-import { sendEmail } from "@lib/email/email";
+import { db } from "@infra/database";
+import { sendEmail } from "@email/email";
 import * as schema from "@schemas/database";
 import { hashPassword, validatePassword } from "@utils/password.ts";
 import {
 	resetPasswordEmailTemplate,
 	resetPasswordTextTemplate,
-} from "@lib/email/templates/resetPassword";
+} from "@email/templates/resetPassword";
 
 export const auth = betterAuth({
 	baseURL: import.meta.env.SITE,

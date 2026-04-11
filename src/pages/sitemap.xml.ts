@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { db } from "@lib/database";
+import { db } from "@infra/database";
 import { users } from "@schemas/database";
 
 export const GET: APIRoute = async ({ site }) => {

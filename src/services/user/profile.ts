@@ -1,4 +1,4 @@
-import { storage } from "@lib/storage";
+import { storage } from "@infra/storage";
 import { parseUser } from "@utils/user";
 import { userProfileRepository, type UpdateUserPayload } from "@repositories/userProfile";
 import { friendshipPossibleStatus } from "@schemas/database";

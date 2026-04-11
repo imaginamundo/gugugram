@@ -1,6 +1,6 @@
 import sanitizeHtml from "sanitize-html";
 import { imageSize } from "image-size";
-import { storage } from "@lib/storage";
+import { storage } from "@infra/storage";
 import { imagePostRepository } from "@repositories/imagePost.ts";
 import { ImagePostErrors } from "@customTypes/errors";
 import { checkRateLimit } from "@utils/rate-limit";

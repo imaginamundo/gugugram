@@ -1,4 +1,4 @@
-import { db } from "@lib/database";
+import { db } from "@infra/database";
 import { and, eq, desc, sql } from "drizzle-orm";
 import { imagePosts, imagePostComments } from "@schemas/database";
 

@@ -8,7 +8,7 @@ import {
 	addImageComment,
 	removeImageComment,
 } from "@services/imagePost";
-import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
+import { trackServerEvent, flushServerEvents } from "@observability/tracking-server";
 import { ImagePostErrors } from "@customTypes/errors";
 
 const UploadImageSchema = z.object({

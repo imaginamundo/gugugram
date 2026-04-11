@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as fc from "fast-check";
 
-vi.mock("../../lib/uploadthing", () => ({
+vi.mock("../../infra/uploadthing", () => ({
 	utapi: {
 		uploadFiles: vi.fn(),
 		deleteFiles: vi.fn().mockResolvedValue(undefined),
@@ -34,7 +34,7 @@ vi.mock("image-size", () => ({
 
 import { imagePostRepository } from "../../repositories/imagePost";
 import { userProfileRepository } from "../../repositories/userProfile";
-import { utapi } from "../../lib/uploadthing";
+import { utapi } from "../../infra/uploadthing";
 import { imageSize } from "image-size";
 
 import {

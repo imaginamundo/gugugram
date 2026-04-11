@@ -8,7 +8,7 @@ const { mockReturning, mockDelete } = vi.hoisted(() => {
 	return { mockReturning, mockDelete };
 });
 
-vi.mock("../../lib/database", () => ({ db: { delete: mockDelete } }));
+vi.mock("../../infra/database", () => ({ db: { delete: mockDelete } }));
 vi.mock("../../schemas/database", () => ({
 	imagePosts: { id: "id", authorId: "authorId" },
 	imagePostComments: {},

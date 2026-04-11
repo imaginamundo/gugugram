@@ -8,7 +8,7 @@ import {
 	acceptPendingFriendRequest,
 	deleteFriendship,
 } from "@services/user/friends";
-import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
+import { trackServerEvent, flushServerEvents } from "@observability/tracking-server";
 
 const FriendshipSchema = z.object({
 	targetUserId: z.string().min(1),

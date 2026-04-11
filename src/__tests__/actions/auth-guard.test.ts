@@ -8,7 +8,7 @@ vi.mock("../../services/imagePost", () => ({
 	removeImageComment: vi.fn(),
 }));
 
-vi.mock("../../lib/tracking-server", () => ({
+vi.mock("../../observability/tracking-server", () => ({
 	trackServerEvent: vi.fn(),
 	flushServerEvents: vi.fn().mockResolvedValue(undefined),
 }));

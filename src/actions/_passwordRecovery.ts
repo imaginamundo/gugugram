@@ -2,7 +2,7 @@ import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
 import { sendPasswordResetEmail, performPasswordReset } from "@services/auth";
-import { trackServerEvent, flushServerEvents } from "@lib/tracking-server";
+import { trackServerEvent, flushServerEvents } from "@observability/tracking-server";
 
 const RequestPasswordResetSchema = z.object({
 	email: z.email("E-mail inválido"),
