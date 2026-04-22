@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { imageModalStore as store } from "@stores/imagePostModalStore.svelte";
-	import type { PostType } from "@services/imagePost.ts";
+	import type { PostType } from "@services/imagePost";
 
 	const { post, index }: { post: PostType; index?: number } = $props();
 

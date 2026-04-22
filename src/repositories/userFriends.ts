@@ -13,7 +13,7 @@ export const userFriendsRepository = {
 					columns: { status: true },
 					with: {
 						requestUser: {
-							columns: { id: true, username: true, image: true },
+							columns: { id: true, username: true, displayUsername: true, image: true },
 						},
 					},
 				},
@@ -22,7 +22,7 @@ export const userFriendsRepository = {
 					columns: { status: true },
 					with: {
 						targetUser: {
-							columns: { id: true, username: true, image: true },
+							columns: { id: true, username: true, displayUsername: true, image: true },
 						},
 					},
 				},

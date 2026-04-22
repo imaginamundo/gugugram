@@ -8,6 +8,7 @@ export const userSearchRepository = {
 			columns: {
 				id: true,
 				username: true,
+				displayUsername: true,
 				image: true,
 			},
 			with: {
@@ -30,6 +31,7 @@ export const userSearchRepository = {
 			columns: {
 				id: true,
 				username: true,
+				displayUsername: true,
 				image: true,
 			},
 			limit: 20,

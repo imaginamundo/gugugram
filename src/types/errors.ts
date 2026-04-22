@@ -31,3 +31,7 @@ export const ProfileErrors = {
 	NO_IMAGE_TO_REMOVE: "NO_IMAGE_TO_REMOVE",
 	DB_UPDATE_FAILED: "DB_UPDATE_FAILED",
 } as const;
+
+export const FriendshipErrors = {
+	INVALID_ACTION: "INVALID_ACTION",
+} as const;

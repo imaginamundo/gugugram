@@ -1,5 +1,6 @@
 import { parseUser } from "@utils/user";
-import type { User, FriendsType, FriendshipContext } from "@utils/user";
+import type { User, FriendsType, FriendshipContext } from "@customTypes/user";
+import { FriendshipErrors } from "@customTypes/errors";
 import { userFriendsRepository } from "@repositories/userFriends";
 
 export async function getFriends(
@@ -40,7 +41,7 @@ export async function getFriends(
 
 export async function processFriendRequest(requesterId: string, targetId: string) {
 	if (requesterId === targetId) {
-		throw new Error("INVALID_ACTION");
+		throw new Error(FriendshipErrors.INVALID_ACTION);
 	}
 
 	const existingReverseRequest = await userFriendsRepository.getReverseRequest(

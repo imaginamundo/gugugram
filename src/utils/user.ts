@@ -1,21 +1,13 @@
 import { getEmojiById } from "@utils/emoji";
-import { friendshipPossibleStatus } from "@schemas/database";
-import { getProfile } from "@services/user/profile.ts";
+import type {
+	BaseUser,
+	ProfileUser,
+	User,
+	FriendshipContext,
+	FriendsType,
+} from "@customTypes/user";
 
-export interface BaseUser {
-	id: string;
-	image: string | null;
-}
-export type ProfileUser = NonNullable<Awaited<ReturnType<typeof getProfile>>["user"]>;
-export type User = Omit<ProfileUser, "description" | "lastCheckedMessagesAt">;
-export type FriendshipContext = {
-	status: (typeof friendshipPossibleStatus)[number] | null;
-	type: "target" | "request" | null;
-};
-export type FriendsType = {
-	friends: User[];
-	friendRequests: User[];
-};
+export type { BaseUser, ProfileUser, User, FriendshipContext, FriendsType };
 
 export function parseUser<T extends BaseUser>(user: T): Omit<T, "image"> & { image: string } {
 	return {

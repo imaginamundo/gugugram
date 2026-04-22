@@ -74,9 +74,10 @@ const shareImageURL = shareImage || new URL("/seo/1280x640.png", canonicalURL);
 		</script>
 		<meta name="user-data" data-username={session?.username} />
 		<script>
+			import { POSTHOG_KEY } from "astro:env/client";
 			import { initTracking, identifyUser } from "@utils/tracking";
 
-			initTracking();
+			initTracking(POSTHOG_KEY);
 
 			const userData = document.querySelector('meta[name="user-data"]');
 			const username = userData?.getAttribute("data-username");

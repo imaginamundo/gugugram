@@ -11,6 +11,8 @@ export const userProfileRepository = {
 			columns: {
 				id: true,
 				username: true,
+				displayUsername: true,
+				email: true,
 				image: true,
 				description: true,
 				lastCheckedMessagesAt: true,

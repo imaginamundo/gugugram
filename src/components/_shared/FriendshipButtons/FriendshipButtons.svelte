@@ -2,7 +2,7 @@
 	import { tick } from "svelte";
 	import { actions } from "astro:actions";
 	import { draggableDialog } from "@utils/draggableDialog.ts";
-	import type { FriendshipContext } from "@utils/user";
+	import type { FriendshipContext } from "@customTypes/user";
 	import Button from "@ui/Button.svelte";
 	import Modal from "@ui/Modal.svelte";
 

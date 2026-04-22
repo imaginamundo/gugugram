@@ -9,6 +9,7 @@ import {
 	deleteFriendship,
 } from "@services/user/friends";
 import { trackServerEvent, flushServerEvents } from "@observability/tracking-server";
+import { FriendshipErrors } from "@customTypes/errors";
 
 const FriendshipSchema = z.object({
 	targetUserId: z.string().min(1),
@@ -34,7 +35,7 @@ export const sendFriendRequest = defineAction({
 			return { success: true as const, status: resultingStatus };
 		} catch (error) {
 			if (error instanceof Error) {
-				if (error.message === "INVALID_ACTION") {
+				if (error.message === FriendshipErrors.INVALID_ACTION) {
 					return {
 						success: false as const,
 						error: "Você não pode enviar uma solicitação para si mesmo.",

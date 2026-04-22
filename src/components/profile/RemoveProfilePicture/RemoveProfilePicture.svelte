@@ -3,7 +3,7 @@
 	import { draggableDialog } from "@utils/draggableDialog.ts";
 	import Button from "@ui/Button.svelte";
 	import Modal from "@ui/Modal.svelte";
-	import type { ProfileUser } from "@utils/user";
+	import type { ProfileUser } from "@customTypes/user";
 
 	const { user }: { user: ProfileUser } = $props();
 

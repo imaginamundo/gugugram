@@ -49,20 +49,11 @@ export const login = defineAction({
 				username,
 			};
 		} catch (error) {
-			if (error instanceof Error) {
-				return {
-					success: false as const,
-					fields,
-					fieldErrors: {},
-					error: error.message,
-				};
-			}
-
 			return {
 				success: false as const,
-				error: "Erro interno.",
 				fields,
-				fieldErrors: {},
+				fieldErrors: null,
+				error: error instanceof Error ? error.message : "Erro interno.",
 			};
 		}
 	},
@@ -100,20 +91,11 @@ export const register = defineAction({
 				username: fields.username,
 			};
 		} catch (error) {
-			if (error instanceof Error) {
-				return {
-					success: false as const,
-					fields,
-					fieldErrors: {},
-					error: error.message,
-				};
-			}
-
 			return {
 				success: false as const,
 				fields,
-				fieldErrors: {},
-				error: "Erro interno.",
+				fieldErrors: null,
+				error: error instanceof Error ? error.message : "Erro interno.",
 			};
 		}
 	},
