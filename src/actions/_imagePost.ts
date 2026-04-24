@@ -18,7 +18,7 @@ const UploadImageSchema = z.object({
 
 export const uploadImagePost = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, context, session) => {
+	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, UploadImageSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -78,7 +78,7 @@ const DeleteImageSchema = z.object({
 
 export const deleteImagePost = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, context, session) => {
+	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, DeleteImageSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -120,7 +120,7 @@ const SendImagePostCommentSchema = z.object({
 
 export const sendImagePostComment = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, context, session) => {
+	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, SendImagePostCommentSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -161,7 +161,7 @@ const DeleteImagePostCommentSchema = z.object({
 
 export const deleteImagePostComment = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, context, session) => {
+	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, DeleteImagePostCommentSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 

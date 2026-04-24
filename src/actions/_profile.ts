@@ -16,7 +16,7 @@ const UpdateProfileSchema = z.object({
 
 export const updateProfile = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, context, session) => {
+	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, UpdateProfileSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Erro ao validar dados." };
 
@@ -65,7 +65,7 @@ export const updateProfile = defineAction({
 
 export const removeProfileImage = defineAction({
 	accept: "form",
-	handler: withAuth(async (_, context, session) => {
+	handler: withAuth(async (_, __, session) => {
 		try {
 			await removeProfileImageFromUser(session.id);
 			return { success: true as const };

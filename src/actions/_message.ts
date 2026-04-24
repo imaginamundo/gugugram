@@ -3,7 +3,7 @@ import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
 import { withAuth } from "@utils/action-guard";
 
-import { processAndSendMessage, deleteMessage, updateLastCheckedMessages } from "@services/message";
+import { processAndSendMessage, deleteMessage } from "@services/message";
 import { MessageErrors } from "@customTypes/errors";
 import { trackServerEvent, flushServerEvents } from "@observability/tracking-server";
 
@@ -14,7 +14,7 @@ const SendMessageSchema = z.object({
 
 export const sendMessage = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, context, session) => {
+	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, SendMessageSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -43,7 +43,7 @@ const RemoveMessageSchema = z.object({
 
 export const removeMessage = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, context, session) => {
+	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, RemoveMessageSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -58,19 +58,6 @@ export const removeMessage = defineAction({
 					return { success: false as const, error: "Sem permissão para remover esta mensagem." };
 			}
 			return { success: false as const, error: "Erro interno ao remover mensagem." };
-		}
-	}),
-});
-
-export const markMessagesAsRead = defineAction({
-	accept: "json",
-	handler: withAuth(async (_, context, session) => {
-		try {
-			await updateLastCheckedMessages(session.id);
-			return { success: true as const };
-		} catch (error) {
-			console.error("Erro ao marcar mensagens como lidas:", error);
-			return { success: false as const, error: "Erro interno" };
 		}
 	}),
 });

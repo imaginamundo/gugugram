@@ -17,7 +17,7 @@ const FriendshipSchema = z.object({
 
 export const sendFriendRequest = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, context, session) => {
+	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -50,7 +50,7 @@ export const sendFriendRequest = defineAction({
 
 export const acceptFriendRequest = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, context, session) => {
+	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -73,7 +73,7 @@ export const acceptFriendRequest = defineAction({
 
 export const removeFriendship = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, context, session) => {
+	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, FriendshipSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
