@@ -14,4 +14,6 @@ export type AppTrackingEvent =
 	| "message_sent"
 	| "profile_updated"
 	| "password_reset_requested"
-	| "password_reset_completed";
+	| "password_reset_completed"
+	| "moderation_report_submitted"
+	| "account_deleted";

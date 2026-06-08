@@ -9,6 +9,13 @@ import {
 import { sendMessage, removeMessage } from "./_message.ts";
 import { updateProfile, removeProfileImage } from "./_profile.ts";
 import { requestPasswordReset, resetPassword } from "./_passwordRecovery.ts";
+import {
+	reportImagePost,
+	reportImagePostComment,
+	reportMessage,
+	reportUser,
+} from "./_moderation.ts";
+import { deleteAccount } from "./_accountDeletion.ts";
 
 export const server = {
 	// auth
@@ -32,4 +39,11 @@ export const server = {
 	// password reset
 	requestPasswordReset,
 	resetPassword,
+	// moderation
+	reportImagePost,
+	reportImagePostComment,
+	reportMessage,
+	reportUser,
+	// account deletion
+	deleteAccount,
 };
