@@ -1,0 +1,19 @@
+---
+description: Drizzle and repository conventions for schema and data access
+globs: "{src/repositories/**,src/services/**,src/schemas/**,src/infra/database.ts,drizzle/**}"
+alwaysApply: false
+---
+
+# Database Rules
+
+- Use PostgreSQL + Drizzle conventions from this codebase.
+- Import `db` from `@infra/database`; import tables from `@schemas/database`.
+- Keep raw DB calls inside repositories, not actions/services/pages.
+- For ownership-verified deletes, use `and(eq(...), eq(...))` filters.
+- Keep schema/table conventions aligned with the `gugugram_` prefix pattern.
+
+## Migrations and Schema Changes
+
+- When schema changes, generate migration files under `drizzle/`.
+- Ensure Drizzle config and snapshots stay consistent with schema updates.
+- Prefer Drizzle query helpers (`eq`, `and`, `desc`, `sql`) over handwritten SQL in app code.

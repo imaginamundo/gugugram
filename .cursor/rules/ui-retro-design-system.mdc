@@ -1,0 +1,19 @@
+---
+description: Retro UI and component conventions for Astro/Svelte views
+globs: src/components/**/*
+alwaysApply: false
+---
+
+# UI and Design System Rules
+
+- Preserve Gugugram's retro Windows 95 visual style in new UI work.
+- Use tokens from `src/styles/global.css`; avoid introducing raw hex colors in components.
+- Prefer existing utility classes and `_ui` primitives before adding new bespoke CSS.
+- Use `.astro` for static/SSR rendering and `.svelte` for client interactivity.
+- Follow Svelte 5 runes patterns in Svelte components (`$props`, `$state`, `$derived`, `$bindable`).
+
+## Component Organization
+
+- Keep component structure as `ComponentName/ComponentName.svelte` or `.astro`.
+- Keep reusable primitives under `src/components/_ui/`.
+- Avoid modern visual patterns that break the retro style (rounded modern cards, soft shadows).

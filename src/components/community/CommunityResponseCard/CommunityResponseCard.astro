@@ -1,0 +1,38 @@
+---
+import type { CommunityResponseType } from "@customTypes/community";
+
+interface Props {
+	response: CommunityResponseType;
+}
+
+const { response } = Astro.props;
+
+const createdAt = response.createdAt.toLocaleDateString("pt-BR", {
+	day: "2-digit",
+	month: "2-digit",
+	year: "numeric",
+});
+---
+
+<article class="response-card field-border p">
+	<p class="text-muted meta">
+		<a href={`/${response.authorUsername}`}>{response.authorUsername}</a> · {createdAt}
+	</p>
+	<p class="content">{response.content}</p>
+</article>
+
+<style>
+	.response-card {
+		background-color: var(--button-highlight);
+	}
+
+	.meta {
+		margin: 0 0 4px;
+	}
+
+	.content {
+		margin: 0;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+</style>

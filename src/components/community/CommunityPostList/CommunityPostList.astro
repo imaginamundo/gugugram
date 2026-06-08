@@ -1,0 +1,45 @@
+---
+import CommunityPostCard from "@components/community/CommunityPostCard/CommunityPostCard.astro";
+import type { CommunityPostType } from "@customTypes/community";
+
+interface Props {
+	posts: CommunityPostType[];
+	communitySlug: string;
+	page: number;
+	hasNextPage: boolean;
+}
+
+const { posts, communitySlug, page, hasNextPage } = Astro.props;
+---
+
+<section class="post-list">
+	{
+		posts.length === 0 ? (
+			<p class="text-muted">Nenhum post ainda. Seja o primeiro a publicar!</p>
+		) : (
+			<div class="flex flex-col gap">
+				{posts.map((post) => (
+					<CommunityPostCard post={post} communitySlug={communitySlug} />
+				))}
+			</div>
+		)
+	}
+
+	{
+		(page > 1 || hasNextPage) && (
+			<nav class="pagination flex gap center mt" aria-label="Paginação">
+				{page > 1 && (
+					<a href={`?page=${page - 1}`} class="button">
+						← Anterior
+					</a>
+				)}
+				<span class="text-muted">Página {page}</span>
+				{hasNextPage && (
+					<a href={`?page=${page + 1}`} class="button">
+						Próxima →
+					</a>
+				)}
+			</nav>
+		)
+	}
+</section>

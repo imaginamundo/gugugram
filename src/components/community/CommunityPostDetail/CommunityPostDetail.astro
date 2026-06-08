@@ -1,0 +1,49 @@
+---
+import CommunityResponseList from "@components/community/CommunityResponseList/CommunityResponseList.astro";
+import type { CommunityPostDetailType } from "@customTypes/community";
+
+interface Props {
+	post: CommunityPostDetailType;
+}
+
+const { post } = Astro.props;
+
+const createdAt = post.createdAt.toLocaleDateString("pt-BR", {
+	day: "2-digit",
+	month: "2-digit",
+	year: "numeric",
+});
+---
+
+<article class="post-detail window">
+	<div class="title-bar">
+		<p><strong>{post.title}</strong></p>
+	</div>
+	<div class="window-body">
+		<p class="text-muted meta">
+			por <a href={`/${post.authorUsername}`}>{post.authorUsername}</a> · {createdAt}
+		</p>
+		<div class="content field-border p">
+			<p>{post.content}</p>
+		</div>
+		<div class="mt">
+			<CommunityResponseList responses={post.responses} />
+		</div>
+	</div>
+</article>
+
+<style>
+	.meta {
+		margin: 0 0 8px;
+	}
+
+	.content {
+		background-color: var(--button-highlight);
+	}
+
+	.content p {
+		margin: 0;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+</style>

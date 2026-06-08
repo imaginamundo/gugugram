@@ -37,7 +37,6 @@ export default defineConfig({
 				context: "server",
 				access: "secret",
 				url: true,
-				startsWith: "postgresql://",
 			}),
 			AUTH_SECRET: envField.string({ context: "server", access: "secret" }),
 

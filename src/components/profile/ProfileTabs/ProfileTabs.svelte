@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 
-	type SelectTabType = "fotos" | "recados" | "amigos";
+	type SelectTabType = "fotos" | "recados" | "amigos" | "comunidades";
 
 	let {
 		selectedTab,
@@ -42,6 +42,12 @@
 			label: `${friendsCount} amigos ${pendingFriends}`,
 			href: `/${username}/amigos`,
 			icon: "/icons/user_computer_pair-1.png",
+		},
+		{
+			id: "comunidades",
+			label: "Comunidades",
+			href: `/${username}/comunidades`,
+			icon: "/icons/entire_network_globe-4.png",
 		},
 	]);
 </script>

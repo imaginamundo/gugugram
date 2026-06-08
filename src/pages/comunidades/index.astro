@@ -1,0 +1,62 @@
+---
+import Layout from "@layout/Main.astro";
+import CommunityCard from "@components/community/CommunityCard/CommunityCard.astro";
+import { getCommunities } from "@services/community";
+
+const PAGE_SIZE = 20;
+const pageParam = Astro.url.searchParams.get("page");
+const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+
+const communities = await getCommunities(page);
+const hasNextPage = communities.length === PAGE_SIZE;
+
+const seo = {
+	title: "Comunidades",
+	description: "Descubra e participe de comunidades temáticas no Gugugram.",
+};
+---
+
+<Layout {...seo}>
+	<div class="flex justify-between center mb">
+		<h2>Comunidades</h2>
+		<a href="/comunidades/criar" class="button">Nova comunidade</a>
+	</div>
+
+	{
+		communities.length === 0 ? (
+			<p class="text-muted">Nenhuma comunidade ainda. Seja o primeiro a criar uma!</p>
+		) : (
+			<div class="community-grid">
+				{communities.map((community) => (
+					<CommunityCard community={community} />
+				))}
+			</div>
+		)
+	}
+
+	{
+		(page > 1 || hasNextPage) && (
+			<nav class="pagination flex gap center mt" aria-label="Paginação">
+				{page > 1 && (
+					<a href={`?page=${page - 1}`} class="button">
+						← Anterior
+					</a>
+				)}
+				<span class="text-muted">Página {page}</span>
+				{hasNextPage && (
+					<a href={`?page=${page + 1}`} class="button">
+						Próxima →
+					</a>
+				)}
+			</nav>
+		)
+	}
+</Layout>
+
+<style>
+	.community-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+</style>

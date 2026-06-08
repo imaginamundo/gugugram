@@ -2,17 +2,32 @@
 	let {
 		name,
 		value = null,
+		width = 30,
+		height = 30,
+		quality = 0.9,
+		previewAlt = "Prévia da imagem selecionada",
 	}: {
 		name: string;
 		value?: string | null;
+		width?: number;
+		height?: number;
+		quality?: number;
+		previewAlt?: string;
 	} = $props();
 
-	let fileInput = $state<HTMLInputElement | null>(null);
+	const safeWidth = $derived(Math.max(1, Math.round(width)));
+	const safeHeight = $derived(Math.max(1, Math.round(height)));
+	const safeQuality = $derived(Math.min(1, Math.max(0, quality)));
+
 	let canvas = $state<HTMLCanvasElement | null>(null);
-	let previewUrl = $state<string | null>(value);
+	let previewUrl = $state<string | null>(null);
 	let base64Output = $state<string>("");
 
-	const TARGET_SIZE = 30;
+	$effect(() => {
+		if (!base64Output) {
+			previewUrl = value;
+		}
+	});
 
 	async function handleFileChange(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -20,7 +35,6 @@
 
 		if (!files || files.length === 0) {
 			base64Output = "";
-			previewUrl = value;
 			return;
 		}
 
@@ -64,28 +78,29 @@
 		const ctx = canvas.getContext("2d");
 		if (!ctx) return;
 
-		canvas.width = TARGET_SIZE;
-		canvas.height = TARGET_SIZE;
+		canvas.width = safeWidth;
+		canvas.height = safeHeight;
 
 		let sourceX = 0;
 		let sourceY = 0;
 		let sourceWidth = img.width;
 		let sourceHeight = img.height;
 
-		const aspectRatio = img.width / img.height;
+		const targetAspect = safeWidth / safeHeight;
+		const sourceAspect = img.width / img.height;
 
-		if (aspectRatio > 1) {
-			sourceWidth = img.height;
-			sourceX = (img.width - img.height) / 2;
-		} else if (aspectRatio < 1) {
-			sourceHeight = img.width;
-			sourceY = (img.height - img.width) / 2;
+		if (sourceAspect > targetAspect) {
+			sourceWidth = img.height * targetAspect;
+			sourceX = (img.width - sourceWidth) / 2;
+		} else if (sourceAspect < targetAspect) {
+			sourceHeight = img.width / targetAspect;
+			sourceY = (img.height - sourceHeight) / 2;
 		}
 
-		ctx.clearRect(0, 0, TARGET_SIZE, TARGET_SIZE);
-		ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, TARGET_SIZE, TARGET_SIZE);
+		ctx.clearRect(0, 0, safeWidth, safeHeight);
+		ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, safeWidth, safeHeight);
 
-		base64Output = canvas.toDataURL("image/png", 0.9);
+		base64Output = canvas.toDataURL("image/png", safeQuality);
 		previewUrl = base64Output;
 	}
 </script>
@@ -94,14 +109,13 @@
 	{#if previewUrl}
 		<span class="flex gap center mb">
 			Prévia:
-			<img src={previewUrl} alt="Preview da foto de perfil" class="avatar-preview" />
+			<img src={previewUrl} alt={previewAlt} class="avatar-preview" />
 		</span>
 	{/if}
 	<input
 		type="file"
 		accept="image/png, image/jpeg, image/webp"
 		onchange={handleFileChange}
-		bind:this={fileInput}
 		class="input block w-full"
 	/>
 

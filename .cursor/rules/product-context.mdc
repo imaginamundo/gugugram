@@ -1,0 +1,16 @@
+---
+description: Gugugram product context and domain constraints
+alwaysApply: true
+---
+
+# Product Context
+
+- Gugugram is a pixel-art social network; preserve this domain intent in features.
+- User-facing language is Brazilian Portuguese (`pt-BR`) unless explicitly requested otherwise.
+- Image posting features must respect square pixel-art constraints and allowed tiny dimensions.
+- Prioritize consistency with existing social features (profiles, friends, comments, messages).
+
+## Tech Snapshot
+
+- Astro SSR + Svelte components, PostgreSQL (Neon), Drizzle ORM, better-auth.
+- Keep implementations aligned with current stack and existing project patterns.

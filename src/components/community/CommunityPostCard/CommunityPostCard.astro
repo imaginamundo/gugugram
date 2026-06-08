@@ -1,0 +1,46 @@
+---
+import type { CommunityPostType } from "@customTypes/community";
+
+interface Props {
+	post: CommunityPostType;
+	communitySlug: string;
+}
+
+const { post, communitySlug } = Astro.props;
+
+const createdAt = post.createdAt.toLocaleDateString("pt-BR", {
+	day: "2-digit",
+	month: "2-digit",
+	year: "numeric",
+});
+---
+
+<a href={`/comunidades/${communitySlug}/${post.id}`} class="post-card field-border p">
+	<p class="post-title"><strong>{post.title}</strong></p>
+	<p class="text-muted meta">
+		por <span>{post.authorUsername}</span> · {createdAt} ·
+		{post.responseCount}
+		{post.responseCount === 1 ? "resposta" : "respostas"}
+	</p>
+</a>
+
+<style>
+	.post-card {
+		display: block;
+		text-decoration: none;
+		color: var(--text-color);
+		background-color: var(--button-highlight);
+	}
+
+	.post-card:hover {
+		background-color: var(--button-face);
+	}
+
+	.post-title {
+		margin: 0 0 4px;
+	}
+
+	.meta {
+		margin: 0;
+	}
+</style>

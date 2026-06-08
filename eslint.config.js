@@ -32,12 +32,13 @@ export default [
 	},
 	eslintConfigPrettier,
 	{
-		files: ["src/**"],
+		files: ["src/**/*.{js,ts,svelte,astro}"],
 		plugins: { boundaries },
 		settings: {
 			"import/resolver": {
-				node: {
-					extensions: [".ts", ".tsx", ".js", ".mjs", ".cjs", ".svelte", ".astro"],
+				typescript: {
+					alwaysTryTypes: true,
+					project: "./tsconfig.json",
 				},
 			},
 			"boundaries/elements": [
@@ -56,29 +57,9 @@ export default [
 				{ type: "utils", pattern: "src/utils/**" },
 				{ type: "assets", pattern: "src/assets/**" },
 				{ type: "middleware", pattern: "src/middleware/**" },
+				{ type: "styles", pattern: "src/styles/**" },
 			],
-			"boundaries/pathsOverrides": {
-				"@ui/*": ["./src/components/_ui/$1"],
-				"@layout/*": ["./src/components/_layout/$1"],
-				"@components/*": ["./src/components/$1"],
-				"@infra/*": ["./src/infra/$1"],
-				"@observability/*": ["./src/observability/$1"],
-				"@auth": ["./src/auth.ts"],
-				"@email/*": ["./src/email/$1"],
-				"@schemas/*": ["./src/schemas/$1"],
-				"@repositories/*": ["./src/repositories/$1"],
-				"@services/*": ["./src/services/$1"],
-				"@stores/*": ["./src/stores/$1"],
-				"@utils/*": ["./src/utils/$1"],
-				"@assets/*": ["./src/assets/$1"],
-				"@icons/*": ["./src/assets/icons/$1"],
-				"@customTypes/*": ["./src/types/$1"],
-			},
 		},
-	},
-	{
-		files: ["src/**"],
-		plugins: { boundaries },
 		rules: {
 			"boundaries/dependencies": [
 				"error",
@@ -123,6 +104,7 @@ export default [
 								{ to: { type: "types" } },
 								{ to: { type: "schemas" } },
 								{ to: { type: "assets" } },
+								{ to: { type: "styles" } },
 							],
 						},
 						{
@@ -136,6 +118,7 @@ export default [
 								{ to: { type: "types" } },
 								{ to: { type: "utils" } },
 								{ to: { type: "stores" } },
+								{ to: { type: "styles" } },
 							],
 						},
 						{
@@ -187,6 +170,7 @@ export default [
 				},
 			],
 			"boundaries/no-unknown": "error",
+			"boundaries/no-unknown-files": "error",
 		},
 	},
 	{
@@ -194,6 +178,15 @@ export default [
 		rules: {
 			"boundaries/dependencies": "off",
 			"boundaries/no-unknown": "off",
+			"boundaries/no-unknown-files": "off",
+		},
+	},
+	{
+		files: ["**/*.css"],
+		rules: {
+			"boundaries/no-unknown": "off",
+			"boundaries/no-unknown-files": "off",
+			"boundaries/no-unknown-files": "off",
 		},
 	},
 ];

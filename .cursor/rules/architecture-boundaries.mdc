@@ -1,0 +1,21 @@
+---
+description: Gugugram architecture layers and import boundaries
+alwaysApply: true
+---
+
+# Gugugram Architecture Rules
+
+- Keep strict layer flow: `actions -> services -> repositories -> external sources`.
+- Do not skip layers (`actions` must not import repositories directly).
+- Repositories contain only Drizzle queries and data access helpers.
+- Services hold business rules (auth checks, ownership, sanitization, rate limits).
+- Prefer path aliases from `tsconfig.json` (`@services/*`, `@repositories/*`, `@utils/*`, etc.).
+- Respect `eslint-plugin-boundaries` constraints configured in `eslint.config.js`.
+
+## Placement Conventions
+
+- `src/actions/`: Astro server actions for input/auth/parsing and service orchestration.
+- `src/services/`: business logic only.
+- `src/repositories/`: DB access only.
+- `src/pages/`: route handlers and page composition through services/components.
+- `src/infra/`: external clients (`db`, upload/storage, integrations), no business logic.

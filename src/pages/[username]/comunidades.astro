@@ -1,0 +1,40 @@
+---
+import Layout from "@layout/Main.astro";
+import { getProfile } from "@services/user/profile.ts";
+import { getUserSubscriptions } from "@services/community";
+import ProfileHeader from "@components/profile/ProfileHeader/ProfileHeader.astro";
+import ProfileTabs from "@components/profile/ProfileTabs/ProfileTabs.svelte";
+import ProfileCommunityList from "@components/community/ProfileCommunityList/ProfileCommunityList.astro";
+
+const { username } = Astro.params;
+if (!username) return new Response(null, { status: 404 });
+
+const session = Astro.locals.user;
+
+const { user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendRequest } =
+	await getProfile({ username, session });
+
+if (!user) return new Response(null, { status: 404 });
+
+const memberships = await getUserSubscriptions(user.id);
+
+const seo = {
+	title: `Comunidades de ${username}`,
+	description: `Veja as comunidades que ${username} assina no Gugugram.`,
+};
+---
+
+<Layout {...seo}>
+	<ProfileHeader user={user} />
+	<ProfileTabs
+		selectedTab="comunidades"
+		username={username}
+		messagesCount={messagesCount}
+		friendsCount={friendsCount}
+		pendingFriendRequest={pendingFriendRequest}
+		unreadMessagesCount={unreadMessagesCount}
+		client:load
+	>
+		<ProfileCommunityList memberships={memberships} username={username} />
+	</ProfileTabs>
+</Layout>

@@ -1,0 +1,77 @@
+---
+import type { CommunityMembershipType } from "@customTypes/community";
+
+interface Props {
+	memberships: CommunityMembershipType[];
+	username: string;
+}
+
+const { memberships, username } = Astro.props;
+---
+
+<div class="community-list field-border p">
+	{
+		memberships.length === 0 ? (
+			<p class="text-muted">{username} não assina nenhuma comunidade ainda.</p>
+		) : (
+			<ul class="list">
+				{memberships.map((m) => (
+					<li>
+						<a href={`/comunidades/${m.communitySlug}`} class="community-item flex gap center">
+							{m.communityImage ? (
+								<img
+									src={m.communityImage}
+									alt={`Imagem da comunidade ${m.communityTitle}`}
+									class="community-image image-border"
+									width="30"
+									height="30"
+								/>
+							) : (
+								<img
+									src="/icons/entire_network_globe-4.png"
+									alt=""
+									aria-hidden="true"
+									class="image-border"
+									width="30"
+									height="30"
+								/>
+							)}
+							<span>{m.communityTitle}</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		)
+	}
+</div>
+
+<style>
+	.community-list {
+		background-color: #fff;
+	}
+
+	.list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.community-item {
+		text-decoration: none;
+		color: var(--text-color);
+		padding: 4px;
+	}
+
+	.community-item:hover {
+		background-color: var(--button-face);
+	}
+
+	.community-image {
+		object-fit: scale-down;
+		background-color: #fff;
+		flex-shrink: 0;
+	}
+</style>

@@ -1,0 +1,24 @@
+---
+description: Property-based testing conventions for Gugugram
+globs: src/__tests__/**
+alwaysApply: false
+---
+
+# Testing Rules
+
+- Use Vitest + fast-check property tests as the default testing style.
+- Each property should run at least `numRuns: 100`.
+- Name test files as `<feature>.test.ts`; for components use `<ComponentName>.test.ts`.
+- Keep tests in the proper layer folder under `src/__tests__/`.
+- In tests, prefer relative imports (`../../services/...`) instead of path aliases.
+
+## Mocking Order
+
+- Put `vi.mock(...)` calls before importing the module under test.
+- For async properties, clear mocks inside each property run when needed.
+- For Astro virtual modules, use stubs from `src/__tests__/__mocks__/`.
+
+## Scope Reminder
+
+- `src/__tests__/components/` is only for component rendering tests.
+- Do not place utils/services/repositories property tests inside `components/`.

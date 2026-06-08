@@ -19,11 +19,12 @@ const baseProps = {
 };
 
 describe("ProfileTabs", () => {
-	it("renders all three tab links", () => {
+	it("renders all four tab links", () => {
 		render(ProfileTabs, { props: baseProps });
 		expect(screen.getByRole("link", { name: /fotos/i })).toBeInTheDocument();
 		expect(screen.getByRole("link", { name: /recados/i })).toBeInTheDocument();
 		expect(screen.getByRole("link", { name: /amigos/i })).toBeInTheDocument();
+		expect(screen.getByRole("link", { name: /comunidades/i })).toBeInTheDocument();
 	});
 
 	it("marks the selected tab with aria-current=page", () => {
@@ -63,5 +64,18 @@ describe("ProfileTabs", () => {
 			"href",
 			"/testuser/amigos",
 		);
+		expect(screen.getByRole("link", { name: /comunidades/i })).toHaveAttribute(
+			"href",
+			"/testuser/comunidades",
+		);
+	});
+
+	it("marks the comunidades tab as selected when selectedTab is comunidades", () => {
+		render(ProfileTabs, { props: { ...baseProps, selectedTab: "comunidades" } });
+		expect(screen.getByRole("link", { name: /comunidades/i })).toHaveAttribute(
+			"aria-current",
+			"page",
+		);
+		expect(screen.getByRole("link", { name: /fotos/i })).not.toHaveAttribute("aria-current");
 	});
 });

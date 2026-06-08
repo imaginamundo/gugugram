@@ -1,0 +1,42 @@
+---
+import Layout from "@layout/Main.astro";
+import CommunityPostDetail from "@components/community/CommunityPostDetail/CommunityPostDetail.astro";
+import CreateResponseForm from "@components/community/CreateResponseForm/CreateResponseForm.svelte";
+import { getCommunityPost } from "@services/community";
+import { communityRepository } from "@repositories/community";
+
+const { slug, postId } = Astro.params;
+if (!slug || !postId) return new Response(null, { status: 404 });
+
+const post = await getCommunityPost(postId);
+if (!post) return new Response(null, { status: 404 });
+
+const session = Astro.locals.user;
+
+let isSubscribed = false;
+if (session) {
+	const subscriber = await communityRepository.getSubscriber(post.communityId, session.id);
+	isSubscribed = !!subscriber;
+}
+
+const seo = {
+	title: post.title,
+	description: post.content.slice(0, 150),
+};
+---
+
+<Layout {...seo}>
+	<nav class="mb" aria-label="Navegação">
+		<a href={`/comunidades/${slug}`}>← Voltar para a comunidade</a>
+	</nav>
+
+	<CommunityPostDetail post={post} />
+
+	{
+		isSubscribed && (
+			<div class="mt">
+				<CreateResponseForm postId={post.id} client:load />
+			</div>
+		)
+	}
+</Layout>

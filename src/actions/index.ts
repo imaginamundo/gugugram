@@ -9,6 +9,19 @@ import {
 import { sendMessage, removeMessage } from "./_message.ts";
 import { updateProfile, removeProfileImage } from "./_profile.ts";
 import { requestPasswordReset, resetPassword } from "./_passwordRecovery.ts";
+import {
+	createCommunity,
+	deleteCommunity,
+	promoteAdmin,
+	removeAdmin,
+	transferOwnership,
+	subscribe,
+	unsubscribe,
+	createPost,
+	deletePost,
+	createResponse,
+	deleteResponse,
+} from "./_community.ts";
 
 export const server = {
 	// auth
@@ -32,4 +45,16 @@ export const server = {
 	// password reset
 	requestPasswordReset,
 	resetPassword,
+	// communities
+	createCommunity,
+	deleteCommunity,
+	promoteAdmin,
+	removeAdmin,
+	transferOwnership,
+	subscribe,
+	unsubscribe,
+	createPost,
+	deletePost,
+	createResponse,
+	deleteResponse,
 };

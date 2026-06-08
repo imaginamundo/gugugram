@@ -36,6 +36,13 @@
       "when": 1772833655839,
       "tag": "0004_secret_silk_fever",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1777054601137,
+      "tag": "0005_outstanding_caretaker",
+      "breakpoints": true
     }
   ]
 }

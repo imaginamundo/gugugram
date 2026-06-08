@@ -1,0 +1,74 @@
+---
+import type { CommunityType } from "@customTypes/community";
+
+interface Props {
+	community: CommunityType;
+}
+
+const { community } = Astro.props;
+
+const description = community.description
+	? community.description.length > 100
+		? community.description.slice(0, 100) + "..."
+		: community.description
+	: null;
+---
+
+<a href={`/comunidades/${community.slug}`} class="community-card window">
+	<div class="title-bar">
+		<p><strong>{community.title}</strong></p>
+	</div>
+	<div class="window-body flex gap">
+		{
+			community.image ? (
+				<img
+					src={community.image}
+					alt={`Imagem da comunidade ${community.title}`}
+					class="community-image image-border"
+					width="30"
+					height="30"
+				/>
+			) : (
+				<img
+					src="/icons/entire_network_globe-4.png"
+					alt=""
+					aria-hidden="true"
+					class="image-border"
+					width="30"
+					height="30"
+				/>
+			)
+		}
+		<div class="flex flex-col grow">
+			{description && <p class="description">{description}</p>}
+			<p class="text-muted post-count">{community.postCount} post{community.postCount !== 1 ? "s" : ""}</p>
+		</div>
+	</div>
+</a>
+
+<style>
+	.community-card {
+		display: block;
+		text-decoration: none;
+		color: var(--text-color);
+		min-width: 200px;
+	}
+
+	.community-card:hover .title-bar {
+		opacity: 0.85;
+	}
+
+	.community-image {
+		object-fit: scale-down;
+		background-color: #fff;
+		flex-shrink: 0;
+	}
+
+	.description {
+		margin: 0 0 4px;
+	}
+
+	.post-count {
+		margin: 0;
+	}
+</style>

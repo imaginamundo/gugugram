@@ -92,6 +92,83 @@ export const imagePostComments = createTable("image_post_comments", {
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const communities = createTable("communities", {
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	title: text("title").notNull().unique(),
+	slug: text("slug").notNull().unique(),
+	description: text("description"),
+	image: text("image"),
+	ownerId: text("owner_id")
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const communityAdmins = createTable(
+	"community_admins",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		communityId: text("community_id")
+			.notNull()
+			.references(() => communities.id, { onDelete: "cascade" }),
+		userId: text("user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [uniqueIndex("unique_community_admin").on(table.communityId, table.userId)],
+);
+
+export const communitySubscribers = createTable(
+	"community_subscribers",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		communityId: text("community_id")
+			.notNull()
+			.references(() => communities.id, { onDelete: "cascade" }),
+		userId: text("user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [uniqueIndex("unique_community_subscriber").on(table.communityId, table.userId)],
+);
+
+export const communityPosts = createTable("community_posts", {
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	communityId: text("community_id")
+		.notNull()
+		.references(() => communities.id, { onDelete: "cascade" }),
+	authorId: text("author_id")
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+	title: text("title").notNull(),
+	content: text("content").notNull(),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const communityResponses = createTable("community_responses", {
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	postId: text("post_id")
+		.notNull()
+		.references(() => communityPosts.id, { onDelete: "cascade" }),
+	authorId: text("author_id")
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+	content: text("content").notNull(),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
 	imagePosts: many(imagePosts),
 	requestedFriends: many(userFriends, {
@@ -107,6 +184,10 @@ export const usersRelations = relations(users, ({ many }) => ({
 		relationName: "messages_receiver",
 	}),
 	imagePostComments: many(imagePostComments),
+	communityAdmins: many(communityAdmins),
+	communitySubscribers: many(communitySubscribers),
+	communityPosts: many(communityPosts),
+	communityResponses: many(communityResponses),
 }));
 
 export const userFriendsRelations = relations(userFriends, ({ one }) => ({
@@ -194,3 +275,43 @@ export const verifications = createTable("verifications", {
 	createdAt: timestamp("created_at"),
 	updatedAt: timestamp("updated_at"),
 });
+
+export const communitiesRelations = relations(communities, ({ one, many }) => ({
+	owner: one(users, { fields: [communities.ownerId], references: [users.id] }),
+	admins: many(communityAdmins),
+	subscribers: many(communitySubscribers),
+	posts: many(communityPosts),
+}));
+
+export const communityAdminsRelations = relations(communityAdmins, ({ one }) => ({
+	community: one(communities, {
+		fields: [communityAdmins.communityId],
+		references: [communities.id],
+	}),
+	user: one(users, { fields: [communityAdmins.userId], references: [users.id] }),
+}));
+
+export const communitySubscribersRelations = relations(communitySubscribers, ({ one }) => ({
+	community: one(communities, {
+		fields: [communitySubscribers.communityId],
+		references: [communities.id],
+	}),
+	user: one(users, { fields: [communitySubscribers.userId], references: [users.id] }),
+}));
+
+export const communityPostsRelations = relations(communityPosts, ({ one, many }) => ({
+	community: one(communities, {
+		fields: [communityPosts.communityId],
+		references: [communities.id],
+	}),
+	author: one(users, { fields: [communityPosts.authorId], references: [users.id] }),
+	responses: many(communityResponses),
+}));
+
+export const communityResponsesRelations = relations(communityResponses, ({ one }) => ({
+	post: one(communityPosts, {
+		fields: [communityResponses.postId],
+		references: [communityPosts.id],
+	}),
+	author: one(users, { fields: [communityResponses.authorId], references: [users.id] }),
+}));
