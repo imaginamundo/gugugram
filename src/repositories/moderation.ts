@@ -7,7 +7,7 @@ import {
 	users,
 	type reportTargetTypes,
 } from "@schemas/database";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray, or } from "drizzle-orm";
 
 type TargetType = (typeof reportTargetTypes)[number];
 
@@ -65,6 +65,55 @@ export const moderationRepository = {
 			targetId: params.targetId,
 			reason: params.reason,
 		});
+	},
+
+	/**
+	 * Purges every report that POINTS AT a user being deleted — the report of the
+	 * user themselves plus any report filed against their posts, comments, or
+	 * messages. Reports filed BY the user already cascade via the `reporterId` FK;
+	 * these don't, because `targetId` is deliberately not a foreign key (it can
+	 * reference four different tables), so they have to be deleted explicitly.
+	 * Caller passes the content ids gathered before the user-row cascade ran.
+	 */
+	deleteReportsTargetingUser: async (params: {
+		userId: string;
+		postIds: string[];
+		commentIds: string[];
+		messageIds: string[];
+	}) => {
+		const clauses = [
+			and(
+				eq(moderationReports.targetType, "user"),
+				eq(moderationReports.targetId, params.userId),
+			),
+		];
+
+		if (params.postIds.length) {
+			clauses.push(
+				and(
+					eq(moderationReports.targetType, "image_post"),
+					inArray(moderationReports.targetId, params.postIds),
+				),
+			);
+		}
+		if (params.commentIds.length) {
+			clauses.push(
+				and(
+					eq(moderationReports.targetType, "image_post_comment"),
+					inArray(moderationReports.targetId, params.commentIds),
+				),
+			);
+		}
+		if (params.messageIds.length) {
+			clauses.push(
+				and(
+					eq(moderationReports.targetType, "message"),
+					inArray(moderationReports.targetId, params.messageIds),
+				),
+			);
+		}
+
+		await db.delete(moderationReports).where(or(...clauses));
 	},
 
 	resolveUserByUsername: async (username: string): Promise<{ id: string } | null> => {
