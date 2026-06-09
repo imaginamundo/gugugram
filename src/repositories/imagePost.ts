@@ -62,6 +62,24 @@ export const imagePostRepository = {
 		});
 	},
 
+	// Used by account deletion. The post rows cascade away with the user, but we
+	// need their ids (to purge moderation reports that target them) and image
+	// urls (to delete the orphaned blobs from storage) BEFORE the cascade runs.
+	getPostsByAuthor: async (authorId: string) => {
+		return db.query.imagePosts.findMany({
+			where: eq(imagePosts.authorId, authorId),
+			columns: { id: true, image: true },
+		});
+	},
+
+	getCommentIdsByAuthor: async (authorId: string): Promise<string[]> => {
+		const rows = await db.query.imagePostComments.findMany({
+			where: eq(imagePostComments.authorId, authorId),
+			columns: { id: true },
+		});
+		return rows.map((row) => row.id);
+	},
+
 	insertPost: async (authorId: string, image: string, description: string | null) => {
 		return db.insert(imagePosts).values({ authorId, description, image });
 	},

@@ -1,0 +1,107 @@
+---
+import Layout from "@layout/Main.astro";
+
+const seo = {
+	title: "Política de Privacidade",
+	description: "Política de Privacidade da rede social Gugugram",
+};
+---
+
+<Layout {...seo}>
+	<div class="form p">
+		<h1>Política de Privacidade</h1>
+		<p class="mb">
+			<small>Última atualização: 8 de junho de 2026</small>
+		</p>
+
+		<p class="mb">
+			Esta política explica quais dados o Gugugram coleta, por que coleta e como você pode exercer
+			seus direitos.
+		</p>
+
+		<h2>1. Quais dados coletamos</h2>
+		<ul class="mb">
+			<li>
+				<strong>Conta:</strong> nome de usuário, e-mail e senha (armazenada com hash, nunca em texto claro).
+			</li>
+			<li>
+				<strong>Perfil:</strong> foto e descrição opcionais que você mesmo publica.
+			</li>
+			<li>
+				<strong>Conteúdo:</strong> imagens, comentários e recados que você publica voluntariamente.
+			</li>
+			<li>
+				<strong>Sessão:</strong> cookies HTTP necessários para manter você conectado.
+			</li>
+			<li>
+				<strong>Operacional:</strong> logs de servidor e eventos de uso (PostHog, Sentry) usados para
+				diagnosticar falhas e entender uso agregado. Não vendemos esses dados.
+			</li>
+		</ul>
+
+		<h2>2. Como usamos seus dados</h2>
+		<ul class="mb">
+			<li>operar o Serviço — autenticar, exibir conteúdo, conectar amigos;</li>
+			<li>moderar conteúdo denunciado e investigar abusos;</li>
+			<li>enviar e-mails transacionais (recuperação de senha);</li>
+			<li>medir saúde do produto de forma agregada e anônima.</li>
+		</ul>
+
+		<h2>3. Com quem compartilhamos</h2>
+		<p class="mb">
+			Compartilhamos dados estritamente com provedores que viabilizam o Serviço: hospedagem
+			(Vercel), banco de dados (Neon), armazenamento de imagens (Uploadthing), e-mail transacional e
+			ferramentas de observabilidade (PostHog, Sentry). Não vendemos seus dados a terceiros nem
+			usamos para publicidade.
+		</p>
+
+		<h2>4. Cookies</h2>
+		<p class="mb">
+			Usamos cookies HTTP estritamente necessários para manter sua sessão autenticada. Não usamos
+			cookies de publicidade ou rastreamento entre sites.
+		</p>
+
+		<h2>5. Retenção</h2>
+		<p class="mb">
+			Mantemos sua conta enquanto ela estiver ativa. Quando você solicita exclusão, removemos sua
+			conta, publicações, comentários e recados. Cópias de segurança podem permanecer por até 30
+			dias até serem rotacionadas.
+		</p>
+
+		<h2>6. Seus direitos (LGPD)</h2>
+		<p class="mb">
+			Você pode, a qualquer momento, solicitar acesso, correção, anonimização, portabilidade ou
+			exclusão dos seus dados pessoais escrevendo para <a href="mailto:suporte@gugugram.com"
+				>suporte@gugugram.com</a
+			>. A exclusão completa da conta pode ser solicitada por <a href="mailto:delete@gugugram.com"
+				>delete@gugugram.com</a
+			> ou pelo botão "Excluir minha conta" no aplicativo iOS.
+		</p>
+
+		<h2>7. Segurança</h2>
+		<p class="mb">
+			Usamos HTTPS em toda a aplicação, senhas com hash, cookies <code>HttpOnly</code> e proteção CSRF.
+			Nenhum método é 100% seguro — informe-nos imediatamente em <a
+				href="mailto:suporte@gugugram.com">suporte@gugugram.com</a
+			> se suspeitar de incidente envolvendo sua conta.
+		</p>
+
+		<h2>8. Crianças</h2>
+		<p class="mb">
+			O Gugugram não é destinado a menores de 13 anos. Se identificarmos uma conta nessa faixa, ela
+			será removida.
+		</p>
+
+		<h2>9. Alterações</h2>
+		<p class="mb">
+			Podemos atualizar esta Política. A versão vigente é sempre a publicada nesta página.
+		</p>
+
+		<h2>10. Contato do controlador</h2>
+		<p>
+			Dúvidas sobre privacidade ou exercício de direitos: <a href="mailto:suporte@gugugram.com"
+				>suporte@gugugram.com</a
+			>.
+		</p>
+	</div>
+</Layout>

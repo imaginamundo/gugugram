@@ -35,3 +35,13 @@ export const ProfileErrors = {
 export const FriendshipErrors = {
 	INVALID_ACTION: "INVALID_ACTION",
 } as const;
+
+export const ReportErrors = {
+	TARGET_NOT_FOUND: "TARGET_NOT_FOUND",
+	CANNOT_REPORT_SELF: "CANNOT_REPORT_SELF",
+} as const;
+
+export const AccountDeletionErrors = {
+	WRONG_PASSWORD: "WRONG_PASSWORD",
+	DELETION_FAILED: "DELETION_FAILED",
+} as const;
