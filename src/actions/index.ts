@@ -22,6 +22,13 @@ import {
 	createResponse,
 	deleteResponse,
 } from "./_community.ts";
+import {
+	reportImagePost,
+	reportImagePostComment,
+	reportMessage,
+	reportUser,
+} from "./_moderation.ts";
+import { deleteAccount } from "./_accountDeletion.ts";
 
 export const server = {
 	// auth
@@ -57,4 +64,11 @@ export const server = {
 	deletePost,
 	createResponse,
 	deleteResponse,
+	// moderation
+	reportImagePost,
+	reportImagePostComment,
+	reportMessage,
+	reportUser,
+	// account deletion
+	deleteAccount,
 };

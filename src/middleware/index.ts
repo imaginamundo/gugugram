@@ -1,6 +1,6 @@
 import { sequence } from "astro:middleware";
-import { authentication } from "./_authentication";
-import { checkOrigin } from "./_checkOrigin";
-import { protectedRoutes } from "./_protectedRoutes";
+import { authentication } from "@middleware/_authentication";
+import { checkOrigin } from "@middleware/_checkOrigin";
+import { protectedRoutes } from "@middleware/_protectedRoutes";
 
 export const onRequest = sequence(checkOrigin, authentication, protectedRoutes);

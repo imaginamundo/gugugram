@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { relations, sql } from "drizzle-orm";
 import {
 	check,
+	index,
 	pgEnum,
 	pgTableCreator,
 	text,
@@ -77,6 +78,52 @@ export const userFriends = createTable(
 		check("no_self_friend", sql`${table.requestUserId} <> ${table.targetUserId}`),
 	],
 );
+
+/**
+ * What a user is reporting. Granular so moderators can route quickly; the
+ * payload table holds the actual identifiers in `targetId`.
+ */
+export const reportTargetTypes = ["image_post", "image_post_comment", "message", "user"] as const;
+export const reportTargetTypeEnum = pgEnum("report_target_type", reportTargetTypes);
+
+export const reportStatuses = ["open", "actioned", "dismissed"] as const;
+export const reportStatusEnum = pgEnum("report_status", reportStatuses);
+
+/**
+ * Persisted moderation reports. `reporterId` is the user who submitted the
+ * report; `targetType` + `targetId` identify what was reported. We do NOT
+ * FK `targetId` since it can point to four different tables — the moderation
+ * dashboard resolves it by `targetType` at read time. Deleting the reporter
+ * cascades; deleting the target leaves the report behind (audit trail).
+ */
+export const moderationReports = createTable(
+	"moderation_reports",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		reporterId: text("reporter_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		targetType: reportTargetTypeEnum("target_type").notNull(),
+		targetId: text("target_id").notNull(),
+		reason: text("reason"),
+		status: reportStatusEnum("status").notNull().default("open"),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+		resolvedAt: timestamp("resolved_at"),
+	},
+	(table) => [
+		index("moderation_reports_target_idx").on(table.targetType, table.targetId),
+		index("moderation_reports_status_idx").on(table.status, table.createdAt),
+	],
+);
+
+export const moderationReportsRelations = relations(moderationReports, ({ one }) => ({
+	reporter: one(users, {
+		fields: [moderationReports.reporterId],
+		references: [users.id],
+	}),
+}));
 
 export const imagePostComments = createTable("image_post_comments", {
 	id: text("id")

@@ -17,8 +17,6 @@ import {
 } from "@services/community";
 import { CommunityErrors } from "@customTypes/errors";
 
-// --- Schemas ---
-
 const CreateCommunitySchema = z.object({
 	title: z.string().min(3).max(100),
 	description: z.string().max(500).optional(),
@@ -49,8 +47,6 @@ const TransferOwnershipSchema = z.object({
 	communityId: z.string().min(1),
 	newOwnerId: z.string().min(1),
 });
-
-// --- Error mapping ---
 
 function mapCommunityError(message: string): string {
 	switch (message) {
@@ -99,12 +95,11 @@ function mapCommunityError(message: string): string {
 	}
 }
 
-// --- Actions ---
-
 export const createCommunity = defineAction({
 	accept: "form",
 	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, CreateCommunitySchema);
+		console.log({ fields, schemaSuccess });
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
 		try {
@@ -114,8 +109,12 @@ export const createCommunity = defineAction({
 				fields.description ?? null,
 				fields.image instanceof File ? fields.image : null,
 			);
+
+			console.log({ result });
+
 			return { success: true as const, id: result.id, slug: result.slug };
 		} catch (error) {
+			console.log({ error });
 			if (error instanceof Error) {
 				return { success: false as const, error: mapCommunityError(error.message) };
 			}

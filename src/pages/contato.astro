@@ -1,0 +1,58 @@
+---
+import Layout from "@layout/Main.astro";
+
+const seo = {
+	title: "Contato",
+	description: "Como entrar em contato com o time do Gugugram",
+};
+---
+
+<Layout {...seo}>
+	<div class="form p">
+		<h1>Contato</h1>
+		<p class="mb">
+			Estes são os canais oficiais de contato do Gugugram. Respondemos em até 24 horas em dias
+			úteis.
+		</p>
+
+		<h2>Suporte geral</h2>
+		<p class="mb">
+			Dúvidas sobre sua conta, problemas no app ou sugestões: <a href="mailto:suporte@gugugram.com"
+				>suporte@gugugram.com</a
+			>.
+		</p>
+
+		<h2>Denúncia de conteúdo</h2>
+		<p class="mb">
+			Encontrou algo abusivo, ilegal ou que viole os <a href="/termos">Termos de Uso</a>? Escreva
+			para <a href="mailto:abuse@gugugram.com">abuse@gugugram.com</a> com o link da publicação e o motivo.
+			O aplicativo iOS também envia denúncias para esse mesmo endereço pelos botões "Denunciar".
+		</p>
+
+		<h2>Exclusão de conta</h2>
+		<p class="mb">
+			Para excluir sua conta e todos os seus dados, use o botão <strong
+				>"Excluir minha conta"</strong
+			> em <em>Conta → Configurações</em> no app iOS, ou envie um e-mail para
+			<a href="mailto:delete@gugugram.com">delete@gugugram.com</a> a partir do endereço cadastrado na
+			conta. A exclusão é permanente.
+		</p>
+
+		<h2>Privacidade e proteção de dados</h2>
+		<p class="mb">
+			Para exercer direitos previstos na <abbr title="Lei Geral de Proteção de Dados">LGPD</abbr> — acesso,
+			correção, portabilidade ou anonimização —, escreva para <a href="mailto:suporte@gugugram.com"
+				>suporte@gugugram.com</a
+			>.
+		</p>
+
+		<h2>Bugs e contribuições</h2>
+		<p>
+			Issues e pull requests no <a
+				href="https://github.com/imaginamundo/gugugram"
+				target="_blank"
+				rel="noopener">github do Gugugram</a
+			>.
+		</p>
+	</div>
+</Layout>

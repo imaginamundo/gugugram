@@ -8,7 +8,7 @@ import boundaries from "eslint-plugin-boundaries";
 
 export default [
 	{
-		ignores: ["drizzle/", "dist/", ".astro/", "node_modules/"],
+		ignores: ["drizzle/", "dist/", ".astro/", "node_modules/", ".vercel", ".git"],
 	},
 	{
 		languageOptions: {
@@ -35,12 +35,6 @@ export default [
 		files: ["src/**/*.{js,ts,svelte,astro}"],
 		plugins: { boundaries },
 		settings: {
-			"import/resolver": {
-				typescript: {
-					alwaysTryTypes: true,
-					project: "./tsconfig.json",
-				},
-			},
 			"boundaries/elements": [
 				{ type: "actions", pattern: "src/actions/**" },
 				{ type: "services", pattern: "src/services/**" },
@@ -88,6 +82,7 @@ export default [
 						{
 							from: { type: "actions" },
 							allow: [
+								{ to: { type: "actions" } },
 								{ to: { type: "services" } },
 								{ to: { type: "observability" } },
 								{ to: { type: "schemas" } },
