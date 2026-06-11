@@ -5,7 +5,6 @@
 	"compilerOptions": {
 		"module": "esnext",
 		"moduleResolution": "Bundler",
-		"baseUrl": ".",
 		"paths": {
 			"@ui/*": ["./src/components/_ui/*"],
 			"@layout/*": ["./src/components/_layout/*"],
@@ -19,7 +18,7 @@
 			"@middleware/*": ["./src/middleware/*"],
 			"@assets/*": ["./src/assets/*"],
 			"@schemas/*": ["./src/schemas/*"],
-			"@repositories/*": ["src/repositories/*"],
+			"@repositories/*": ["./src/repositories/*"],
 			"@services/*": ["./src/services/*"],
 			"@styles/*": ["./src/styles/*"],
 			"@utils/*": ["./src/utils/*"],
