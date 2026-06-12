@@ -2,11 +2,15 @@
 import Layout from "@layout/Main.astro";
 import CommunityPostDetail from "@components/community/CommunityPostDetail/CommunityPostDetail.astro";
 import CreateResponseForm from "@components/community/CreateResponseForm/CreateResponseForm.svelte";
-import { getCommunityPost } from "@services/community";
+import CommunityHeader from "@components/community/CommunityHeader/CommunityHeader.astro";
+import { getCommunity, getCommunityPost } from "@services/community";
 import { communityRepository } from "@repositories/community";
 
 const { slug, postId } = Astro.params;
 if (!slug || !postId) return new Response(null, { status: 404 });
+
+const community = await getCommunity(slug);
+if (!community) return new Response(null, { status: 404 });
 
 const post = await getCommunityPost(postId);
 if (!post) return new Response(null, { status: 404 });
@@ -26,9 +30,7 @@ const seo = {
 ---
 
 <Layout {...seo}>
-	<nav class="mb" aria-label="Navegação">
-		<a href={`/comunidades/${slug}`}>← Voltar para a comunidade</a>
-	</nav>
+	<CommunityHeader community={community} isSubscribed={isSubscribed} />
 
 	<CommunityPostDetail post={post} />
 

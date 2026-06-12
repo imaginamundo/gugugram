@@ -282,8 +282,6 @@ export const communityRepository = {
 			.returning();
 	},
 
-	// --- RESPONSES ---
-
 	getResponsesByPost: async (postId: string) => {
 		return db.query.communityResponses.findMany({
 			where: eq(communityResponses.postId, postId),

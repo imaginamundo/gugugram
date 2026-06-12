@@ -23,6 +23,8 @@
 	let isLoading = $derived(comments === undefined && !hasFetched);
 	let displayComments = $derived(comments !== undefined ? comments : fetchedComments);
 
+	const sessionId = $derived(session?.id);
+
 	onMount(() => {
 		if (comments !== undefined) return;
 
@@ -82,7 +84,7 @@
 	<div class="comments-list flex flex-col gap field-border p">
 		{#each displayComments as comment (comment.id)}
 			<div class="flex center gap mb-sm">
-				{#if session && (session.id === comment.authorId || session.id === postAuthorId)}
+				{#if sessionId && (sessionId === comment.authorId || sessionId === postAuthorId)}
 					<form method="POST" action={actions.deleteImagePostComment}>
 						<input type="hidden" name="commentId" value={comment.id} />
 						<Button type="submit" aria-label={`Apagar comentário de ${comment.authorUsername}`}>

@@ -18,36 +18,34 @@ const createdAt = community.createdAt.toLocaleDateString("pt-BR", {
 
 <header class="community-header flex gap">
 	<div>
-		{
-			community.image ? (
-				<img
-					src={community.image}
-					alt={`Imagem da comunidade ${community.title}`}
-					class="community-image image-border"
-					width="120"
-					height="120"
-				/>
-			) : (
-				<img
-					src="/icons/entire_network_globe-4.png"
-					alt=""
-					aria-hidden="true"
-					class="image-border"
-					width="120"
-					height="120"
-				/>
-			)
-		}
-		
+		<a href={`/comunidades/${community.slug}`}>
+			{
+				community.image ? (
+					<img
+						src={community.image}
+						alt={`Imagem da comunidade ${community.title}`}
+						class="community-image image-border"
+						width="120"
+						height="120"
+					/>
+				) : (
+					<img
+						src="/icons/entire_network_globe-4.png"
+						alt=""
+						aria-hidden="true"
+						class="image-border"
+						width="120"
+						height="120"
+					/>
+				)
+			}
+		</a>
 	</div>
 	<div>
 		<div class="flex center gap">
-			<h1>{community.title}</h1>
-			<SubscribeButton communityId={community.id} {isSubscribed} client:load />
+			<h1><a href={`/comunidades/${community.slug}`}>{community.title}</a></h1>
 		</div>
-		{community.description && (
-			<p><strong>Descrição:</strong></p>
-			<p class="mb">{community.description}</p>)}
+		{community.description && <p class="mb">{community.description}</p>}
 		<table>
 			<tr>
 				<td>Dono</td>
@@ -64,6 +62,9 @@ const createdAt = community.createdAt.toLocaleDateString("pt-BR", {
 		</table>
 	</div>
 </header>
+<div class="flex gap mt">
+	<SubscribeButton communityId={community.id} {isSubscribed} client:load />
+</div>
 
 <style>
 	.community-image {
