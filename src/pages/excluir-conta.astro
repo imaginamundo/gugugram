@@ -1,0 +1,54 @@
+---
+import { actions } from "astro:actions";
+import { getProfile } from "@services/user/profile";
+import Layout from "@layout/Main.astro";
+import Input from "@ui/Input.svelte";
+import Button from "@ui/Button.svelte";
+
+const session = Astro.locals.user;
+if (!session || !session.username) return Astro.redirect("/");
+
+const result = Astro.getActionResult(actions.deleteAccount);
+if (result?.data?.success) {
+	return Astro.redirect(`/`);
+}
+
+const { user } = await getProfile({
+	username: session?.username,
+	session,
+});
+
+const seo = {
+	title: `Excluir conta`,
+	robots: "noindex,nofollow",
+};
+
+if (!user) return Astro.redirect("/entrar");
+---
+
+<Layout {...seo}>
+	<div class="form p">
+		{
+			!!result?.data?.error && (
+				<p class="error mb flex center gap ">
+					<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+					{result.data.error}
+				</p>
+			)
+		}
+		<form action={actions.deleteAccount} method="POST" class="mb">
+			<fieldset>
+				<legend>Excluir conta</legend>
+
+				<label class="label">
+					Senha
+					<Input name="password" type="password" class="block" placeholder="Sua senha" />
+				</label>
+
+				<div class="flex center justify-end">
+					<Button class="m-sm">Excluir conta</Button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</Layout>

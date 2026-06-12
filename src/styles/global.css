@@ -587,6 +587,9 @@ label:focus-within {
 .mr-sm {
 	margin-right: calc(4 * var(--border-width));
 }
+.mr-auto {
+	margin-right: auto;
+}
 
 .p {
 	padding: calc(2 * var(--border-width) + var(--element-spacing));

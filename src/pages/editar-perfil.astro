@@ -23,7 +23,7 @@ const { user } = await getProfile({
 
 const seo = {
 	title: `Editar perfil`,
-	robots: "noindex,nofollow,",
+	robots: "noindex,nofollow",
 };
 
 if (!user) return Astro.redirect("/entrar");
@@ -81,8 +81,8 @@ const hasImage = user.image && !user.image.includes("/emojis/");
 						value={session.email}
 					/>
 				</label>
-				<div class="flex justify-end">
-					<Button class="m-sm" type="button">Cancelar</Button>
+				<div class="flex center justify">
+					<a href="/excluir-conta" class="mr-auto">Excluir conta</a>
 					<Button class="m-sm">Atualizar</Button>
 				</div>
 			</fieldset>

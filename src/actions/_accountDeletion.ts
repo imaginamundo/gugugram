@@ -2,6 +2,7 @@ import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
 import { withAuth } from "@utils/action-guard";
+import { auth } from "@auth";
 
 import { deleteOwnAccount } from "@services/auth/deletion";
 import { AccountDeletionErrors } from "@customTypes/errors";
@@ -24,10 +25,9 @@ export const deleteAccount = defineAction({
 
 			// Cascade dropped the session row but the browser/app still holds the
 			// cookie — clear it so the next request is unambiguously logged out.
-			const cookieNames = ["better-auth.session_token", "better-auth.session"];
-			for (const name of cookieNames) {
-				context.cookies.delete(name, { path: "/" });
-			}
+			await auth.api.signOut({
+				headers: context.request.headers,
+			});
 
 			trackServerEvent({
 				distinctId: session.username ?? session.id,
