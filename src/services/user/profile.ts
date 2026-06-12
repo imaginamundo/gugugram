@@ -3,6 +3,7 @@ import { parseUser } from "@utils/user";
 import { userProfileRepository, type UpdateUserPayload } from "@repositories/userProfile";
 import { friendshipPossibleStatus } from "@schemas/database";
 import { ProfileErrors } from "@customTypes/errors";
+import { checkImage, uploadImage } from "@services/uploadImage/uploadImage";
 
 type UpdateProfileData = {
 	username: string;
@@ -99,13 +100,11 @@ export async function updateProfileData(userId: string, data: UpdateProfileData)
 			const newFilename = `${originalName}_30x30.png`;
 			const file = new File([buffer], newFilename, { type: "image/png" });
 
-			const upload = await storage.upload(file);
+			checkImage(file);
 
-			if (!upload.data?.ufsUrl) {
-				throw new Error(ProfileErrors.IMAGE_UPLOAD_FAILED);
-			}
+			const uploadedImageUrl = await uploadImage(file);
 
-			updateData.image = upload.data.ufsUrl;
+			updateData.image = uploadedImageUrl;
 
 			if (currentUser.image) {
 				oldImageKeyToDelete = currentUser.image.split("/").pop() || null;

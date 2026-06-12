@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { actions } from "astro:actions";
-	import { formatDate } from "src/utils/date";
+	import { formatDate } from "@utils/date";
 	import Button from "@ui/Button.svelte";
 	import Input from "@ui/Input.svelte";
 	import type { CommentType } from "@services/imagePost";

@@ -1,8 +1,8 @@
 import sanitizeHtml from "sanitize-html";
 import { communityRepository } from "@repositories/community";
-import { storage } from "@infra/storage";
 import { slugify } from "@utils/slugify";
 import { CommunityErrors } from "@customTypes/errors";
+import { checkImage, uploadImage } from "@services/uploadImage/uploadImage";
 import type {
 	CommunityType,
 	CommunityPostType,
@@ -29,7 +29,7 @@ export async function createCommunity(
 	ownerId: string,
 	title: string,
 	description: string | null,
-	imageFile: File | null,
+	imageFile: string | null,
 ): Promise<{ id: string; slug: string }> {
 	if (title.length < 3) throw new Error(CommunityErrors.TITLE_TOO_SHORT);
 	if (title.length > 100) throw new Error(CommunityErrors.TITLE_TOO_LONG);
@@ -44,10 +44,16 @@ export async function createCommunity(
 	const sanitizedDescription = description ? sanitize(description) : null;
 
 	let imageUrl: string | null = null;
-	if (imageFile) {
-		const upload = await storage.upload(imageFile);
-		if (!upload.data?.ufsUrl) throw new Error(CommunityErrors.UPLOAD_FAILED);
-		imageUrl = upload.data.ufsUrl;
+	if (imageFile && imageFile.includes(",")) {
+		const base64Data = imageFile.replace(/^data:image\/\w+;base64,/, "");
+		const buffer = Buffer.from(base64Data, "base64");
+		const originalName = slug || "community";
+		const newFilename = `${originalName}_30x30.png`;
+		const file = new File([buffer], newFilename, { type: "image/png" });
+
+		checkImage(file);
+
+		imageUrl = await uploadImage(file);
 	}
 
 	const id = crypto.randomUUID();

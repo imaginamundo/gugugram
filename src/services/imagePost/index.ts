@@ -1,9 +1,9 @@
 import sanitizeHtml from "sanitize-html";
-import { imageSize } from "image-size";
 import { storage } from "@infra/storage";
 import { imagePostRepository } from "@repositories/imagePost.ts";
 import { ImagePostErrors } from "@customTypes/errors";
 import { checkRateLimit } from "@utils/rate-limit";
+import { checkImage, uploadImage } from "@services/uploadImage/uploadImage";
 
 export type CommentType = {
 	id: string;
@@ -28,7 +28,6 @@ export type PostWithCommentsType = PostType & {
 };
 
 const RATE_LIMIT_MS = 5000;
-const ALLOWED_DIMENSIONS = [5, 10, 15, 30, 60];
 
 export async function getLatestImagePosts(): Promise<PostType[]> {
 	const posts = await imagePostRepository.getLatestPosts();
@@ -93,46 +92,24 @@ export async function getImagePostComments(postId: string): Promise<CommentType[
 }
 
 export async function processAndUploadImagePost(userId: string, file: File, description?: string) {
-	if (file.size > 60000) {
-		throw new Error(ImagePostErrors.FILE_TOO_LARGE);
-	}
+	checkImage(file);
 
 	const lastImage = await imagePostRepository.getLatestPostByAuthor(userId);
-	checkRateLimit(lastImage?.createdAt, RATE_LIMIT_MS, "Aguarde mais");
+	checkRateLimit(lastImage?.createdAt, RATE_LIMIT_MS, "Muitas requisições");
 
-	const arrayBuffer = await file.arrayBuffer();
-	const dimensions = imageSize(Buffer.from(arrayBuffer));
-
-	if (!dimensions || dimensions.width === undefined || dimensions.height === undefined) {
-		throw new Error(ImagePostErrors.INVALID_IMAGE_FILE);
-	}
-
-	const isSquare = dimensions.width === dimensions.height;
-	const isAllowedDimension =
-		ALLOWED_DIMENSIONS.includes(dimensions.width) && ALLOWED_DIMENSIONS.includes(dimensions.height);
-
-	if (!isSquare || !isAllowedDimension) {
-		throw new Error(ImagePostErrors.INVALID_IMAGE_DIMENSIONS);
-	}
-
-	const fileToUpload = new File([arrayBuffer], file.name, { type: file.type });
-	const upload = await storage.upload(fileToUpload);
-
-	if (!upload.data?.ufsUrl) {
-		throw new Error(ImagePostErrors.UPLOAD_FAILED);
-	}
+	const uploadedImage = await uploadImage(file);
 
 	const sanitizedDescription = description ? sanitizeHtml(description, { allowedTags: [] }) : null;
 
 	try {
-		await imagePostRepository.insertPost(userId, upload.data.ufsUrl, sanitizedDescription);
+		await imagePostRepository.insertPost(userId, uploadedImage, sanitizedDescription);
 	} catch {
-		const imageKey = upload.data.ufsUrl.split("/").pop();
+		const imageKey = uploadedImage.split("/").pop();
 		if (imageKey) await storage.delete(imageKey);
 		throw new Error(ImagePostErrors.DB_INSERT_FAILED);
 	}
 
-	return upload.data.ufsUrl;
+	return uploadedImage;
 }
 
 export async function removeImagePost(userId: string, postId: string, imageUrl: string) {

@@ -2,7 +2,7 @@
 	import { onDestroy } from "svelte";
 	import { actions } from "astro:actions";
 	import { draggableDialog } from "@utils/draggableDialog.ts";
-	import { drawImageToCanvas, downloadImageFromSrc, getCanvasBlob } from "src/utils/image";
+	import { drawImageToCanvas, downloadImageFromSrc, getCanvasBlob } from "@utils/image";
 	import Button from "@ui/Button.svelte";
 	import Checkbox from "@ui/Checkbox.svelte";
 	import Modal from "@ui/Modal.svelte";

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatDate } from "src/utils/date";
+	import { formatDate } from "@utils/date";
 	import type { PostType, CommentType } from "@services/imagePost";
 	import Button from "@ui/Button.svelte";
 	import ImagePostComments from "@components/post/ImagePostComments/ImagePostComments.svelte";
