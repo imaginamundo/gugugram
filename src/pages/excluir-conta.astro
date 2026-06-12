@@ -1,6 +1,5 @@
 ---
 import { actions } from "astro:actions";
-import { getProfile } from "@services/user/profile";
 import Layout from "@layout/Main.astro";
 import Input from "@ui/Input.svelte";
 import Button from "@ui/Button.svelte";
@@ -13,17 +12,12 @@ if (result?.data?.success) {
 	return Astro.redirect(`/`);
 }
 
-const { user } = await getProfile({
-	username: session?.username,
-	session,
-});
-
 const seo = {
 	title: `Excluir conta`,
 	robots: "noindex,nofollow",
 };
 
-if (!user) return Astro.redirect("/entrar");
+if (!session || !session.username) return Astro.redirect("/entrar");
 ---
 
 <Layout {...seo}>
