@@ -27,8 +27,6 @@ const responseCountSubquery =
 		.as("responseCount");
 
 export const communityRepository = {
-	// --- COMMUNITY ---
-
 	getCommunities: async (page: number, limit: number): Promise<CommunityType[]> => {
 		const offset = (page - 1) * limit;
 		const rows = await db
@@ -153,8 +151,6 @@ export const communityRepository = {
 			.where(and(eq(communityAdmins.communityId, communityId), eq(communityAdmins.userId, userId)));
 	},
 
-	// --- SUBSCRIBERS ---
-
 	getSubscriber: async (communityId: string, userId: string) => {
 		return db.query.communitySubscribers.findFirst({
 			where: and(
@@ -193,7 +189,12 @@ export const communityRepository = {
 			);
 	},
 
-	// --- POSTS ---
+	getLatestResponseByAuthor: async (postId: string, authorId: string) => {
+		return db.query.communityResponses.findFirst({
+			where: and(eq(communityResponses.postId, postId), eq(communityResponses.authorId, authorId)),
+			orderBy: [desc(communityResponses.createdAt)],
+		});
+	},
 
 	getPostsByCommunity: async (
 		communityId: string,

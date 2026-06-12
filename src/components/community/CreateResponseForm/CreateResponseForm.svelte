@@ -47,23 +47,21 @@
 	}
 </script>
 
-<div class="window">
-	<div class="title-bar">
-		<p><strong>Responder</strong></p>
-	</div>
-	<div class="window-body">
-		{#if actionError}
-			<p class="helper-error mb flex center gap" role="alert">
-				<img src="/icons/msg_error-0.png" alt="Ícone de erro" />
-				{actionError}
-			</p>
-		{/if}
+<div class="form p">
+	{#if actionError}
+		<p class="helper-error mb flex center gap" role="alert">
+			<img src="/icons/msg_error-0.png" alt="Ícone de erro" />
+			{actionError}
+		</p>
+	{/if}
 
-		{#if success}
-			<p class="mb" role="status">Resposta publicada com sucesso!</p>
-		{/if}
+	{#if success}
+		<p class="mb" role="status">Resposta publicada com sucesso!</p>
+	{/if}
 
-		<form class="form" onsubmit={handleSubmit}>
+	<form class="form" onsubmit={handleSubmit}>
+		<fieldset>
+			<legend>Responder post</legend>
 			<label class="label">
 				Conteúdo
 				<Textarea
@@ -83,6 +81,6 @@
 					{loading ? "Enviando..." : "Responder"}
 				</Button>
 			</div>
-		</form>
-	</div>
+		</fieldset>
+	</form>
 </div>
