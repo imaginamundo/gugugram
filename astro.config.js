@@ -23,6 +23,7 @@ export default defineConfig({
 				project: env.SENTRY_PROJECT,
 				authToken: env.SENTRY_AUTH_TOKEN,
 				org: env.SENTRY_ORG,
+				assets: [".vercel/output/**/*.js"],
 			},
 		}),
 	],
