@@ -32,7 +32,6 @@ const CreatePostSchema = z.object({
 });
 
 const CreateResponseSchema = z.object({
-	userId: z.string().min(1),
 	postId: z.string().min(1),
 	content: z.string().min(1).max(2000),
 });
@@ -276,12 +275,20 @@ export const deletePost = defineAction({
 export const createResponse = defineAction({
 	accept: "form",
 	handler: withAuth(async (input: FormData, _, session) => {
-		const { fields, success: schemaSuccess } = parseSchema(input, CreateResponseSchema);
+		console.log({ input });
+
+		const {
+			fields,
+			success: schemaSuccess,
+			fieldErrors,
+		} = parseSchema(input, CreateResponseSchema);
+
+		console.log({ fields, fieldErrors });
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
 		const lastPostResponse = await communityRepository.getLatestResponseByAuthor(
 			fields.postId,
-			fields.userId,
+			session.id,
 		);
 
 		checkRateLimit(lastPostResponse?.createdAt, RATE_LIMIT_MS, "Excesso de respostas");

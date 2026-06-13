@@ -1,0 +1,23 @@
+---
+import Layout from "@layout/Main.astro";
+import EditCommunityForm from "@components/community/EditCommunityForm/EditCommunityForm.svelte";
+import { getCommunity } from "@services/community";
+
+const session = Astro.locals.user;
+if (!session) return Astro.redirect("/entrar");
+
+const { slug } = Astro.params;
+if (!slug) return new Response(null, { status: 404 });
+
+const community = await getCommunity(slug);
+if (!community) return new Response(null, { status: 404 });
+
+const seo = {
+	title: "Criar comunidade",
+	robots: "noindex,nofollow",
+};
+---
+
+<Layout {...seo}>
+	<EditCommunityForm {community} client:load />
+</Layout>

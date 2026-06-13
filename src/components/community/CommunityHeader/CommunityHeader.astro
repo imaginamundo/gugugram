@@ -5,9 +5,10 @@ import SubscribeButton from "@components/community/SubscribeButton/SubscribeButt
 interface Props {
 	community: CommunityType;
 	isSubscribed: boolean;
+	isOwner: boolean;
 }
 
-const { community, isSubscribed } = Astro.props;
+const { community, isSubscribed, isOwner } = Astro.props;
 
 const createdAt = community.createdAt.toLocaleDateString("pt-BR", {
 	day: "2-digit",
@@ -62,8 +63,10 @@ const createdAt = community.createdAt.toLocaleDateString("pt-BR", {
 		</table>
 	</div>
 </header>
-<div class="flex gap mt">
+<div class="flex gap center mt">
 	<SubscribeButton communityId={community.id} {isSubscribed} client:load />
+	{isOwner && <a href={`/comunidades/${community.slug}/editar`}>Editar comunidade</a>}
+	<a href={`/comunidades/${community.slug}/membros`}>Membros</a>
 </div>
 
 <style>

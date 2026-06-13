@@ -2,13 +2,7 @@
 import Layout from "@layout/Main.astro";
 import CommunityHeader from "@components/community/CommunityHeader/CommunityHeader.astro";
 import CommunityPostList from "@components/community/CommunityPostList/CommunityPostList.astro";
-// import AdminManagement from "@components/community/AdminManagement/AdminManagement.svelte";
-import {
-	getCommunity,
-	getCommunityPosts,
-	getSubscriber,
-	// getCommunityAdmins,
-} from "@services/community";
+import { getCommunity, getCommunityPosts, getSubscriber } from "@services/community";
 
 const { slug } = Astro.params;
 if (!slug) return new Response(null, { status: 404 });
@@ -26,17 +20,12 @@ const hasNextPage = posts.length === PAGE_SIZE;
 const session = Astro.locals.user;
 
 let isSubscribed = false;
-// let isOwner = false;
-// let admins: { id: string; username: string }[] = [];
+let isOwner = false;
 
 if (session) {
-	// isOwner = community.ownerId === session.id;
+	isOwner = community.ownerId === session.id;
 
 	isSubscribed = await getSubscriber(community.id, session.id);
-
-	// if (isOwner) {
-	// 	admins = await getCommunityAdmins(community.id);
-	// }
 }
 
 const seo = {
@@ -46,19 +35,11 @@ const seo = {
 ---
 
 <Layout {...seo}>
-	<CommunityHeader community={community} isSubscribed={isSubscribed} />
+	<CommunityHeader {community} {isSubscribed} {isOwner} />
 
 	<div class="mt flex gap center">
 		<h2>Posts</h2>
 		<a href={`/comunidades/${slug}/novo-post`} class="button">Novo post</a>
 	</div>
-	<CommunityPostList posts={posts} communitySlug={slug} page={page} hasNextPage={hasNextPage} />
-
-	<!-- {
-		isOwner && (
-			<div class="mt">
-				<AdminManagement communityId={community.id} admins={admins} client:load />
-			</div>
-		)
-	} -->
+	<CommunityPostList {posts} communitySlug={slug} {page} {hasNextPage} />
 </Layout>
