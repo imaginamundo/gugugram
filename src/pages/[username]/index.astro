@@ -11,15 +11,12 @@ if (!username) return new Response(null, { status: 404 });
 
 const session = Astro.locals.user;
 
-const { user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendRequest } =
-	await getProfile({
-		username,
-		session,
-	});
+// getImagePosts only depends on `username`, so fetch it alongside the profile
+// instead of waiting for the profile round-trip to finish first.
+const [{ user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendRequest }, images] =
+	await Promise.all([getProfile({ username, session }), getImagePosts(username)]);
 
 if (!user) return new Response(null, { status: 404 });
-
-const images = await getImagePosts(username);
 
 const seo = {
 	title: `Imagens de ${username}`,

@@ -51,7 +51,7 @@ export async function createCommunity(
 		const newFilename = `${originalName}_30x30.png`;
 		const file = new File([buffer], newFilename, { type: "image/png" });
 
-		checkImage(file);
+		await checkImage(file);
 
 		imageUrl = await uploadImage(file);
 	}

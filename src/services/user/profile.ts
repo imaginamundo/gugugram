@@ -38,30 +38,30 @@ export async function getProfile({
 		type: null,
 	};
 
-	if (session && session.id !== userData.id) {
-		const friendshipData = await userProfileRepository.getFriendshipBetweenUsers(
-			session.id,
-			userData.id,
-		);
+	const isOwnProfile = !!session && session.id === userData.id;
 
-		if (friendshipData) {
-			friendshipStatus.status = friendshipData.status;
-			friendshipStatus.type = friendshipData.targetUserId === userData.id ? "request" : "target";
-		}
-	}
+	// These queries are independent of each other, so run them in a single
+	// round-trip instead of awaiting one after another. The friendship lookup
+	// only matters when viewing someone else's profile, and the pending/unread
+	// counts only matter when viewing your own — the others resolve to a no-op.
+	const [friendsCount, messagesCount, friendshipData, pendingFriendRequest, unreadMessagesCount] =
+		await Promise.all([
+			userProfileRepository.getAcceptedFriendsCount(userData.id),
+			userProfileRepository.getTotalMessagesCount(userData.id),
+			session && session.id !== userData.id
+				? userProfileRepository.getFriendshipBetweenUsers(session.id, userData.id)
+				: Promise.resolve(null),
+			isOwnProfile
+				? userProfileRepository.getPendingRequestsCount(userData.id)
+				: Promise.resolve(0),
+			isOwnProfile
+				? userProfileRepository.getUnreadMessagesCount(userData.id, userData.lastCheckedMessagesAt)
+				: Promise.resolve(0),
+		]);
 
-	const friendsCount = await userProfileRepository.getAcceptedFriendsCount(userData.id);
-	const messagesCount = await userProfileRepository.getTotalMessagesCount(userData.id);
-
-	let pendingFriendRequest = 0;
-	let unreadMessagesCount = 0;
-
-	if (session && session.id === userData.id) {
-		pendingFriendRequest = await userProfileRepository.getPendingRequestsCount(userData.id);
-		unreadMessagesCount = await userProfileRepository.getUnreadMessagesCount(
-			userData.id,
-			userData.lastCheckedMessagesAt,
-		);
+	if (friendshipData) {
+		friendshipStatus.status = friendshipData.status;
+		friendshipStatus.type = friendshipData.targetUserId === userData.id ? "request" : "target";
 	}
 
 	const profileUser = {
@@ -100,7 +100,7 @@ export async function updateProfileData(userId: string, data: UpdateProfileData)
 			const newFilename = `${originalName}_30x30.png`;
 			const file = new File([buffer], newFilename, { type: "image/png" });
 
-			checkImage(file);
+			await checkImage(file);
 
 			const uploadedImageUrl = await uploadImage(file);
 
