@@ -17,16 +17,16 @@ if (result && !result.error) {
 	return Astro.redirect(`/${username}`);
 }
 
-const post = await getImagePost(postId);
+// The post (keyed by postId) and the profile (keyed by username) are
+// independent lookups, so run them in parallel rather than in series.
+const [post, { user }] = await Promise.all([
+	getImagePost(postId),
+	getProfile({ username, session }),
+]);
 
 if (!post || post.username !== username) {
 	return new Response(null, { status: 404 });
 }
-
-const { user } = await getProfile({
-	username,
-	session,
-});
 
 if (!user) return new Response(null, { status: 404 });
 

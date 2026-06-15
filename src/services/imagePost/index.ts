@@ -92,7 +92,7 @@ export async function getImagePostComments(postId: string): Promise<CommentType[
 }
 
 export async function processAndUploadImagePost(userId: string, file: File, description?: string) {
-	checkImage(file);
+	await checkImage(file);
 
 	const lastImage = await imagePostRepository.getLatestPostByAuthor(userId);
 	checkRateLimit(lastImage?.createdAt, RATE_LIMIT_MS, "Muitas requisições");
