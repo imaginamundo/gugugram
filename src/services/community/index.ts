@@ -1,11 +1,12 @@
 import sanitizeHtml from "sanitize-html";
 import { communityRepository, type UpdateCommunityPayload } from "@repositories/community";
 import { slugify } from "@utils/slugify";
+import { parseUser } from "@utils/user";
 import { CommunityErrors } from "@customTypes/errors";
 import { checkImage, uploadImage } from "@services/uploadImage/uploadImage";
+import { friendshipPossibleStatus } from "@schemas/database";
 import type {
 	CommunityType,
-	CommunityPostType,
 	CommunityPostDetailType,
 	CommunityMembershipType,
 } from "@customTypes/community";
@@ -17,13 +18,70 @@ function sanitize(text: string): string {
 	return sanitizeHtml(text, { allowedTags: [] });
 }
 
-export async function getCommunities(page: number): Promise<CommunityType[]> {
-	return communityRepository.getCommunities(page, PAGE_SIZE);
+export async function getCommunities(page: number) {
+	const [totalCount, items] = await Promise.all([
+		communityRepository.countCommunities(),
+		communityRepository.getCommunities(page, PAGE_SIZE),
+	]);
+
+	const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+	return {
+		items,
+		pagination: {
+			page,
+			totalPages,
+		},
+	};
 }
 
 export async function getCommunity(slug: string): Promise<CommunityType | null> {
 	const community = await communityRepository.getCommunityBySlug(slug);
 	return community ?? null;
+}
+
+export async function getMembers(communityId: string, page = 1, session?: App.Locals["user"]) {
+	const currentUserId = session?.id;
+	const [totalCount, communityMembers] = await Promise.all([
+		communityRepository.countMembers(communityId),
+		currentUserId
+			? communityRepository.getMembersAuthenticated(communityId, currentUserId, page, PAGE_SIZE)
+			: communityRepository.getMembers(communityId, page, PAGE_SIZE),
+	]);
+
+	const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+	const items = communityMembers.map(({ user }) => {
+		let friendshipStatus: (typeof friendshipPossibleStatus)[number] | null = null;
+		let friendshipType: "target" | "request" | null = null;
+
+		if (currentUserId && "targetedFriends" in user) {
+			const authedUser = user as typeof user & {
+				targetedFriends: { status: (typeof friendshipPossibleStatus)[number] }[];
+				requestedFriends: { status: (typeof friendshipPossibleStatus)[number] }[];
+			};
+			if (authedUser.targetedFriends.length > 0) {
+				friendshipStatus = authedUser.targetedFriends[0].status;
+				friendshipType = "request";
+			} else if (authedUser.requestedFriends.length > 0) {
+				friendshipStatus = authedUser.requestedFriends[0].status;
+				friendshipType = "target";
+			}
+		}
+
+		return {
+			...parseUser(user),
+			friendship: { status: friendshipStatus, type: friendshipType },
+		};
+	});
+
+	return {
+		items,
+		pagination: {
+			page,
+			totalPages,
+		},
+	};
 }
 
 export async function createCommunity(
@@ -78,8 +136,6 @@ export async function removeCommunity(requesterId: string, communitySlug: string
 	const deleted = await communityRepository.deleteCommunity(communitySlug, requesterId);
 	if (deleted.length === 0) throw new Error(CommunityErrors.NOT_OWNER);
 }
-
-// --- ADMINS ---
 
 export async function promoteToAdmin(
 	ownerId: string,
@@ -169,16 +225,73 @@ export async function getCommunityAdmins(
 	return rows.map((a) => ({ id: a.userId, username: a.user.username }));
 }
 
-export async function getCommunityPosts(
-	communityId: string,
-	page: number,
-): Promise<CommunityPostType[]> {
-	return communityRepository.getPostsByCommunity(communityId, page, PAGE_SIZE);
+export async function getCommunityPosts(communityId: string, page: number) {
+	const [totalCount, items] = await Promise.all([
+		communityRepository.countPostsByCommunity(communityId),
+		communityRepository.getPostsByCommunity(communityId, page, PAGE_SIZE),
+	]);
+
+	const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+	return {
+		items,
+		pagination: {
+			page,
+			totalPages,
+		},
+	};
 }
 
 export async function getCommunityPost(postId: string): Promise<CommunityPostDetailType | null> {
 	const post = await communityRepository.getPostWithResponses(postId);
 	return post ?? null;
+}
+
+const RESPONSES_PAGE_SIZE = 20;
+
+export async function getCommunityPostPaginated(postId: string, page: number) {
+	const postRow = await communityRepository.getPostById(postId);
+	if (!postRow) return null;
+
+	const author = await communityRepository.getPostWithResponses(postId);
+	if (!author) return null;
+
+	const [totalCount, responseRows] = await Promise.all([
+		communityRepository.countResponsesByPost(postId),
+		communityRepository.getResponsesByPostPaginated(postId, page, RESPONSES_PAGE_SIZE),
+	]);
+
+	const totalPages = Math.max(1, Math.ceil(totalCount / RESPONSES_PAGE_SIZE));
+
+	const responses = responseRows.map((r) => ({
+		id: r.id,
+		postId: r.postId,
+		content: r.content,
+		authorId: r.authorId,
+		authorUsername: r.author.username,
+		createdAt: r.createdAt,
+	}));
+
+	const post: CommunityPostDetailType = {
+		id: author.id,
+		communityId: author.communityId,
+		title: author.title,
+		content: author.content,
+		authorId: author.authorId,
+		authorUsername: author.authorUsername,
+		responseCount: totalCount,
+		createdAt: author.createdAt,
+		responses,
+	};
+
+	return {
+		post,
+		pagination: {
+			page,
+			totalPages,
+			totalCount,
+		},
+	};
 }
 
 export async function createPost(
@@ -258,7 +371,6 @@ export async function removeResponse(requesterId: string, responseId: string): P
 		return;
 	}
 
-	// Check if moderator (owner or admin)
 	const post = await communityRepository.getPostById(response.postId);
 	if (!post) throw new Error(CommunityErrors.POST_NOT_FOUND);
 

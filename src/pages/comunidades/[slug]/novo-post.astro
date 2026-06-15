@@ -22,6 +22,8 @@ if (!isSubscribed) {
 	return Astro.redirect(`/comunidades/${slug}`);
 }
 
+const isOwner = session?.id === community.ownerId;
+
 const seo = {
 	title: `${community.title} • Novo post`,
 	description: community.description ?? `Comunidade ${community.title} no Gugugram.`,
@@ -29,6 +31,6 @@ const seo = {
 ---
 
 <Layout {...seo}>
-	<CommunityHeader {community} {isSubscribed} />
+	<CommunityHeader {community} {isSubscribed} {isOwner} />
 	<CreatePostForm communityId={community.id} communitySlug={slug} client:load />
 </Layout>

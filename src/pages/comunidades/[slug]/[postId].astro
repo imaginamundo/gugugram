@@ -3,7 +3,7 @@ import Layout from "@layout/Main.astro";
 import CommunityPostDetail from "@components/community/CommunityPostDetail/CommunityPostDetail.astro";
 import CreateResponseForm from "@components/community/CreateResponseForm/CreateResponseForm.svelte";
 import CommunityHeader from "@components/community/CommunityHeader/CommunityHeader.astro";
-import { getCommunity, getCommunityPost } from "@services/community";
+import { getCommunity, getCommunityPostPaginated } from "@services/community";
 import { communityRepository } from "@repositories/community";
 
 const { slug, postId } = Astro.params;
@@ -12,8 +12,13 @@ if (!slug || !postId) return new Response(null, { status: 404 });
 const community = await getCommunity(slug);
 if (!community) return new Response(null, { status: 404 });
 
-const post = await getCommunityPost(postId);
-if (!post) return new Response(null, { status: 404 });
+const pageParam = Astro.url.searchParams.get("page");
+const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+
+const result = await getCommunityPostPaginated(postId, page);
+if (!result) return new Response(null, { status: 404 });
+
+const { post, pagination } = result;
 
 const session = Astro.locals.user;
 
@@ -23,6 +28,10 @@ if (session) {
 	isSubscribed = !!subscriber;
 }
 
+const isOwner = session?.id === community.ownerId;
+
+const baseUrl = `/comunidades/${slug}/${postId}`;
+
 const seo = {
 	title: post.title,
 	description: post.content.slice(0, 150),
@@ -30,9 +39,9 @@ const seo = {
 ---
 
 <Layout {...seo}>
-	<CommunityHeader community={community} isSubscribed={isSubscribed} />
+	<CommunityHeader community={community} isSubscribed={isSubscribed} isOwner={isOwner} />
 
-	<CommunityPostDetail post={post} />
+	<CommunityPostDetail post={post} pagination={pagination} baseUrl={baseUrl} />
 
 	{
 		isSubscribed && (

@@ -19,6 +19,7 @@ export type CommunityPostType = {
 	authorUsername: string;
 	responseCount: number;
 	createdAt: Date;
+	lastActivity?: Date;
 };
 
 export type CommunityPostDetailType = CommunityPostType & {

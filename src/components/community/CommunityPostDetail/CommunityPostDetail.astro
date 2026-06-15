@@ -1,17 +1,26 @@
 ---
 import CommunityResponseList from "@components/community/CommunityResponseList/CommunityResponseList.astro";
+import Pagination from "@components/_shared/Pagination/Pagination.astro";
 import type { CommunityPostDetailType } from "@customTypes/community";
 
 interface Props {
 	post: CommunityPostDetailType;
+	pagination: {
+		page: number;
+		totalPages: number;
+		totalCount: number;
+	};
+	baseUrl: string;
 }
 
-const { post } = Astro.props;
+const { post, pagination, baseUrl } = Astro.props;
 
-const createdAt = post.createdAt.toLocaleDateString("pt-BR", {
+const createdAt = post.createdAt.toLocaleString("pt-BR", {
 	day: "2-digit",
 	month: "2-digit",
 	year: "numeric",
+	hour: "2-digit",
+	minute: "2-digit",
 });
 ---
 
@@ -27,7 +36,8 @@ const createdAt = post.createdAt.toLocaleDateString("pt-BR", {
 			<p>{post.content}</p>
 		</div>
 		<div class="mt">
-			<CommunityResponseList responses={post.responses} />
+			<CommunityResponseList responses={post.responses} totalCount={pagination.totalCount} />
+			<Pagination page={pagination.page} totalPages={pagination.totalPages} baseUrl={baseUrl} />
 		</div>
 	</div>
 </article>

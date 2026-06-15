@@ -47,7 +47,9 @@ describe("checkImage", () => {
 	beforeEach(() => vi.clearAllMocks());
 
 	it("rejects files larger than the size limit", async () => {
-		await expect(checkImage(makeFile(60001))).rejects.toThrow(ImageUploadErrors.FILE_TOO_LARGE);
+		await expect(checkImage(makeFile(1024 * 201))).rejects.toThrow(
+			ImageUploadErrors.FILE_TOO_LARGE,
+		);
 	});
 
 	it("rejects files with no readable dimensions", async () => {

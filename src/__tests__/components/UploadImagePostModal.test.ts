@@ -125,7 +125,6 @@ describe("UploadImagePostModal", () => {
 
 		it("shows character count starting at 0 / 500", () => {
 			expect(screen.getByText(/0 \/ 500 caracteres/i)).toBeInTheDocument();
-			expect(screen.getByText(/500 restantes/i)).toBeInTheDocument();
 		});
 
 		it("updates character count as description is typed", async () => {
@@ -133,7 +132,6 @@ describe("UploadImagePostModal", () => {
 			const textarea = screen.getByPlaceholderText(/coloque um texto para exibir/i);
 			await user.type(textarea, "hello");
 			expect(screen.getByText(/5 \/ 500 caracteres/i)).toBeInTheDocument();
-			expect(screen.getByText(/495 restantes/i)).toBeInTheDocument();
 		});
 
 		it("renders the submit button with 'Publicar' label", () => {

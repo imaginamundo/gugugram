@@ -1,14 +1,17 @@
 ---
 import Layout from "@layout/Main.astro";
 import CommunityCard from "@components/community/CommunityCard/CommunityCard.astro";
+import Pagination from "@components/_shared/Pagination/Pagination.astro";
 import { getCommunities } from "@services/community";
 
-const PAGE_SIZE = 20;
 const pageParam = Astro.url.searchParams.get("page");
 const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
-const communities = await getCommunities(page);
-const hasNextPage = communities.length === PAGE_SIZE;
+const { items: communities, pagination } = await getCommunities(page);
+
+if (page > pagination.totalPages) {
+	return Astro.redirect(`?page=${pagination.totalPages}`, 307);
+}
 
 const seo = {
 	title: "Comunidades",
@@ -34,23 +37,7 @@ const seo = {
 		)
 	}
 
-	{
-		(page > 1 || hasNextPage) && (
-			<nav class="pagination flex gap center mt" aria-label="Paginação">
-				{page > 1 && (
-					<a href={`?page=${page - 1}`} class="button">
-						← Anterior
-					</a>
-				)}
-				<span class="text-muted">Página {page}</span>
-				{hasNextPage && (
-					<a href={`?page=${page + 1}`} class="button">
-						Próxima →
-					</a>
-				)}
-			</nav>
-		)
-	}
+	<Pagination page={pagination.page} totalPages={pagination.totalPages} />
 </Layout>
 
 <style>

@@ -4,17 +4,19 @@ import type { CommunityResponseType } from "@customTypes/community";
 
 interface Props {
 	responses: CommunityResponseType[];
+	totalCount?: number;
 }
 
-const { responses } = Astro.props;
+const { responses, totalCount } = Astro.props;
 
 // Responses come from the service already ordered oldest-first (ASC createdAt)
+const count = totalCount ?? responses.length;
 ---
 
 <section class="response-list">
 	<h2 class="response-count">
-		{responses.length}
-		{responses.length === 1 ? "resposta" : "respostas"}
+		{count}
+		{count === 1 ? "resposta" : "respostas"}
 	</h2>
 	{
 		responses.length === 0 ? (

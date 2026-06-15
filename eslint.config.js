@@ -8,7 +8,16 @@ import boundaries from "eslint-plugin-boundaries";
 
 export default [
 	{
-		ignores: ["drizzle/", "dist/", ".astro/", "node_modules/", ".vercel", ".git"],
+		ignores: [
+			"drizzle/",
+			"dist/",
+			".astro/",
+			"node_modules/",
+			".vercel",
+			".git",
+			"src/env.d.ts",
+			"src/styles/**",
+		],
 	},
 	{
 		languageOptions: {
@@ -44,7 +53,7 @@ export default [
 				{ type: "stores", pattern: "src/stores/**" },
 				{ type: "infra", pattern: "src/infra/**" },
 				{ type: "observability", pattern: "src/observability/**" },
-				{ type: "auth", pattern: "src/auth.ts" },
+				{ type: "auth", pattern: "src/auth.ts", mode: "file" },
 				{ type: "email", pattern: "src/email/**" },
 				{ type: "schemas", pattern: "src/schemas/**" },
 				{ type: "types", pattern: "src/types/**" },

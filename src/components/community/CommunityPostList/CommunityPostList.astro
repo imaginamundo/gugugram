@@ -1,15 +1,16 @@
 ---
 import CommunityPostCard from "@components/community/CommunityPostCard/CommunityPostCard.astro";
+import Pagination from "@components/_shared/Pagination/Pagination.astro";
 import type { CommunityPostType } from "@customTypes/community";
 
 interface Props {
 	posts: CommunityPostType[];
 	communitySlug: string;
 	page: number;
-	hasNextPage: boolean;
+	totalPages: number;
 }
 
-const { posts, communitySlug, page, hasNextPage } = Astro.props;
+const { posts, communitySlug, page, totalPages } = Astro.props;
 ---
 
 <section class="post-list">
@@ -25,21 +26,5 @@ const { posts, communitySlug, page, hasNextPage } = Astro.props;
 		)
 	}
 
-	{
-		(page > 1 || hasNextPage) && (
-			<nav class="pagination flex gap center mt" aria-label="Paginação">
-				{page > 1 && (
-					<a href={`?page=${page - 1}`} class="button">
-						← Anterior
-					</a>
-				)}
-				<span class="text-muted">Página {page}</span>
-				{hasNextPage && (
-					<a href={`?page=${page + 1}`} class="button">
-						Próxima →
-					</a>
-				)}
-			</nav>
-		)
-	}
+	<Pagination {page} {totalPages} />
 </section>

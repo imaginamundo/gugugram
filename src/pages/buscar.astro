@@ -1,12 +1,19 @@
 ---
 import Layout from "@layout/Main.astro";
 import UsersList from "@components/_shared/UsersList/UsersList.astro";
+import Pagination from "@components/_shared/Pagination/Pagination.astro";
 import { getUsers } from "@services/user/search";
 
 const query = Astro.url.searchParams.get("q") || "";
+const pageParam = Astro.url.searchParams.get("page");
+const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 const session = Astro.locals.user;
 
-const users = await getUsers({ query, session });
+const { items: users, pagination } = await getUsers({ query, session, page });
+
+if (query && page > pagination.totalPages) {
+	return Astro.redirect(`?q=${encodeURIComponent(query)}&page=${pagination.totalPages}`, 307);
+}
 
 const seo = {
 	title: `Buscar por ${query}`,
@@ -17,7 +24,12 @@ const seo = {
 <Layout {...seo}>
 	<h2>Buscar por: {query}</h2>
 	<div class="friends field-border p">
-		<UsersList users={users} additionalParameter={`q=${query}`} />
+		<UsersList users={users} />
 		{users.length === 0 && <p>Nenhum usuário encontrado :(</p>}
 	</div>
+	<Pagination
+		page={pagination.page}
+		totalPages={pagination.totalPages}
+		baseUrl={`?q=${encodeURIComponent(query)}`}
+	/>
 </Layout>

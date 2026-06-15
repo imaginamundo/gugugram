@@ -1,0 +1,54 @@
+---
+interface Props {
+	page: number;
+	totalPages: number;
+	baseUrl?: string;
+}
+
+const { page, totalPages, baseUrl = "" } = Astro.props;
+
+const sep = baseUrl.includes("?") ? "&" : "?";
+const pageHref = (p: number) => `${baseUrl}${sep}page=${p}`;
+
+const WINDOW = 5;
+const half = Math.floor(WINDOW / 2);
+let start = Math.max(1, page - half);
+let end = Math.min(totalPages, start + WINDOW - 1);
+if (end - start + 1 < WINDOW) {
+	start = Math.max(1, end - WINDOW + 1);
+}
+const pages = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+
+const hasPrev = page > 1;
+const hasNext = page < totalPages;
+---
+
+{
+	totalPages > 1 && (
+		<nav class="pagination flex gap-sm center mt" aria-label="Paginação">
+			{hasPrev ? (
+				<a href={pageHref(page - 1)} aria-label="Página anterior">
+					←
+				</a>
+			) : (
+				<span aria-disabled="true" style="visibility:hidden">
+					←
+				</span>
+			)}
+
+			{pages.map((p) =>
+				p === page ? <span aria-current="page">{p}</span> : <a href={pageHref(p)}>{p}</a>,
+			)}
+
+			{hasNext ? (
+				<a href={pageHref(page + 1)} aria-label="Próxima página">
+					→
+				</a>
+			) : (
+				<span aria-disabled="true" style="visibility:hidden">
+					→
+				</span>
+			)}
+		</nav>
+	)
+}

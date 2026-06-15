@@ -1,0 +1,37 @@
+---
+import Layout from "@layout/Main.astro";
+import UsersList from "@components/_shared/UsersList/UsersList.astro";
+import Pagination from "@components/_shared/Pagination/Pagination.astro";
+import { getCommunity, getMembers } from "@services/community";
+
+const { slug } = Astro.params;
+if (!slug) return new Response(null, { status: 404 });
+
+const community = await getCommunity(slug);
+if (!community) return new Response(null, { status: 404 });
+
+const session = Astro.locals.user;
+
+const pageParam = Astro.url.searchParams.get("page");
+const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+
+const { items: users, pagination } = await getMembers(community.id, page, session);
+
+if (page > pagination.totalPages) {
+	return Astro.redirect(`?page=${pagination.totalPages}`, 307);
+}
+
+const seo = {
+	title: `Membros da comunidade ${community.title}`,
+	robots: "index,follow",
+};
+---
+
+<Layout {...seo}>
+	<h2>Membros da comunidade <a href={`/comunidades/${community.slug}`}>{community.title}</a></h2>
+	<div class="friends field-border p">
+		<UsersList users={users} />
+		<Pagination page={pagination.page} totalPages={pagination.totalPages} />
+		{users.length === 0 && <p>Nenhum membro encontrado.</p>}
+	</div>
+</Layout>

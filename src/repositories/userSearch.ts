@@ -1,7 +1,23 @@
 import { db } from "@infra/database";
+import { ilike, and, ne, count } from "drizzle-orm";
+import { users } from "@schemas/database";
+
+const PAGE_SIZE = 20;
 
 export const userSearchRepository = {
-	searchAuthenticatedUsers: async (searchQuery: string, currentUserId: string) => {
+	countUsers: async (searchQuery: string, excludeUserId?: string): Promise<number> => {
+		const conditions = [ilike(users.username, `%${searchQuery}%`)];
+		if (excludeUserId) conditions.push(ne(users.id, excludeUserId));
+
+		const result = await db
+			.select({ count: count() })
+			.from(users)
+			.where(and(...conditions));
+		return result[0]?.count ?? 0;
+	},
+
+	searchAuthenticatedUsers: async (searchQuery: string, currentUserId: string, page = 1) => {
+		const offset = (page - 1) * PAGE_SIZE;
 		return db.query.users.findMany({
 			where: (user, { ilike, and, ne }) =>
 				and(ilike(user.username, `%${searchQuery}%`), ne(user.id, currentUserId)),
@@ -21,11 +37,13 @@ export const userSearchRepository = {
 					columns: { status: true },
 				},
 			},
-			limit: 20,
+			limit: PAGE_SIZE,
+			offset,
 		});
 	},
 
-	searchGuestUsers: async (searchQuery: string) => {
+	searchGuestUsers: async (searchQuery: string, page = 1) => {
+		const offset = (page - 1) * PAGE_SIZE;
 		return db.query.users.findMany({
 			where: (user, { ilike }) => ilike(user.username, `%${searchQuery}%`),
 			columns: {
@@ -34,7 +52,8 @@ export const userSearchRepository = {
 				displayUsername: true,
 				image: true,
 			},
-			limit: 20,
+			limit: PAGE_SIZE,
+			offset,
 		});
 	},
 };

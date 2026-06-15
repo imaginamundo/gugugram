@@ -10,12 +10,14 @@ if (!slug) return new Response(null, { status: 404 });
 const community = await getCommunity(slug);
 if (!community) return new Response(null, { status: 404 });
 
-const PAGE_SIZE = 20;
 const pageParam = Astro.url.searchParams.get("page");
 const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
-const posts = await getCommunityPosts(community.id, page);
-const hasNextPage = posts.length === PAGE_SIZE;
+const { items: posts, pagination } = await getCommunityPosts(community.id, page);
+
+if (page > pagination.totalPages) {
+	return Astro.redirect(`?page=${pagination.totalPages}`, 307);
+}
 
 const session = Astro.locals.user;
 
@@ -41,5 +43,5 @@ const seo = {
 		<h2>Posts</h2>
 		<a href={`/comunidades/${slug}/novo-post`} class="button">Novo post</a>
 	</div>
-	<CommunityPostList {posts} communitySlug={slug} {page} {hasNextPage} />
+	<CommunityPostList {posts} communitySlug={slug} {page} totalPages={pagination.totalPages} />
 </Layout>

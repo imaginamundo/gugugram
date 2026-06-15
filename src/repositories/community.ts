@@ -1,5 +1,5 @@
 import { db } from "@infra/database";
-import { and, eq, desc, sql } from "drizzle-orm";
+import { and, eq, desc, sql, count } from "drizzle-orm";
 import {
 	communities,
 	communityAdmins,
@@ -29,6 +29,11 @@ const responseCountSubquery =
 		.mapWith(Number)
 		.as("responseCount");
 
+const lastActivitySubquery =
+	sql<Date>`COALESCE((SELECT MAX(r.created_at) FROM ${communityResponses} AS r WHERE r.post_id = ${communityPosts.id}), ${communityPosts.createdAt})`.as(
+		"lastActivity",
+	);
+
 export const communityRepository = {
 	getCommunities: async (page: number, limit: number): Promise<CommunityType[]> => {
 		const offset = (page - 1) * limit;
@@ -50,6 +55,11 @@ export const communityRepository = {
 			.limit(limit)
 			.offset(offset);
 		return rows;
+	},
+
+	countCommunities: async (): Promise<number> => {
+		const result = await db.select({ count: count() }).from(communities);
+		return result[0]?.count ?? 0;
 	},
 
 	getCommunityById: async (id: string): Promise<CommunityType | undefined> => {
@@ -158,6 +168,71 @@ export const communityRepository = {
 			.where(and(eq(communityAdmins.communityId, communityId), eq(communityAdmins.userId, userId)));
 	},
 
+	getMembers: async (communityId: string, page = 1, limit = 20) => {
+		const offset = (page - 1) * limit;
+		return db.query.communitySubscribers.findMany({
+			where: and(eq(communitySubscribers.communityId, communityId)),
+			with: {
+				user: {
+					columns: {
+						id: true,
+						username: true,
+						displayUsername: true,
+						image: true,
+					},
+				},
+			},
+			limit,
+			offset,
+			orderBy: [desc(communitySubscribers.createdAt)],
+		});
+	},
+
+	getMembersAuthenticated: async (
+		communityId: string,
+		currentUserId: string,
+		page = 1,
+		limit = 20,
+	) => {
+		const offset = (page - 1) * limit;
+		return db.query.communitySubscribers.findMany({
+			where: and(eq(communitySubscribers.communityId, communityId)),
+			with: {
+				user: {
+					columns: {
+						id: true,
+						username: true,
+						displayUsername: true,
+						image: true,
+					},
+					with: {
+						targetedFriends: {
+							where: (uf, { eq }) => eq(uf.requestUserId, currentUserId),
+							columns: { status: true },
+							limit: 1,
+						},
+						requestedFriends: {
+							where: (uf, { eq }) => eq(uf.targetUserId, currentUserId),
+							columns: { status: true },
+							limit: 1,
+						},
+					},
+				},
+			},
+			limit,
+			offset,
+			orderBy: [desc(communitySubscribers.createdAt)],
+		});
+	},
+
+	countMembers: async (communityId: string): Promise<number> => {
+		const result = await db
+			.select({ count: count() })
+			.from(communitySubscribers)
+			.where(eq(communitySubscribers.communityId, communityId));
+		return result[0]?.count ?? 0;
+	},
+
 	getSubscriber: async (communityId: string, userId: string) => {
 		return db.query.communitySubscribers.findFirst({
 			where: and(
@@ -219,14 +294,23 @@ export const communityRepository = {
 				authorUsername: users.username,
 				responseCount: responseCountSubquery,
 				createdAt: communityPosts.createdAt,
+				lastActivity: lastActivitySubquery,
 			})
 			.from(communityPosts)
 			.innerJoin(users, eq(communityPosts.authorId, users.id))
 			.where(eq(communityPosts.communityId, communityId))
-			.orderBy(desc(communityPosts.createdAt))
+			.orderBy(desc(lastActivitySubquery))
 			.limit(limit)
 			.offset(offset);
 		return rows;
+	},
+
+	countPostsByCommunity: async (communityId: string): Promise<number> => {
+		const result = await db
+			.select({ count: count() })
+			.from(communityPosts)
+			.where(eq(communityPosts.communityId, communityId));
+		return result[0]?.count ?? 0;
 	},
 
 	getPostById: async (postId: string) => {
@@ -295,6 +379,25 @@ export const communityRepository = {
 			orderBy: [communityResponses.createdAt],
 			with: { author: { columns: { id: true, username: true } } },
 		});
+	},
+
+	getResponsesByPostPaginated: async (postId: string, page: number, limit: number) => {
+		const offset = (page - 1) * limit;
+		return db.query.communityResponses.findMany({
+			where: eq(communityResponses.postId, postId),
+			orderBy: [communityResponses.createdAt],
+			with: { author: { columns: { id: true, username: true } } },
+			limit,
+			offset,
+		});
+	},
+
+	countResponsesByPost: async (postId: string): Promise<number> => {
+		const result = await db
+			.select({ count: count() })
+			.from(communityResponses)
+			.where(eq(communityResponses.postId, postId));
+		return result[0]?.count ?? 0;
 	},
 
 	getResponseById: async (responseId: string) => {
