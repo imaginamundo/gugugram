@@ -13,15 +13,18 @@ if (!session) return Astro.redirect("/entrar");
 const { slug } = Astro.params;
 if (!slug) return new Response(null, { status: 404 });
 
-const community = await getCommunity(slug);
+const [community, editResult, removeImageResult] = await Promise.all([
+	getCommunity(slug),
+	Astro.getActionResult(actions.editCommunity),
+	Astro.getActionResult(actions.removeCommunityImage),
+]);
+
 if (!community) return new Response(null, { status: 404 });
 
-const editResult = Astro.getActionResult(actions.editCommunity);
 if (editResult?.data?.success) {
 	return Astro.redirect(`/comunidades/${community.slug}`);
 }
 
-const removeImageResult = Astro.getActionResult(actions.removeCommunityImage);
 if (removeImageResult?.data?.success) {
 	return Astro.redirect(`/comunidades/${community.slug}`);
 }
