@@ -21,6 +21,8 @@ import {
 	deletePost,
 	createResponse,
 	deleteResponse,
+	removeCommunityImage,
+	editCommunity,
 } from "./_community.ts";
 import {
 	reportImagePost,
@@ -64,6 +66,8 @@ export const server = {
 	deletePost,
 	createResponse,
 	deleteResponse,
+	removeCommunityImage,
+	editCommunity,
 	// moderation
 	reportImagePost,
 	reportImagePostComment,

@@ -74,10 +74,10 @@
 					minlength={3}
 					maxlength={TITLE_MAX}
 					placeholder="Título do post"
+					characterCount
 					required
 					bind:value={title}
 				/>
-				<span class="helper-text">{title.length} / {TITLE_MAX} caracteres</span>
 			</label>
 
 			<label class="label mt">
@@ -88,10 +88,10 @@
 					class="w-full"
 					maxlength={CONTENT_MAX}
 					placeholder="Escreva o conteúdo do post"
-					required
 					bind:value={content}
+					characterCount
+					required
 				/>
-				<span class="helper-text">{content.length} / {CONTENT_MAX} caracteres</span>
 			</label>
 
 			<div class="flex justify-end mt">

@@ -15,6 +15,9 @@ import type {
 	CommunityResponseType,
 	CommunityMembershipType,
 } from "@customTypes/community";
+import { CommunityErrors } from "@customTypes/errors";
+
+export type UpdateCommunityPayload = Partial<Pick<CommunityType, "description" | "image">>;
 
 const postCountSubquery =
 	sql<number>`(SELECT count(*) FROM ${communityPosts} AS p WHERE p.community_id = ${communities.id})`
@@ -99,23 +102,27 @@ export const communityRepository = {
 		return db.insert(communities).values({ ownerId, title, slug, description, image });
 	},
 
-	deleteCommunity: async (communityId: string, ownerId: string) => {
+	deleteCommunity: async (communitySlug: string, ownerId: string) => {
 		return db
 			.delete(communities)
-			.where(and(eq(communities.id, communityId), eq(communities.ownerId, ownerId)))
+			.where(and(eq(communities.slug, communitySlug), eq(communities.ownerId, ownerId)))
 			.returning();
 	},
 
 	updateCommunity: async (
-		communityId: string,
-		description: string | null,
-		imageUrl: string | null,
+		communitySlug: string,
+		data: UpdateCommunityPayload,
 	): Promise<CommunityType> => {
 		const rows = await db
 			.update(communities)
-			.set({ description, image: imageUrl })
-			.where(eq(communities.id, communityId))
+			.set(data)
+			.where(eq(communities.slug, communitySlug))
 			.returning();
+
+		if (rows.length === 0) {
+			throw new Error(CommunityErrors.NOT_FOUND);
+		}
+
 		return rows[0] as CommunityType;
 	},
 

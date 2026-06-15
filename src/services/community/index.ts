@@ -1,5 +1,5 @@
 import sanitizeHtml from "sanitize-html";
-import { communityRepository } from "@repositories/community";
+import { communityRepository, type UpdateCommunityPayload } from "@repositories/community";
 import { slugify } from "@utils/slugify";
 import { CommunityErrors } from "@customTypes/errors";
 import { checkImage, uploadImage } from "@services/uploadImage/uploadImage";
@@ -9,6 +9,7 @@ import type {
 	CommunityPostDetailType,
 	CommunityMembershipType,
 } from "@customTypes/community";
+import { deleteImage } from "@services/uploadImage/deleteImage";
 
 const PAGE_SIZE = 20;
 
@@ -73,8 +74,8 @@ export async function createCommunity(
 	return { id: communityId, slug };
 }
 
-export async function removeCommunity(requesterId: string, communityId: string): Promise<void> {
-	const deleted = await communityRepository.deleteCommunity(communityId, requesterId);
+export async function removeCommunity(requesterId: string, communitySlug: string): Promise<void> {
+	const deleted = await communityRepository.deleteCommunity(communitySlug, requesterId);
 	if (deleted.length === 0) throw new Error(CommunityErrors.NOT_OWNER);
 }
 
@@ -272,4 +273,48 @@ export async function removeResponse(requesterId: string, responseId: string): P
 	if (!isOwner && !isAdmin) throw new Error(CommunityErrors.RESPONSE_NOT_AUTHORIZED);
 
 	await communityRepository.deleteResponseAsModerator(responseId, post.communityId);
+}
+
+export async function deleteCommunityImage(requesterId: string, communitySlug: string) {
+	const community = await communityRepository.getCommunityBySlug(communitySlug);
+	if (!community) throw new Error(CommunityErrors.NOT_FOUND);
+	if (!community.image) throw new Error(CommunityErrors.NO_IMAGE_TO_REMOVE);
+
+	const isOwner = community.ownerId === requesterId;
+	if (!isOwner) throw new Error(CommunityErrors.NOT_OWNER);
+
+	const imageKey = community.image.split("/").pop();
+	if (imageKey) await deleteImage(imageKey);
+	await communityRepository.updateCommunity(communitySlug, { image: null });
+}
+
+export async function updateCommunity(
+	requesterId: string,
+	communitySlug: string,
+	data: UpdateCommunityPayload,
+) {
+	const community = await communityRepository.getCommunityBySlug(communitySlug);
+	if (!community) throw new Error(CommunityErrors.NOT_FOUND);
+
+	const isOwner = community.ownerId === requesterId;
+	if (!isOwner) throw new Error(CommunityErrors.NOT_OWNER);
+
+	if (data.image) {
+		const base64Data = data.image.replace(/^data:image\/\w+;base64,/, "");
+		const buffer = Buffer.from(base64Data, "base64");
+		const originalName = communitySlug || "community";
+		const newFilename = `${originalName}_.png`;
+		const file = new File([buffer], newFilename, { type: "image/png" });
+
+		await checkImage(file);
+
+		data.image = await uploadImage(file);
+
+		if (community.image) {
+			const oldImageKey = community.image.split("/").pop();
+			if (oldImageKey) await deleteImage(oldImageKey);
+		}
+	}
+
+	await communityRepository.updateCommunity(communitySlug, data);
 }

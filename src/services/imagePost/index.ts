@@ -1,9 +1,9 @@
 import sanitizeHtml from "sanitize-html";
-import { storage } from "@infra/storage";
 import { imagePostRepository } from "@repositories/imagePost.ts";
 import { ImagePostErrors } from "@customTypes/errors";
 import { checkRateLimit } from "@utils/rate-limit";
 import { checkImage, uploadImage } from "@services/uploadImage/uploadImage";
+import { deleteImage } from "@services/uploadImage/deleteImage";
 
 export type CommentType = {
 	id: string;
@@ -105,7 +105,7 @@ export async function processAndUploadImagePost(userId: string, file: File, desc
 		await imagePostRepository.insertPost(userId, uploadedImage, sanitizedDescription);
 	} catch {
 		const imageKey = uploadedImage.split("/").pop();
-		if (imageKey) await storage.delete(imageKey);
+		if (imageKey) await deleteImage(imageKey);
 		throw new Error(ImagePostErrors.DB_INSERT_FAILED);
 	}
 
@@ -122,7 +122,7 @@ export async function removeImagePost(userId: string, postId: string, imageUrl: 
 		throw new Error(ImagePostErrors.POST_NOT_FOUND_OR_FORBIDDEN);
 	}
 
-	await storage.delete(imageKey);
+	await deleteImage(imageKey);
 }
 
 export async function addImageComment(userId: string, imageId: string, body: string) {

@@ -10,6 +10,8 @@ if (result?.data?.success) {
 	return Astro.redirect(`/${result.data.username}`);
 }
 
+const USERNAME_MAX = 14;
+
 const seo = {
 	title: `Criação de conta`,
 	description: `Crie sua conta no gugugram e faça parte da rede social!`,
@@ -37,6 +39,7 @@ const seo = {
 						class="block"
 						type="text"
 						placeholder="Novo nome de usuário"
+						maxlength={USERNAME_MAX}
 						required
 					/>
 					<span class="helper-text">Máximo de 14 caracteres, sem caracteres especiais</span>

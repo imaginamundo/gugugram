@@ -2,7 +2,9 @@
 	import type { HTMLInputAttributes } from "svelte/elements";
 	import type { WithElementRef } from "@ui/types";
 
-	export type InputProps = WithElementRef<HTMLInputAttributes, HTMLInputElement>;
+	export type InputProps = WithElementRef<HTMLInputAttributes, HTMLInputElement> & {
+		characterCount?: boolean;
+	};
 </script>
 
 <script lang="ts">
@@ -11,6 +13,8 @@
 		value = $bindable(),
 		files = $bindable(),
 		type = "text",
+		maxlength,
+		characterCount = false,
 		class: className,
 		...props
 	}: InputProps = $props();
@@ -21,5 +25,8 @@
 {#if type === "file"}
 	<input bind:this={ref} type="file" bind:files class={classes} {...props} />
 {:else}
-	<input bind:this={ref} bind:value {type} class={classes} {...props} />
+	<input bind:this={ref} bind:value {type} class={classes} {maxlength} {...props} />
+{/if}
+{#if characterCount && maxlength && typeof value === "string"}
+	<span class="helper-text">{value?.length} / {maxlength} caracteres</span>
 {/if}

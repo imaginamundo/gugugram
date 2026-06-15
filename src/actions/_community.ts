@@ -15,8 +15,10 @@ import {
 	removePost,
 	createResponse as createResponseService,
 	removeResponse,
+	deleteCommunityImage,
+	updateCommunity,
 } from "@services/community";
-import { CommunityErrors } from "@customTypes/errors";
+import { CommunityErrors, ImageUploadErrors } from "@customTypes/errors";
 import { communityRepository } from "@repositories/community";
 
 const CreateCommunitySchema = z.object({
@@ -48,6 +50,13 @@ const AdminActionSchema = z.object({
 const TransferOwnershipSchema = z.object({
 	communityId: z.string().min(1),
 	newOwnerId: z.string().min(1),
+});
+
+const UpdateCommunitySchema = CreateCommunitySchema.pick({
+	description: true,
+	image: true,
+}).refine((data) => Object.keys(data).length > 0, {
+	message: "Pelo menos um campo deve ser informado.",
 });
 
 function mapCommunityError(message: string): string {
@@ -92,6 +101,17 @@ function mapCommunityError(message: string): string {
 			return "Você não tem permissão para excluir esta resposta.";
 		case CommunityErrors.UPLOAD_FAILED:
 			return "Erro ao enviar a imagem. Tente novamente.";
+		case CommunityErrors.NO_IMAGE_TO_REMOVE:
+			return "Imagem inexistente.";
+
+		case ImageUploadErrors.FILE_TOO_LARGE:
+			return "A imagem deve ter no máximo 1MB.";
+		case ImageUploadErrors.INVALID_IMAGE_FILE:
+			return "Formato de imagem inválido. Use PNG, JPG ou JPEG.";
+		case ImageUploadErrors.INVALID_IMAGE_DIMENSIONS:
+			return "Dimensões da imagem não permitidas. Verifique as dimensões aceitas.";
+		case ImageUploadErrors.UPLOAD_FAILED:
+			return "Erro ao enviar a imagem. Tente novamente.";
 		default:
 			return message;
 	}
@@ -125,12 +145,12 @@ export const createCommunity = defineAction({
 
 export const deleteCommunity = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, _, session) => {
-		const { fields, success: schemaSuccess } = parseSchema(input, CommunityIdSchema);
-		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
+	handler: withAuth(async (_, context, session) => {
+		const communitySlug = context.params.slug;
+		if (!communitySlug) return { success: false as const, error: "Dados inválidos." };
 
 		try {
-			await removeCommunity(session.id, fields.communityId);
+			await removeCommunity(session.id, communitySlug);
 			return { success: true as const };
 		} catch (error) {
 			if (error instanceof Error) {
@@ -143,9 +163,12 @@ export const deleteCommunity = defineAction({
 
 export const promoteAdmin = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, _, session) => {
+	handler: withAuth(async (input: FormData, context, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, AdminActionSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
+
+		const communitySlug = context.params.slug;
+		if (!communitySlug) return { success: false as const, error: "Dados inválidos." };
 
 		try {
 			await promoteToAdmin(session.id, fields.communityId, fields.targetUserId);
@@ -179,7 +202,9 @@ export const removeAdmin = defineAction({
 
 export const transferOwnership = defineAction({
 	accept: "form",
-	handler: withAuth(async (input: FormData, _, session) => {
+	handler: withAuth(async (input: FormData, context, session) => {
+		const communitySlug = context.params.slug;
+		if (!communitySlug) return { success: false as const, error: "Dados inválidos." };
 		const { fields, success: schemaSuccess } = parseSchema(input, TransferOwnershipSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
@@ -275,15 +300,7 @@ export const deletePost = defineAction({
 export const createResponse = defineAction({
 	accept: "form",
 	handler: withAuth(async (input: FormData, _, session) => {
-		console.log({ input });
-
-		const {
-			fields,
-			success: schemaSuccess,
-			fieldErrors,
-		} = parseSchema(input, CreateResponseSchema);
-
-		console.log({ fields, fieldErrors });
+		const { fields, success: schemaSuccess } = parseSchema(input, CreateResponseSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
 		const lastPostResponse = await communityRepository.getLatestResponseByAuthor(
@@ -319,6 +336,57 @@ export const deleteResponse = defineAction({
 				return { success: false as const, error: mapCommunityError(error.message) };
 			}
 			return { success: false as const, error: "Erro interno." };
+		}
+	}),
+});
+
+export const removeCommunityImage = defineAction({
+	accept: "form",
+	handler: withAuth(async (_, context, session) => {
+		const communitySlug = context.params.slug;
+		if (!communitySlug) return { success: false as const, error: "Dados inválidos." };
+
+		try {
+			await deleteCommunityImage(session.id, communitySlug);
+			return { success: true as const };
+		} catch (error) {
+			if (error instanceof Error) {
+				return {
+					success: false as const,
+					error: mapCommunityError(error.message),
+				};
+			}
+			return {
+				success: false as const,
+				error: "Erro interno.",
+			};
+		}
+	}),
+});
+
+export const editCommunity = defineAction({
+	accept: "form",
+	handler: withAuth(async (input: FormData, context, session) => {
+		const communitySlug = context.params.slug;
+		if (!communitySlug) return { success: false as const, error: "Dados inválidos." };
+
+		const { fields, success: schemaSuccess } = parseSchema(input, UpdateCommunitySchema);
+		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
+
+		try {
+			await updateCommunity(session.id, communitySlug, fields);
+			return { success: true as const };
+		} catch (error) {
+			if (error instanceof Error) {
+				return {
+					success: false as const,
+					error: mapCommunityError(error.message),
+				};
+			}
+			return {
+				success: false as const,
+				error: "Erro interno.",
+			};
 		}
 	}),
 });

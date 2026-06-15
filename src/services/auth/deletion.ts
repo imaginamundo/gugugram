@@ -1,5 +1,5 @@
 import { db } from "@infra/database";
-import { storage } from "@infra/storage";
+import { deleteImage } from "@services/uploadImage/deleteImage";
 import { accounts, users } from "@schemas/database";
 import { eq, and } from "drizzle-orm";
 import { validatePassword } from "@utils/password.ts";
@@ -84,7 +84,7 @@ export async function deleteOwnAccount(userId: string, password: string): Promis
 	// data is already gone, so a storage hiccup must not fail the deletion or
 	// resurrect the account — just log it for cleanup.
 	if (imageKeys.length) {
-		const outcomes = await Promise.allSettled(imageKeys.map((key) => storage.delete(key)));
+		const outcomes = await Promise.allSettled(imageKeys.map((key) => deleteImage(key)));
 		for (const outcome of outcomes) {
 			if (outcome.status === "rejected") {
 				console.error("Falha ao deletar arquivo órfão do storage:", outcome.reason);

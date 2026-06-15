@@ -1,7 +1,11 @@
 ---
+import { actions } from "astro:actions";
 import Layout from "@layout/Main.astro";
-import EditCommunityForm from "@components/community/EditCommunityForm/EditCommunityForm.svelte";
 import { getCommunity } from "@services/community";
+import Button from "@ui/Button.svelte";
+import Textarea from "@ui/Textarea.svelte";
+import InputImage from "@ui/InputImage.svelte";
+import RemoveCommunityPicture from "@components/profile/RemoveCommunityPicture/RemoveCommunityPicture.svelte";
 
 const session = Astro.locals.user;
 if (!session) return Astro.redirect("/entrar");
@@ -12,6 +16,20 @@ if (!slug) return new Response(null, { status: 404 });
 const community = await getCommunity(slug);
 if (!community) return new Response(null, { status: 404 });
 
+const editResult = Astro.getActionResult(actions.editCommunity);
+if (editResult?.data?.success) {
+	return Astro.redirect(`/comunidades/${community.slug}`);
+}
+
+const removeImageResult = Astro.getActionResult(actions.removeCommunityImage);
+if (removeImageResult?.data?.success) {
+	return Astro.redirect(`/comunidades/${community.slug}`);
+}
+
+const DESC_MAX = 500;
+
+const hasImage = !!community.image;
+
 const seo = {
 	title: "Criar comunidade",
 	robots: "noindex,nofollow",
@@ -19,5 +37,53 @@ const seo = {
 ---
 
 <Layout {...seo}>
-	<EditCommunityForm {community} client:load />
+	<div class="form p">
+		{
+			!!editResult?.data?.error && (
+				<p class="error mb flex center gap ">
+					<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+					{editResult.data.error}
+				</p>
+			)
+		}
+
+		{
+			!!removeImageResult?.data?.error && (
+				<p class="error mb flex center gap ">
+					<img src="/icons/msg_error-0.png" alt="'Ícone de erro" />
+					{removeImageResult.data.error}
+				</p>
+			)
+		}
+
+		{hasImage && <RemoveCommunityPicture {community} client:load />}
+
+		<form class="form" action={actions.editCommunity} method="POST">
+			<fieldset>
+				<legend>Editar comunidade</legend>
+				<label class="label">
+					<span>Descrição <span class="text-muted">(opcional)</span></span>
+					<Textarea
+						name="description"
+						value={community.description}
+						rows={4}
+						class="w-full"
+						maxlength={DESC_MAX}
+						placeholder="Descreva o tema da comunidade"
+						characterCount={true}
+						client:load
+					/>
+				</label>
+
+				<label class="label mt">
+					<span>Imagem <span class="text-muted">(opcional)</span></span>
+					<InputImage name="image" width={60} height={60} client:load />
+				</label>
+
+				<div class="flex justify-end mt">
+					<Button type="submit">Atualizar comunidade</Button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
 </Layout>

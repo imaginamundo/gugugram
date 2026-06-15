@@ -70,10 +70,10 @@
 					class="w-full"
 					maxlength={CONTENT_MAX}
 					placeholder="Escreva sua resposta"
+					characterCount
 					required
 					bind:value={content}
 				/>
-				<span class="helper-text">{content.length} / {CONTENT_MAX} caracteres</span>
 			</label>
 
 			<div class="flex justify-end mt">

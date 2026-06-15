@@ -58,10 +58,10 @@
 					minlength={3}
 					maxlength={TITLE_MAX}
 					placeholder="Nome da comunidade"
+					characterCount
 					required
 					bind:value={title}
 				/>
-				<span class="helper-text">{title.length} / {TITLE_MAX} caracteres</span>
 			</label>
 
 			<label class="label mt">
@@ -73,8 +73,8 @@
 					maxlength={DESC_MAX}
 					placeholder="Descreva o tema da comunidade"
 					bind:value={description}
+					characterCount
 				/>
-				<span class="helper-text">{description.length} / {DESC_MAX} caracteres</span>
 			</label>
 
 			<label class="label mt">

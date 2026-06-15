@@ -1,9 +1,9 @@
-import { storage } from "@infra/storage";
 import { parseUser } from "@utils/user";
 import { userProfileRepository, type UpdateUserPayload } from "@repositories/userProfile";
 import { friendshipPossibleStatus } from "@schemas/database";
 import { ProfileErrors } from "@customTypes/errors";
 import { checkImage, uploadImage } from "@services/uploadImage/uploadImage";
+import { deleteImage } from "@services/uploadImage/deleteImage";
 
 type UpdateProfileData = {
 	username: string;
@@ -119,9 +119,9 @@ export async function updateProfileData(userId: string, data: UpdateProfileData)
 		await userProfileRepository.updateUser(userId, updateData);
 
 		if (oldImageKeyToDelete) {
-			storage
-				.delete(oldImageKeyToDelete)
-				.catch((e) => console.error("Erro ao deletar imagem antiga do UT:", e));
+			deleteImage(oldImageKeyToDelete).catch((e) =>
+				console.error("Erro ao deletar imagem antiga do UT:", e),
+			);
 		}
 	} catch (error) {
 		const dbError = error as { code?: string };
@@ -143,7 +143,7 @@ export async function removeProfileImageFromUser(userId: string) {
 
 	try {
 		if (imageKey) {
-			await storage.delete(imageKey);
+			await deleteImage(imageKey);
 		}
 		await userProfileRepository.updateUser(userId, { image: null });
 	} catch {

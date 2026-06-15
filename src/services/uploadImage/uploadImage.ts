@@ -6,7 +6,7 @@ const ALLOWED_DIMENSIONS = ["5x5", "10x10", "15x15", "30x30", "60x60"];
 
 export async function checkImage(
 	file: File,
-	sizeLimit = 60000,
+	sizeLimit = 1024 * 100, // 100kb
 	allowedDimension = ALLOWED_DIMENSIONS,
 ) {
 	if (file.size > sizeLimit) {

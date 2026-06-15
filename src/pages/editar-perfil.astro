@@ -9,26 +9,28 @@ import InputImage from "@ui/InputImage.svelte";
 import RemoveProfilePicture from "@components/profile/RemoveProfilePicture/RemoveProfilePicture.svelte";
 
 const session = Astro.locals.user;
-if (!session || !session.username) return Astro.redirect("/");
-
-const result = Astro.getActionResult(actions.updateProfile);
-if (result?.data?.success) {
-	return Astro.redirect(`/${session.username}`);
-}
+if (!session || !session.username) return Astro.redirect("/entrar");
 
 const { user } = await getProfile({
 	username: session?.username,
 	session,
 });
 
+if (!user) return Astro.redirect("/");
+
+const result = Astro.getActionResult(actions.updateProfile);
+if (result?.data?.success) {
+	return Astro.redirect(`/${session.username}`);
+}
+
+const DESC_MAX = 500;
+
+const hasImage = user.image && !user.image.includes("/emojis/");
+
 const seo = {
 	title: `Editar perfil`,
 	robots: "noindex,nofollow",
 };
-
-if (!user) return Astro.redirect("/entrar");
-
-const hasImage = user.image && !user.image.includes("/emojis/");
 ---
 
 <Layout {...seo}>
@@ -57,6 +59,10 @@ const hasImage = user.image && !user.image.includes("/emojis/");
 						class="block"
 						placeholder="Descrição que será exibida no seu perfil"
 						value={user?.description}
+						rows={4}
+						maxlength={DESC_MAX}
+						characterCount={true}
+						client:load
 					/>
 				</label>
 				<label class="label">

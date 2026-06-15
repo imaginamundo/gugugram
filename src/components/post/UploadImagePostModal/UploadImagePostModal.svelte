@@ -197,12 +197,9 @@
 							class="w-full"
 							maxlength={CHARACTER_COUNT_LIMIT}
 							placeholder="Coloque um texto para exibir junto com a foto, campo opcional"
+							characterCount
 							bind:value={imageDescription}
 						/>
-						<span class="flex justify-between mt-sm">
-							<span>{imageDescription.length} / {CHARACTER_COUNT_LIMIT} caracteres</span>
-							<span>{CHARACTER_COUNT_LIMIT - imageDescription.length} restantes</span>
-						</span>
 					</label>
 				</fieldset>
 			</div>
