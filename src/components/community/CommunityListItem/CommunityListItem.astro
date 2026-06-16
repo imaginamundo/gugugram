@@ -1,0 +1,33 @@
+---
+import type { CommunityType } from "@customTypes/community";
+
+interface Props {
+	community: CommunityType;
+}
+
+const { community } = Astro.props;
+---
+
+<a href={`/comunidades/${community.slug}`} class="community-item flex gap center">
+	{
+		community.image ? (
+			<img
+				src={community.image}
+				alt={`Imagem da comunidade ${community.title}`}
+				class="user-image image-border"
+				width="30"
+				height="30"
+			/>
+		) : (
+			<img
+				src="/icons/entire_network_globe-4.png"
+				alt=""
+				aria-hidden="true"
+				class="image-border"
+				width="30"
+				height="30"
+			/>
+		)
+	}
+	<span>{community.title}</span>
+</a>

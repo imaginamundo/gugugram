@@ -1,6 +1,6 @@
 ---
 import Layout from "@layout/Main.astro";
-import CommunityCard from "@components/community/CommunityCard/CommunityCard.astro";
+import CommunityListItem from "@components/community/CommunityListItem/CommunityListItem.astro";
 import Pagination from "@components/_shared/Pagination/Pagination.astro";
 import { getCommunities } from "@services/community";
 
@@ -25,17 +25,21 @@ const seo = {
 		<a href="/comunidades/criar" class="button">Nova comunidade</a>
 	</div>
 
-	{
-		communities.length === 0 ? (
-			<p class="text-muted">Nenhuma comunidade ainda. Seja o primeiro a criar uma!</p>
-		) : (
-			<div class="community-grid">
-				{communities.map((community) => (
-					<CommunityCard community={community} />
-				))}
-			</div>
-		)
-	}
+	<div class="field-border links-list p">
+		{
+			communities.length === 0 ? (
+				<p class="text-muted">Nenhuma comunidade ainda. Seja o primeiro a criar uma!</p>
+			) : (
+				<ul class="unstyled">
+					{communities.map((community) => (
+						<li>
+							<CommunityListItem {community} />
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</div>
 
 	<Pagination page={pagination.page} totalPages={pagination.totalPages} />
 </Layout>

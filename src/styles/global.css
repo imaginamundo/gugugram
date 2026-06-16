@@ -483,6 +483,11 @@ label:focus-within {
 }
 
 /* Helpers */
+.unstyled {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
 .hidden {
 	display: none;
 }
@@ -630,4 +635,16 @@ label:focus-within {
 	display: inline-block;
 	vertical-align: middle;
 	object-fit: scale-down;
+}
+
+.links-list {
+	background: #fff;
+	a {
+		text-decoration: none;
+		color: var(--text-color);
+		padding: 4px;
+	}
+	a:hover {
+		background-color: var(--button-face);
+	}
 }

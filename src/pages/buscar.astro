@@ -23,7 +23,7 @@ const seo = {
 
 <Layout {...seo}>
 	<h2>Buscar por: {query}</h2>
-	<div class="friends field-border p">
+	<div class="field-border links-list p">
 		<UsersList users={users} />
 		{users.length === 0 && <p>Nenhum usuário encontrado :(</p>}
 	</div>
