@@ -11,7 +11,14 @@ const session = Astro.locals.user;
 	<fieldset class="header-button-home flex p-0">
 		<a class="header-button flex gap center p w-full justify-center" href="/">
 			<img src="/icons/home.png" width="19" height="20" alt="Ícone de casa" />
-			Página inicial
+			<span class="hidden-m">Página Inicial</span>
+		</a>
+	</fieldset>
+
+	<fieldset class="header-button-communities flex p-0">
+		<a class="header-button flex gap center p w-full justify-center" href="/comunidades">
+			<img src="/icons/address_book_users.png" width="20" height="20" alt="Ícone de casa" />
+			Comunidades
 		</a>
 	</fieldset>
 
@@ -59,19 +66,22 @@ const session = Astro.locals.user;
 	.header {
 		display: grid;
 		grid-template-areas:
-			"home upload user"
-			"search search search";
+			"communities communities upload user"
+			"home search search search";
 	}
 
 	@media (min-width: 600px) {
 		.header {
-			grid-template-areas: "home upload search user";
-			grid-template-columns: auto auto 1fr auto;
+			grid-template-areas: "home upload communities search user";
+			grid-template-columns: auto auto auto 1fr auto;
 		}
 	}
 
 	.header-button-home {
 		grid-area: home;
+	}
+	.header-button-communities {
+		grid-area: communities;
 	}
 	.header-button-upload {
 		grid-area: upload;

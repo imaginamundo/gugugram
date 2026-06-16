@@ -491,6 +491,11 @@ label:focus-within {
 .hidden {
 	display: none;
 }
+@media (max-width: 600px) {
+	.hidden-m {
+		display: none;
+	}
+}
 
 .block {
 	display: block;
