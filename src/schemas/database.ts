@@ -28,31 +28,52 @@ export const users = createTable("users", {
 	updatedAt: timestamp("updated_at").notNull(),
 });
 
-export const imagePosts = createTable("images_posts", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	image: text("image").notNull(),
-	description: text("description"),
-	authorId: text("author_id")
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" }),
-	createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const imagePosts = createTable(
+	"images_posts",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		image: text("image").notNull(),
+		description: text("description"),
+		authorId: text("author_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [
+		// Profile page (`getPostsByAuthor`) and the account-deletion cascade.
+		// The `created_at` tail also serves the rate-limit lookup for the
+		// author's latest post.
+		index("images_posts_author_created_idx").on(table.authorId, table.createdAt.desc()),
+		// Homepage feed: `ORDER BY created_at DESC LIMIT 120`.
+		index("images_posts_created_at_idx").on(table.createdAt.desc()),
+	],
+);
 
-export const messages = createTable("messages", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	body: text("body").notNull(),
-	authorId: text("author_id")
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" }),
-	receiverId: text("receiver_id")
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" }),
-	createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const messages = createTable(
+	"messages",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		body: text("body").notNull(),
+		authorId: text("author_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		receiverId: text("receiver_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [
+		// `/recados`, the unread badge and the total count all filter by
+		// receiver and order by date.
+		index("messages_receiver_created_idx").on(table.receiverId, table.createdAt.desc()),
+		// Rate-limit check on every message sent.
+		index("messages_author_created_idx").on(table.authorId, table.createdAt.desc()),
+	],
+);
 
 export const friendshipPossibleStatus = ["pending", "accepted"] as const;
 export const statusEnum = pgEnum("status", friendshipPossibleStatus);
@@ -75,6 +96,9 @@ export const userFriends = createTable(
 	},
 	(table) => [
 		uniqueIndex("unique_friends_index").on(table.requestUserId, table.targetUserId),
+		// `unique_friends_index` already covers lookups led by `request_user_id`,
+		// but pending-request and friend-list queries filter on the target alone.
+		index("user_friends_target_idx").on(table.targetUserId),
 		check("no_self_friend", sql`${table.requestUserId} <> ${table.targetUserId}`),
 	],
 );
@@ -125,33 +149,47 @@ export const moderationReportsRelations = relations(moderationReports, ({ one })
 	}),
 }));
 
-export const imagePostComments = createTable("image_post_comments", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	imageId: text("image_id")
-		.notNull()
-		.references(() => imagePosts.id, { onDelete: "cascade" }),
-	authorId: text("author_id")
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" }),
-	body: text("body").notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const imagePostComments = createTable(
+	"image_post_comments",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		imageId: text("image_id")
+			.notNull()
+			.references(() => imagePosts.id, { onDelete: "cascade" }),
+		authorId: text("author_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		body: text("body").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [
+		// The comment-count subquery runs once per post row on the homepage
+		// feed — without this it is a sequential scan per row.
+		index("image_post_comments_image_idx").on(table.imageId),
+		// Rate-limit check on every comment.
+		index("image_post_comments_author_created_idx").on(table.authorId, table.createdAt.desc()),
+	],
+);
 
-export const communities = createTable("communities", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	title: text("title").notNull().unique(),
-	slug: text("slug").notNull().unique(),
-	description: text("description"),
-	image: text("image"),
-	ownerId: text("owner_id")
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" }),
-	createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const communities = createTable(
+	"communities",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		title: text("title").notNull().unique(),
+		slug: text("slug").notNull().unique(),
+		description: text("description"),
+		image: text("image"),
+		ownerId: text("owner_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [index("communities_owner_idx").on(table.ownerId)],
+);
 
 export const communityAdmins = createTable(
 	"community_admins",
@@ -184,37 +222,57 @@ export const communitySubscribers = createTable(
 			.references(() => users.id, { onDelete: "cascade" }),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 	},
-	(table) => [uniqueIndex("unique_community_subscriber").on(table.communityId, table.userId)],
+	(table) => [
+		uniqueIndex("unique_community_subscriber").on(table.communityId, table.userId),
+		// "communities this user belongs to" filters on the user alone, which
+		// the composite unique index above cannot serve.
+		index("community_subscribers_user_idx").on(table.userId),
+	],
 );
 
-export const communityPosts = createTable("community_posts", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	communityId: text("community_id")
-		.notNull()
-		.references(() => communities.id, { onDelete: "cascade" }),
-	authorId: text("author_id")
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" }),
-	title: text("title").notNull(),
-	content: text("content").notNull(),
-	createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const communityPosts = createTable(
+	"community_posts",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		communityId: text("community_id")
+			.notNull()
+			.references(() => communities.id, { onDelete: "cascade" }),
+		authorId: text("author_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		title: text("title").notNull(),
+		content: text("content").notNull(),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [
+		// Community page listing plus the post-count subquery.
+		index("community_posts_community_idx").on(table.communityId),
+	],
+);
 
-export const communityResponses = createTable("community_responses", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	postId: text("post_id")
-		.notNull()
-		.references(() => communityPosts.id, { onDelete: "cascade" }),
-	authorId: text("author_id")
-		.notNull()
-		.references(() => users.id, { onDelete: "cascade" }),
-	content: text("content").notNull(),
-	createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const communityResponses = createTable(
+	"community_responses",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		postId: text("post_id")
+			.notNull()
+			.references(() => communityPosts.id, { onDelete: "cascade" }),
+		authorId: text("author_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		content: text("content").notNull(),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [
+		// Paginated responses, the response-count subquery and the
+		// last-activity `MAX(created_at)` subquery all key off `post_id`.
+		index("community_responses_post_created_idx").on(table.postId, table.createdAt.desc()),
+	],
+);
 
 export const usersRelations = relations(users, ({ many }) => ({
 	imagePosts: many(imagePosts),
