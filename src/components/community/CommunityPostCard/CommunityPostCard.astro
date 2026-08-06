@@ -20,8 +20,8 @@ const createdAt = post.createdAt.toLocaleDateString("pt-BR", {
 <a href={`/comunidades/${communitySlug}/${post.id}`} class="post-card field-border p">
 	<p class="post-title"><strong>{post.title}</strong></p>
 	<p class="text-muted meta">
-		por <span>{post.authorUsername}</span> · {createdAt} ·
-		{post.responseCount}
+		por <span>{post.authorUsername}</span> · {createdAt} ·{" "}
+		{post.responseCount}{" "}
 		{post.responseCount === 1 ? "resposta" : "respostas"}
 	</p>
 </a>
