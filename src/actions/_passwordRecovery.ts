@@ -2,6 +2,7 @@ import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
 import { checkAuthRateLimit } from "@utils/auth-rate-limit";
+import { MIN_PASSWORD_LENGTH } from "@schemas/authentication";
 import { sendPasswordResetEmail, performPasswordReset } from "@services/auth";
 import { trackServerEvent, flushServerEvents } from "@observability/tracking-server";
 
@@ -41,7 +42,9 @@ export const requestPasswordReset = defineAction({
 });
 
 const ResetPasswordSchema = z.object({
-	newPassword: z.string().min(8, "A senha deve ter 8 caracteres"),
+	newPassword: z
+		.string()
+		.min(MIN_PASSWORD_LENGTH, `A senha deve ter no mínimo ${MIN_PASSWORD_LENGTH} caracteres.`),
 	token: z.string(),
 });
 
