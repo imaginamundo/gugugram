@@ -19,6 +19,7 @@
 	const CHARACTER_COUNT_LIMIT = 500;
 
 	let imageSrc = $state("");
+	let imageLoaded = $state(false);
 	let imageSize = $state(DEFAULT_SIZE);
 	let imageResize = $state(true);
 	let imageDescription = $state("");
@@ -40,11 +41,12 @@
 
 	function selectImage(e: Event & { currentTarget: HTMLInputElement }) {
 		const file = e.currentTarget.files?.[0];
-		if (file) {
-			if (imageSrc) URL.revokeObjectURL(imageSrc);
-			modalRef?.showModal();
-			imageSrc = URL.createObjectURL(file);
-		}
+		if (!file) return;
+
+		if (imageSrc) URL.revokeObjectURL(imageSrc);
+		imageLoaded = false;
+		imageSrc = URL.createObjectURL(file);
+		if (!modalRef?.open) modalRef?.showModal();
 	}
 
 	function onModalClose() {
@@ -53,7 +55,9 @@
 		imageResize = true;
 		loading = false;
 		actionError = "";
+		imageLoaded = false;
 		if (imageSrc) URL.revokeObjectURL(imageSrc);
+		imageSrc = "";
 		if (inputFileRef) inputFileRef.value = "";
 	}
 
@@ -91,26 +95,34 @@
 		}
 	}
 
-	async function drawCanvas() {
-		const currentSize = imageSize;
-		const currentResize = imageResize;
+	function handleImageLoad() {
+		imageLoaded = true;
+	}
 
-		if (!canvasRef || !imageRef || !imageSrc || !imageRef.complete) return;
-
-		try {
-			await imageRef.decode();
-		} catch {}
-
-		drawImageToCanvas({
-			canvas: canvasRef,
-			imageElement: imageRef,
-			imageSize: currentSize,
-			imageResize: currentResize,
-		});
+	function handleImageError() {
+		imageLoaded = false;
 	}
 
 	$effect(() => {
-		drawCanvas();
+		const src = imageSrc;
+		const size = imageSize;
+		const resize = imageResize;
+		const img = imageRef;
+		const canvas = canvasRef;
+
+		if (!src || !img || !canvas || !imageLoaded) return;
+		if (img.src !== src) return;
+
+		img
+			.decode()
+			.then(() => {
+				// The image or the options may have changed while decoding — never draw stale state.
+				if (imageSrc !== src || imageSize !== size || imageResize !== resize) return;
+				drawImageToCanvas({ canvas, imageElement: img, imageSize: size, imageResize: resize });
+			})
+			.catch(() => {
+				// decode() rejects when the image is no longer available (e.g. URL revoked mid-load).
+			});
 	});
 
 	onDestroy(() => {
@@ -182,7 +194,8 @@
 								alt="To be uploaded"
 								width={imageSize || DEFAULT_SIZE}
 								height={imageSize || DEFAULT_SIZE}
-								onload={drawCanvas}
+								onload={handleImageLoad}
+								onerror={handleImageError}
 							/>
 						</div>
 					</div>
@@ -206,7 +219,7 @@
 			<div class="flex justify-between mt">
 				<Button type="button" onclick={() => downloadImageFromSrc(imageSrc)}>Baixar original</Button
 				>
-				<Button type="submit" disabled={loading}>
+				<Button type="submit" disabled={loading || !imageLoaded}>
 					{loading ? "Publicando..." : "Publicar"}
 				</Button>
 			</div>

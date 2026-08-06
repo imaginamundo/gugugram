@@ -34,7 +34,7 @@ const isOwnProfile = session?.id === user.id;
 								{formatDate(message.createdAt)}
 							</time>
 							)
-						</span>
+						</span>{" "}
 						<a href={`/${message.author.username}`}>{message.author.username}</a> disse:
 					</p>
 					<p class="pl message">{message.body}</p>
