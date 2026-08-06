@@ -8,4 +8,8 @@ Sentry.init({
 	tracesSampleRate: 0.1,
 	replaysSessionSampleRate: 0.1,
 	replaysOnErrorSampleRate: 1.0,
+  ignoreErrors: [
+    // https://trackjs.com/javascript-errors/object-not-found-matching-id-methodname-paramcount/
+    /Object Not Found Matching Id:\d+, MethodName:\w+, ParamCount:\d+/
+  ],
 });
