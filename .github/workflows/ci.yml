@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# The workflow only reads the tree; nothing here needs write access to the repo.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: lint · check · test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # `astro check` regenerates `.astro/` itself, so it runs first: a cold
+      # checkout has no generated types, and eslint's type-aware rules would
+      # otherwise see every `astro:*` import as unresolved.
+      - name: Type check
+        run: npm run check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
