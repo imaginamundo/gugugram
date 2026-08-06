@@ -2,6 +2,7 @@ import sanitizeHtml from "sanitize-html";
 import { imagePostRepository } from "@repositories/imagePost.ts";
 import { ImagePostErrors } from "@customTypes/errors";
 import { checkRateLimit } from "@utils/content-rate-limit";
+import { COMMENTS_PAGE_SIZE } from "@utils/pagination";
 import { checkImage, uploadImage } from "@services/uploadImage/uploadImage";
 import { deleteImage } from "@services/uploadImage/deleteImage";
 
@@ -27,7 +28,14 @@ export type PostWithCommentsType = PostType & {
 	comments: CommentType[];
 };
 
+export type CommentsPageType = {
+	items: CommentType[];
+	pagination: { page: number; totalPages: number; totalCount: number };
+};
+
 const RATE_LIMIT_MS = 5000;
+
+export { COMMENTS_PAGE_SIZE };
 
 export async function getLatestImagePosts(): Promise<PostType[]> {
 	const posts = await imagePostRepository.getLatestPosts();
@@ -40,13 +48,6 @@ export async function getLatestImagePosts(): Promise<PostType[]> {
 		username: item.author.username,
 		createdAt: item.createdAt,
 	}));
-}
-
-export async function getPostsForSitemap(
-	limit = 1000,
-): Promise<{ id: string; username: string }[]> {
-	const posts = await imagePostRepository.getPostsForSitemap(limit);
-	return posts.map(({ id, username }) => ({ id, username }));
 }
 
 export async function getImagePosts(username: string): Promise<PostType[]> {
@@ -66,14 +67,14 @@ export async function getImagePosts(username: string): Promise<PostType[]> {
 }
 
 export async function getImagePost(id: string): Promise<PostWithCommentsType | null> {
-	const post = await imagePostRepository.getPostWithCommentsById(id);
+	const post = await imagePostRepository.getPostWithCommentsById(id, COMMENTS_PAGE_SIZE);
 	if (!post) return null;
 
 	return {
 		id: post.id,
 		image: post.image,
 		description: post.description,
-		commentsCount: post.comments.length,
+		commentsCount: post.commentsCount,
 		userId: post.author.id,
 		username: post.author.username,
 		createdAt: post.createdAt,
@@ -87,15 +88,32 @@ export async function getImagePost(id: string): Promise<PostWithCommentsType | n
 	};
 }
 
-export async function getImagePostComments(postId: string): Promise<CommentType[]> {
-	const comments = await imagePostRepository.getCommentsByPostId(postId);
-	return comments.map((comment) => ({
-		id: comment.id,
-		body: comment.body,
-		createdAt: comment.createdAt,
-		authorId: comment.author.id,
-		authorUsername: comment.author.username,
-	}));
+export async function getImagePostComments(postId: string, page = 1): Promise<CommentsPageType> {
+	const currentPage = Math.max(1, page);
+
+	const [totalCount, comments] = await Promise.all([
+		imagePostRepository.countCommentsByPostId(postId),
+		imagePostRepository.getCommentsByPostId(
+			postId,
+			COMMENTS_PAGE_SIZE,
+			(currentPage - 1) * COMMENTS_PAGE_SIZE,
+		),
+	]);
+
+	return {
+		items: comments.map((comment) => ({
+			id: comment.id,
+			body: comment.body,
+			createdAt: comment.createdAt,
+			authorId: comment.author.id,
+			authorUsername: comment.author.username,
+		})),
+		pagination: {
+			page: currentPage,
+			totalPages: Math.max(1, Math.ceil(totalCount / COMMENTS_PAGE_SIZE)),
+			totalCount,
+		},
+	};
 }
 
 export async function getPostForOg(

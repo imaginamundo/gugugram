@@ -168,6 +168,11 @@ export const imagePostComments = createTable(
 		// The comment-count subquery runs once per post row on the homepage
 		// feed — without this it is a sequential scan per row.
 		index("image_post_comments_image_idx").on(table.imageId),
+		// One page of a post's comments, newest first. The image-only index above
+		// still has to sort every comment on a busy post; this one hands the rows
+		// back already ordered, so the read costs the page size rather than the
+		// whole thread.
+		index("image_post_comments_image_created_idx").on(table.imageId, table.createdAt.desc()),
 		// Rate-limit check on every comment.
 		index("image_post_comments_author_created_idx").on(table.authorId, table.createdAt.desc()),
 	],

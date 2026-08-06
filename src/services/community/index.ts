@@ -35,10 +35,6 @@ export async function getCommunities(page: number) {
 	};
 }
 
-export async function getAllCommunitySlugs(): Promise<string[]> {
-	return communityRepository.getAllSlugs();
-}
-
 export async function getCommunity(slug: string): Promise<CommunityType | null> {
 	const community = await communityRepository.getCommunityBySlug(slug);
 	return community ?? null;

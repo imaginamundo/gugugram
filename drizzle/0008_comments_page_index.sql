@@ -1,0 +1,1 @@
+CREATE INDEX "image_post_comments_image_created_idx" ON "gugugram_image_post_comments" USING btree ("image_id","created_at" DESC NULLS LAST);

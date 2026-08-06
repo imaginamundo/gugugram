@@ -63,14 +63,6 @@ export const communityRepository = {
 		return result[0]?.count ?? 0;
 	},
 
-	getAllSlugs: async (): Promise<string[]> => {
-		const rows = await db
-			.select({ slug: communities.slug })
-			.from(communities)
-			.orderBy(desc(communities.createdAt));
-		return rows.map((row) => row.slug);
-	},
-
 	getCommunityById: async (id: string): Promise<CommunityType | undefined> => {
 		const rows = await db
 			.select({

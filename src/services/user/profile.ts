@@ -151,6 +151,3 @@ export async function removeProfileImageFromUser(userId: string) {
 	}
 }
 
-export async function getUserUsernames() {
-	return userProfileRepository.getUserUsernames();
-}

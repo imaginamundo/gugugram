@@ -1,6 +1,7 @@
 import { db } from "@infra/database";
-import { and, eq, desc, sql } from "drizzle-orm";
-import { imagePosts, imagePostComments, users } from "@schemas/database";
+import { and, count, eq, desc, sql } from "drizzle-orm";
+import { descNullsLast } from "@utils/order";
+import { imagePosts, imagePostComments } from "@schemas/database";
 
 const commentsCountExtra = {
 	commentsCount:
@@ -16,7 +17,7 @@ export const imagePostRepository = {
 			columns: { id: true, image: true, description: true, createdAt: true },
 			with: { author: { columns: { id: true, username: true } } },
 			extras: commentsCountExtra,
-			orderBy: desc(imagePosts.createdAt),
+			orderBy: descNullsLast(imagePosts.createdAt),
 			limit,
 		});
 	},
@@ -27,7 +28,7 @@ export const imagePostRepository = {
 			columns: { id: true, username: true },
 			with: {
 				imagePosts: {
-					orderBy: [desc(imagePosts.createdAt)],
+					orderBy: [descNullsLast(imagePosts.createdAt)],
 					columns: { id: true, image: true, description: true, createdAt: true },
 					extras: commentsCountExtra,
 				},
@@ -50,14 +51,19 @@ export const imagePostRepository = {
 		});
 	},
 
-	getPostWithCommentsById: async (id: string) => {
+	// Only the first page of comments is server-rendered; the rest is fetched by
+	// `/api/post/[postId]/comments`. `commentsCount` comes from a count subquery
+	// rather than from `comments.length`, which now stops at the page size.
+	getPostWithCommentsById: async (id: string, commentsLimit: number) => {
 		return db.query.imagePosts.findFirst({
 			where: eq(imagePosts.id, id),
+			extras: commentsCountExtra,
 			with: {
 				author: { columns: { id: true, username: true } },
 				comments: {
-					orderBy: (comments, { desc }) => [desc(comments.createdAt)],
+					orderBy: [descNullsLast(imagePostComments.createdAt)],
 					with: { author: { columns: { id: true, username: true } } },
+					limit: commentsLimit,
 				},
 			},
 		});
@@ -68,17 +74,6 @@ export const imagePostRepository = {
 			where: eq(imagePosts.authorId, authorId),
 			orderBy: [desc(imagePosts.createdAt)],
 		});
-	},
-
-	// Used by the sitemap: recent posts with their author usernames so each post
-	// URL (/[username]/[postId]) can be listed. No comment counts needed here.
-	getPostsForSitemap: async (limit = 1000) => {
-		return db
-			.select({ id: imagePosts.id, username: users.username })
-			.from(imagePosts)
-			.innerJoin(users, eq(imagePosts.authorId, users.id))
-			.orderBy(desc(imagePosts.createdAt))
-			.limit(limit);
 	},
 
 	// Used by account deletion. The post rows cascade away with the user, but we
@@ -111,12 +106,22 @@ export const imagePostRepository = {
 	},
 
 	// --- COMMENT QUERIES ---
-	getCommentsByPostId: async (postId: string) => {
+	getCommentsByPostId: async (postId: string, limit: number, offset: number) => {
 		return db.query.imagePostComments.findMany({
 			where: eq(imagePostComments.imageId, postId),
-			orderBy: [desc(imagePostComments.createdAt)],
+			orderBy: [descNullsLast(imagePostComments.createdAt)],
 			with: { author: { columns: { id: true, username: true } } },
+			limit,
+			offset,
 		});
+	},
+
+	countCommentsByPostId: async (postId: string) => {
+		const result = await db
+			.select({ count: count() })
+			.from(imagePostComments)
+			.where(eq(imagePostComments.imageId, postId));
+		return result[0].count;
 	},
 
 	getLatestCommentByAuthor: async (authorId: string) => {
