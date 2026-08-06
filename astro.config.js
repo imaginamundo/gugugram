@@ -9,7 +9,7 @@ const env = loadEnv(process.env.NODE_ENV || "development", process.cwd(), "");
 
 // https://astro.build/config
 export default defineConfig({
-	site: "http://www.gugugram.com",
+	site: "https://www.gugugram.com",
 	vite: {
 		build: {
 			sourcemap: "hidden",
