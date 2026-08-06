@@ -27,7 +27,14 @@ export type PostWithCommentsType = PostType & {
 	comments: CommentType[];
 };
 
+export type CommentsPageType = {
+	items: CommentType[];
+	pagination: { page: number; totalPages: number; totalCount: number };
+};
+
 const RATE_LIMIT_MS = 5000;
+
+export const COMMENTS_PAGE_SIZE = 50;
 
 export async function getLatestImagePosts(): Promise<PostType[]> {
 	const posts = await imagePostRepository.getLatestPosts();
@@ -80,15 +87,32 @@ export async function getImagePost(id: string): Promise<PostWithCommentsType | n
 	};
 }
 
-export async function getImagePostComments(postId: string): Promise<CommentType[]> {
-	const comments = await imagePostRepository.getCommentsByPostId(postId);
-	return comments.map((comment) => ({
-		id: comment.id,
-		body: comment.body,
-		createdAt: comment.createdAt,
-		authorId: comment.author.id,
-		authorUsername: comment.author.username,
-	}));
+export async function getImagePostComments(postId: string, page = 1): Promise<CommentsPageType> {
+	const currentPage = Math.max(1, page);
+
+	const [totalCount, comments] = await Promise.all([
+		imagePostRepository.countCommentsByPostId(postId),
+		imagePostRepository.getCommentsByPostId(
+			postId,
+			COMMENTS_PAGE_SIZE,
+			(currentPage - 1) * COMMENTS_PAGE_SIZE,
+		),
+	]);
+
+	return {
+		items: comments.map((comment) => ({
+			id: comment.id,
+			body: comment.body,
+			createdAt: comment.createdAt,
+			authorId: comment.author.id,
+			authorUsername: comment.author.username,
+		})),
+		pagination: {
+			page: currentPage,
+			totalPages: Math.max(1, Math.ceil(totalCount / COMMENTS_PAGE_SIZE)),
+			totalCount,
+		},
+	};
 }
 
 export async function processAndUploadImagePost(userId: string, file: File, description?: string) {
