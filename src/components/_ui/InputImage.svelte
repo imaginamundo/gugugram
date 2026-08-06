@@ -1,5 +1,6 @@
 <script lang="ts">
 	let {
+		id,
 		name,
 		value = null,
 		width = 30,
@@ -7,6 +8,7 @@
 		quality = 0.9,
 		previewAlt = "Prévia da imagem selecionada",
 	}: {
+		id?: string;
 		name: string;
 		value?: string | null;
 		width?: number;
@@ -114,6 +116,7 @@
 	{/if}
 	<input
 		type="file"
+		id={id}
 		accept="image/png, image/jpeg, image/webp"
 		onchange={handleFileChange}
 		class="input block w-full"

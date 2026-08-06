@@ -29,6 +29,7 @@ export default [
 	},
 	...tseslint.configs.recommended,
 	...eslintPluginAstro.configs.recommended,
+	...eslintPluginAstro.configs["jsx-a11y-recommended"],
 	...eslintPluginSvelte.configs["flat/recommended"],
 	{
 		files: ["**/*.svelte", "**/*.svelte.ts"],

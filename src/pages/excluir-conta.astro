@@ -34,9 +34,15 @@ if (!session || !session.username) return Astro.redirect("/entrar");
 			<fieldset>
 				<legend>Excluir conta</legend>
 
-				<label class="label">
+				<label class="label" for="password">
 					Senha
-					<Input name="password" type="password" class="block" placeholder="Sua senha" />
+					<Input
+						name="password"
+						type="password"
+						id="password"
+						class="block"
+						placeholder="Sua senha"
+					/>
 				</label>
 
 				<div class="flex center justify-end">

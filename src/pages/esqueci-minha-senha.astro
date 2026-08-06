@@ -25,9 +25,15 @@ const seo = {
 		<form class="mb" method="POST" action={actions.requestPasswordReset}>
 			<fieldset>
 				<legend>Esqueci minha senha</legend>
-				<label class="label">
+				<label class="label" for="email">
 					E-mail:
-					<Input class="block" name="email" type="email" placeholder="Seu e-mail cadastrado" />
+					<Input
+						id="email"
+						class="block"
+						name="email"
+						type="email"
+						placeholder="Seu e-mail cadastrado"
+					/>
 				</label>
 				<Button class="m-sm">Enviar e-mail de troca de senha</Button>
 			</fieldset>

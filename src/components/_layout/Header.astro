@@ -28,9 +28,15 @@ const session = Astro.locals.user;
 
 	<fieldset class="header-search flex center grow p-sm">
 		<form action="/buscar" method="GET" class="flex center w-full">
-			<label class="flex center grow p-sm">
+			<label class="flex center grow p-sm" for="header-search">
 				Buscar
-				<Input client:load name="q" class="w-full ml-sm" placeholder="Buscar por nome de usuário" />
+				<Input
+					client:load
+					name="q"
+					id="header-search"
+					class="w-full ml-sm"
+					placeholder="Buscar por nome de usuário"
+				/>
 			</label>
 			<Button client:load class="ml-sm">
 				<img src="/icons/search-web.png" width="16" height="16" alt="Ícone de lupa e um globo" />

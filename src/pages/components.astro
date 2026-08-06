@@ -66,16 +66,16 @@ const sections = [
 			<h2 id="checkbox">Checkbox</h2>
 			<fieldset>
 				<legend>Examples</legend>
-				<label class="inline-label">
-					<Checkbox />
+				<label class="inline-label" for="demo-checkbox">
+					<Checkbox id="demo-checkbox" />
 					This is a checkbox
 				</label>
-				<label class="inline-label">
-					<Checkbox disabled />
+				<label class="inline-label" for="demo-checkbox-disabled">
+					<Checkbox id="demo-checkbox-disabled" disabled />
 					Disabled
 				</label>
-				<label class="inline-label">
-					<Checkbox indeterminate={true} client:load />
+				<label class="inline-label" for="demo-checkbox-indeterminate">
+					<Checkbox id="demo-checkbox-indeterminate" indeterminate={true} client:load />
 					Indeterminate
 				</label>
 			</fieldset>
@@ -83,38 +83,38 @@ const sections = [
 			<h2 id="radio">Radio</h2>
 			<fieldset>
 				<legend>Examples</legend>
-				<label class="inline-label">
-					<Radio name="test" />
+				<label class="inline-label" for="demo-radio-1">
+					<Radio name="test" id="demo-radio-1" />
 					This is a radio
 				</label>
-				<label class="inline-label">
-					<Radio name="test" />
+				<label class="inline-label" for="demo-radio-2">
+					<Radio name="test" id="demo-radio-2" />
 					Other radio
 				</label>
-				<label class="inline-label">
-					<Radio name="test" disabled />
+				<label class="inline-label" for="demo-radio-disabled">
+					<Radio name="test" id="demo-radio-disabled" disabled />
 					Disabled
 				</label>
 			</fieldset>
 
 			<h2 id="input">Input</h2>
-			<label class="label">
+			<label class="label" for="demo-input">
 				Input:
-				<Input />
+				<Input id="demo-input" />
 			</label>
-			<label class="label">
+			<label class="label" for="demo-input-disabled">
 				Disabled:
-				<Input disabled />
+				<Input id="demo-input-disabled" disabled />
 			</label>
 
 			<h2 id="textarea">Textarea</h2>
-			<label class="label">
+			<label class="label" for="demo-textarea">
 				Textarea:
-				<Textarea />
+				<Textarea id="demo-textarea" />
 			</label>
-			<label class="label">
+			<label class="label" for="demo-textarea-disabled">
 				Disabled:
-				<Textarea disabled />
+				<Textarea id="demo-textarea-disabled" disabled />
 			</label>
 
 			<h2 id="select">Select</h2>
@@ -135,9 +135,9 @@ const sections = [
 			</Select>
 
 			<h2 id="input-image">Input file for image with preview</h2>
-			<label class="label">
+			<label class="label" for="demo-input-image">
 				Image:
-				<InputImage name="profileImage" client:load />
+				<InputImage name="profileImage" id="demo-input-image" client:load />
 			</label>
 
 			<h2 id="title-bar">Title bar</h2>
@@ -179,8 +179,12 @@ const sections = [
 			<div class="window">
 				<div class="window-body">
 					<ul class="tablist">
+						{/* Demo tabs: placeholder links on the showcase page — real tabs are in ProfileTabs */}
+						{/* eslint-disable-next-line astro/jsx-a11y/anchor-is-valid */}
 						<li data-selected="true"><a href="#">Aba 1</a></li>
+						{/* eslint-disable-next-line astro/jsx-a11y/anchor-is-valid */}
 						<li><a href="#">Aba 2</a></li>
+						{/* eslint-disable-next-line astro/jsx-a11y/anchor-is-valid */}
 						<li><a href="#">Aba 3</a></li>
 					</ul>
 					<div class="window" style="margin-top: 0;">

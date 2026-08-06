@@ -9,7 +9,7 @@ const env = loadEnv(process.env.NODE_ENV || "development", process.cwd(), "");
 
 // https://astro.build/config
 export default defineConfig({
-	site: "http://www.gugugram.com",
+	site: "https://www.gugugram.com",
 	vite: {
 		build: {
 			sourcemap: "hidden",
@@ -23,14 +23,6 @@ export default defineConfig({
 				project: env.SENTRY_PROJECT,
 				authToken: env.SENTRY_AUTH_TOKEN,
 				org: env.SENTRY_ORG,
-				assets: [
-					".vercel/output/_functions/**/*.mjs",
-					".vercel/output/_functions/**/*.js",
-					".vercel/output/_functions/**/*.map",
-					".vercel/output/static/**/*.mjs",
-					".vercel/output/static/**/*.js",
-					".vercel/output/static/**/*.map",
-				],
 			},
 		}),
 	],

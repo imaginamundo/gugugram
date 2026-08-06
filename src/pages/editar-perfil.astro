@@ -48,14 +48,15 @@ const seo = {
 			<fieldset>
 				<legend>Editar perfil</legend>
 
-				<label class="label">
+				<label class="label" for="profile-image">
 					Nova imagem de perfil
-					<InputImage name="profileImage" client:load />
+					<InputImage name="profileImage" id="profile-image" client:load />
 				</label>
-				<label class="label">
+				<label class="label" for="description">
 					Descrição
 					<Textarea
 						name="description"
+						id="description"
 						class="block"
 						placeholder="Descrição que será exibida no seu perfil"
 						value={user?.description}
@@ -65,10 +66,11 @@ const seo = {
 						client:load
 					/>
 				</label>
-				<label class="label">
+				<label class="label" for="username">
 					Nome de usuário
 					<Input
 						name="username"
+						id="username"
 						autocomplete="username"
 						type="text"
 						class="block"
@@ -76,10 +78,11 @@ const seo = {
 						value={session.username}
 					/>
 				</label>
-				<label class="label">
+				<label class="label" for="email">
 					E-mail
 					<Input
 						name="email"
+						id="email"
 						autocomplete="email"
 						type="text"
 						class="block"

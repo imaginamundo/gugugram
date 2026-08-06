@@ -1,4 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
+import { ALLOWED_ORIGINS } from "@utils/allowedOrigins";
 
 export const checkOrigin = defineMiddleware(async (context, next) => {
 	const request = context.request;
@@ -6,7 +7,7 @@ export const checkOrigin = defineMiddleware(async (context, next) => {
 	if (request.method !== "GET" && request.method !== "HEAD") {
 		const origin = request.headers.get("origin");
 
-		const allowedOrigins = ["https://www.gugugram.com", "https://gugugram.com"];
+		const allowedOrigins: string[] = [...ALLOWED_ORIGINS];
 
 		if (import.meta.env.DEV) {
 			allowedOrigins.push("http://localhost:4321");

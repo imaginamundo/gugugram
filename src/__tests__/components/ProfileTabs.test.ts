@@ -19,14 +19,12 @@ const baseProps = {
 };
 
 describe("ProfileTabs", () => {
-	// The "comunidades" tab is currently commented out in ProfileTabs.svelte
-	// (commit "Comment profile communities"), so it is not asserted here.
-	it("renders the three active tab links", () => {
+	it("renders the four active tab links", () => {
 		render(ProfileTabs, { props: baseProps });
 		expect(screen.getByRole("link", { name: /fotos/i })).toBeInTheDocument();
 		expect(screen.getByRole("link", { name: /recados/i })).toBeInTheDocument();
 		expect(screen.getByRole("link", { name: /amigos/i })).toBeInTheDocument();
-		expect(screen.queryByRole("link", { name: /comunidades/i })).not.toBeInTheDocument();
+		expect(screen.getByRole("link", { name: /comunidades/i })).toBeInTheDocument();
 	});
 
 	it("marks the selected tab with aria-current=page", () => {
@@ -65,6 +63,10 @@ describe("ProfileTabs", () => {
 		expect(screen.getByRole("link", { name: /amigos/i })).toHaveAttribute(
 			"href",
 			"/testuser/amigos",
+		);
+		expect(screen.getByRole("link", { name: /comunidades/i })).toHaveAttribute(
+			"href",
+			"/testuser/comunidades",
 		);
 	});
 });
