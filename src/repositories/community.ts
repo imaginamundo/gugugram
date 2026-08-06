@@ -12,6 +12,7 @@ import type {
 	CommunityType,
 	CommunityPostType,
 	CommunityPostDetailType,
+	CommunityPostWithAuthorType,
 	CommunityResponseType,
 	CommunityMembershipType,
 } from "@customTypes/community";
@@ -317,6 +318,29 @@ export const communityRepository = {
 		return db.query.communityPosts.findFirst({
 			where: eq(communityPosts.id, postId),
 		});
+	},
+
+	/**
+	 * Post columns + author username, with no responses and no counts. The
+	 * paginated detail view pages the responses on its own, so it must not pay
+	 * for `getPostWithResponses`' eager load of every response on the post.
+	 */
+	getPostWithAuthor: async (postId: string): Promise<CommunityPostWithAuthorType | undefined> => {
+		const rows = await db
+			.select({
+				id: communityPosts.id,
+				communityId: communityPosts.communityId,
+				title: communityPosts.title,
+				content: communityPosts.content,
+				authorId: communityPosts.authorId,
+				authorUsername: users.username,
+				createdAt: communityPosts.createdAt,
+			})
+			.from(communityPosts)
+			.innerJoin(users, eq(communityPosts.authorId, users.id))
+			.where(eq(communityPosts.id, postId))
+			.limit(1);
+		return rows[0];
 	},
 
 	getPostWithResponses: async (postId: string): Promise<CommunityPostDetailType | undefined> => {
