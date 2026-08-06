@@ -16,10 +16,10 @@ vi.mock("../../repositories/community", () => ({
 	communityRepository: {
 		getCommunityBySlug: vi.fn().mockResolvedValue(undefined),
 		getCommunityById: vi.fn(),
-		insertCommunity: vi.fn().mockResolvedValue(undefined),
+		insertCommunity: vi.fn().mockResolvedValue([{ id: "community-1" }]),
 		insertSubscriber: vi.fn().mockResolvedValue(undefined),
 		getSubscriber: vi.fn().mockResolvedValue({ id: "sub-1" }),
-		insertPost: vi.fn().mockResolvedValue(undefined),
+		insertPost: vi.fn().mockResolvedValue([{ id: "post-1" }]),
 		getPostsByCommunity: vi.fn().mockResolvedValue([{ id: "post-1" }]),
 		getPostById: vi.fn(),
 		insertResponse: vi.fn().mockResolvedValue(undefined),
@@ -75,12 +75,12 @@ describe("Property 2: Validação do comprimento do título da comunidade", () =
 		await fc.assert(
 			fc.asyncProperty(fc.string({ minLength: 3, maxLength: 100 }), async (validTitle) => {
 				vi.clearAllMocks();
-				(communityRepository.getCommunityBySlug as ReturnType<typeof vi.fn>)
-					.mockResolvedValueOnce(undefined)
-					.mockResolvedValueOnce({ id: "c-1", slug: "slug" });
-				(communityRepository.insertCommunity as ReturnType<typeof vi.fn>).mockResolvedValue(
+				(communityRepository.getCommunityBySlug as ReturnType<typeof vi.fn>).mockResolvedValue(
 					undefined,
 				);
+				(communityRepository.insertCommunity as ReturnType<typeof vi.fn>).mockResolvedValue([
+					{ id: "community-1" },
+				]);
 				(communityRepository.insertSubscriber as ReturnType<typeof vi.fn>).mockResolvedValue(
 					undefined,
 				);
@@ -120,12 +120,12 @@ describe("Property 3: Validação do comprimento da descrição da comunidade", 
 				fc.string({ maxLength: 500 }),
 				async (title, validDesc) => {
 					vi.clearAllMocks();
-					(communityRepository.getCommunityBySlug as ReturnType<typeof vi.fn>)
-						.mockResolvedValueOnce(undefined)
-						.mockResolvedValueOnce({ id: "c-1", slug: "slug" });
-					(communityRepository.insertCommunity as ReturnType<typeof vi.fn>).mockResolvedValue(
+					(communityRepository.getCommunityBySlug as ReturnType<typeof vi.fn>).mockResolvedValue(
 						undefined,
 					);
+					(communityRepository.insertCommunity as ReturnType<typeof vi.fn>).mockResolvedValue([
+						{ id: "community-1" },
+					]);
 					(communityRepository.insertSubscriber as ReturnType<typeof vi.fn>).mockResolvedValue(
 						undefined,
 					);

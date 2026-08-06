@@ -109,7 +109,10 @@ export const communityRepository = {
 		description: string | null,
 		image: string | null,
 	) => {
-		return db.insert(communities).values({ ownerId, title, slug, description, image });
+		return db
+			.insert(communities)
+			.values({ ownerId, title, slug, description, image })
+			.returning();
 	},
 
 	deleteCommunity: async (communitySlug: string, ownerId: string) => {
@@ -356,7 +359,10 @@ export const communityRepository = {
 	},
 
 	insertPost: async (communityId: string, authorId: string, title: string, content: string) => {
-		return db.insert(communityPosts).values({ communityId, authorId, title, content });
+		return db
+			.insert(communityPosts)
+			.values({ communityId, authorId, title, content })
+			.returning();
 	},
 
 	deletePost: async (postId: string, authorId: string) => {
