@@ -1,15 +1,14 @@
 import type { APIRoute } from "astro";
-import { db } from "@infra/database";
-import { users } from "@schemas/database";
+import { getAllUsernames } from "@services/user/profile";
 
 export const GET: APIRoute = async ({ site }) => {
-	const allUsers = await db.select({ username: users.username }).from(users);
+	const usernames = await getAllUsernames();
 
-	const userUrls = allUsers
+	const userUrls = usernames
 		.map(
-			(user) => `
+			(username) => `
     <url>
-      <loc>${site}${user.username}</loc>
+      <loc>${site}${username}</loc>
       <changefreq>weekly</changefreq>
       <priority>0.8</priority>
     </url>

@@ -44,6 +44,13 @@ export default [
 		files: ["src/**/*.{js,ts,svelte,astro}"],
 		plugins: { boundaries },
 		settings: {
+			// Without a resolver, `eslint-plugin-boundaries` cannot map the `@services/*`,
+			// `@repositories/*` … path aliases onto the elements below, so every rule in
+			// this block silently matches nothing. Keep this entry — the whole layer
+			// policy is inert without it.
+			"import/resolver": {
+				typescript: { project: "./tsconfig.json" },
+			},
 			"boundaries/elements": [
 				{ type: "actions", pattern: "src/actions/**" },
 				{ type: "services", pattern: "src/services/**" },
@@ -84,6 +91,10 @@ export default [
 								{ to: { type: "repositories" } },
 								{ to: { type: "infra" } },
 								{ to: { type: "schemas" } },
+								// `src/services/auth/*` is the adapter over better-auth: it is the
+								// only layer allowed to reach the `auth` instance directly, so that
+								// actions and pages depend on our vocabulary, not on better-auth's.
+								{ to: { type: "auth" } },
 								{ to: { type: "types" } },
 								{ to: { type: "utils" } },
 							],
@@ -170,6 +181,14 @@ export default [
 						},
 						{ from: { type: "schemas" }, allow: [{ to: { type: "types" } }] },
 						{ from: { type: "utils" }, allow: [{ to: { type: "types" } }] },
+						// Type-only imports are erased at compile time, so they create no
+						// runtime coupling. The UI is allowed to *name* the shapes the service
+						// layer returns; the rules above still stop it from *calling* into it.
+						{
+							from: [{ type: "components" }, { type: "stores" }],
+							allow: [{ to: { type: "services" } }],
+							dependency: { kind: "type" },
+						},
 					],
 				},
 			],

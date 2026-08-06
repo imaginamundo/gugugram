@@ -23,6 +23,7 @@ vi.mock("../../repositories/community", () => ({
 		getPostsByCommunity: vi.fn().mockResolvedValue([{ id: "post-1" }]),
 		getPostById: vi.fn(),
 		insertResponse: vi.fn().mockResolvedValue(undefined),
+		getLatestResponseByAuthor: vi.fn().mockResolvedValue(undefined),
 	},
 }));
 
@@ -272,5 +273,17 @@ describe("Property 9: Validação do comprimento do conteúdo do post e da respo
 			}),
 			{ numRuns: 100 },
 		);
+	});
+
+	it("rejeita respostas em sequência rápida demais", async () => {
+		vi.clearAllMocks();
+		(communityRepository.getLatestResponseByAuthor as ReturnType<typeof vi.fn>).mockResolvedValue({
+			createdAt: new Date(Date.now() - 1000),
+		});
+
+		const err = await captureError(() => createResponse("user-1", "post-1", "Olá!"));
+
+		expect(err.message).toContain("Excesso de respostas");
+		expect(communityRepository.insertResponse).not.toHaveBeenCalled();
 	});
 });
