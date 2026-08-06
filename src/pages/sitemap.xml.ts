@@ -1,9 +1,8 @@
 import type { APIRoute } from "astro";
-import { db } from "@infra/database";
-import { users } from "@schemas/database";
+import { getUserUsernames } from "@services/user/profile";
 
 export const GET: APIRoute = async ({ site }) => {
-	const allUsers = await db.select({ username: users.username }).from(users);
+	const allUsers = await getUserUsernames();
 
 	const userUrls = allUsers
 		.map(

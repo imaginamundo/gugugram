@@ -15,11 +15,11 @@ import {
 	removePost,
 	createResponse as createResponseService,
 	removeResponse,
+	getLatestResponseByAuthor,
 	deleteCommunityImage,
 	updateCommunity,
 } from "@services/community";
 import { CommunityErrors, ImageUploadErrors } from "@customTypes/errors";
-import { communityRepository } from "@repositories/community";
 
 const CreateCommunitySchema = z.object({
 	title: z.string().min(3).max(100),
@@ -303,10 +303,7 @@ export const createResponse = defineAction({
 		const { fields, success: schemaSuccess } = parseSchema(input, CreateResponseSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
-		const lastPostResponse = await communityRepository.getLatestResponseByAuthor(
-			fields.postId,
-			session.id,
-		);
+		const lastPostResponse = await getLatestResponseByAuthor(fields.postId, session.id);
 
 		checkRateLimit(lastPostResponse?.createdAt, RATE_LIMIT_MS, "Excesso de respostas");
 

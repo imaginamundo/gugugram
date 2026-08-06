@@ -3,8 +3,7 @@ import Layout from "@layout/Main.astro";
 import CommunityPostDetail from "@components/community/CommunityPostDetail/CommunityPostDetail.astro";
 import CreateResponseForm from "@components/community/CreateResponseForm/CreateResponseForm.svelte";
 import CommunityHeader from "@components/community/CommunityHeader/CommunityHeader.astro";
-import { getCommunity, getCommunityPostPaginated } from "@services/community";
-import { communityRepository } from "@repositories/community";
+import { getCommunity, getCommunityPostPaginated, getSubscriber } from "@services/community";
 
 const { slug, postId } = Astro.params;
 if (!slug || !postId) return new Response(null, { status: 404 });
@@ -24,8 +23,7 @@ const session = Astro.locals.user;
 
 let isSubscribed = false;
 if (session) {
-	const subscriber = await communityRepository.getSubscriber(post.communityId, session.id);
-	isSubscribed = !!subscriber;
+	isSubscribed = await getSubscriber(post.communityId, session.id);
 }
 
 const isOwner = session?.id === community.ownerId;

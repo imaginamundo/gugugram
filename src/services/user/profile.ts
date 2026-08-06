@@ -150,3 +150,7 @@ export async function removeProfileImageFromUser(userId: string) {
 		throw new Error(ProfileErrors.DB_UPDATE_FAILED);
 	}
 }
+
+export async function getUserUsernames() {
+	return userProfileRepository.getUserUsernames();
+}

@@ -218,6 +218,10 @@ export async function getSubscriber(communityId: string, userId: string): Promis
 	return !!subscriber;
 }
 
+export async function getLatestResponseByAuthor(postId: string, authorId: string) {
+	return communityRepository.getLatestResponseByAuthor(postId, authorId);
+}
+
 export async function getCommunityAdmins(
 	communityId: string,
 ): Promise<{ id: string; username: string }[]> {

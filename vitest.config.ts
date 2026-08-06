@@ -1,13 +1,9 @@
-import { defineConfig } from "vitest/config";
-import { svelte } from "@sveltejs/vite-plugin-svelte";
+/// <reference types="vitest/config" />
+import { getViteConfig } from "astro/config";
 import { svelteTesting } from "@testing-library/svelte/vite";
 
-export default defineConfig({
-	plugins: [svelte(), svelteTesting()],
-	test: {
-		environment: "node",
-		setupFiles: ["src/__tests__/setup.ts"],
-	},
+export default getViteConfig({
+	plugins: [svelteTesting()],
 	resolve: {
 		conditions: ["browser"],
 		alias: {
@@ -21,23 +17,10 @@ export default defineConfig({
 			"astro:middleware": new URL("./src/__tests__/__mocks__/astro-middleware.ts", import.meta.url)
 				.pathname,
 			"astro/zod": new URL("./src/__tests__/__mocks__/astro-zod.ts", import.meta.url).pathname,
-			"@ui": new URL("./src/components/_ui", import.meta.url).pathname,
-			"@layout": new URL("./src/components/_layout", import.meta.url).pathname,
-			"@icons": new URL("./src/assets/icons", import.meta.url).pathname,
-			"@infra": new URL("./src/infra", import.meta.url).pathname,
-			"@observability": new URL("./src/observability", import.meta.url).pathname,
-			"@auth": new URL("./src/auth.ts", import.meta.url).pathname,
-			"@email": new URL("./src/email", import.meta.url).pathname,
-			"@customTypes": new URL("./src/types", import.meta.url).pathname,
-			"@assets": new URL("./src/assets", import.meta.url).pathname,
-			"@schemas": new URL("./src/schemas", import.meta.url).pathname,
-			"@repositories": new URL("./src/repositories", import.meta.url).pathname,
-			"@services": new URL("./src/services", import.meta.url).pathname,
-			"@styles": new URL("./src/styles", import.meta.url).pathname,
-			"@utils": new URL("./src/utils", import.meta.url).pathname,
-			"@stores": new URL("./src/stores", import.meta.url).pathname,
-			"@components": new URL("./src/components", import.meta.url).pathname,
-			"src/utils": new URL("./src/utils", import.meta.url).pathname,
 		},
+	},
+	test: {
+		environment: "node",
+		setupFiles: ["vitest.setup.ts"],
 	},
 });

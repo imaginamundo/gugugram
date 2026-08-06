@@ -44,6 +44,12 @@ export default [
 		files: ["src/**/*.{js,ts,svelte,astro}"],
 		plugins: { boundaries },
 		settings: {
+			"import/resolver": {
+				typescript: {
+					alwaysTryTypes: true,
+					project: "./tsconfig.json",
+				},
+			},
 			"boundaries/elements": [
 				{ type: "actions", pattern: "src/actions/**" },
 				{ type: "services", pattern: "src/services/**" },
@@ -53,7 +59,6 @@ export default [
 				{ type: "stores", pattern: "src/stores/**" },
 				{ type: "infra", pattern: "src/infra/**" },
 				{ type: "observability", pattern: "src/observability/**" },
-				{ type: "auth", pattern: "src/auth.ts", mode: "file" },
 				{ type: "email", pattern: "src/email/**" },
 				{ type: "schemas", pattern: "src/schemas/**" },
 				{ type: "types", pattern: "src/types/**" },
@@ -62,118 +67,134 @@ export default [
 				{ type: "middleware", pattern: "src/middleware/**" },
 				{ type: "styles", pattern: "src/styles/**" },
 			],
+			"boundaries/files": [{ category: "auth", pattern: "src/auth.ts" }],
 		},
 		rules: {
 			"boundaries/dependencies": [
 				"error",
 				{
 					default: "disallow",
-					rules: [
+					policies: [
 						{
-							from: { type: "repositories" },
+							from: { element: { types: "repositories" } },
+							allow: [{ to: { element: { types: ["infra", "schemas", "types", "utils"] } } }],
+						},
+						{
+							from: { element: { types: "services" } },
 							allow: [
-								{ to: { type: "infra" } },
-								{ to: { type: "schemas" } },
-								{ to: { type: "types" } },
-								{ to: { type: "utils" } },
+								{
+									to: {
+										element: {
+											types: ["repositories", "infra", "schemas", "types", "utils"],
+										},
+									},
+								},
+								{ to: { file: { categories: "auth" } } },
 							],
 						},
 						{
-							from: { type: "services" },
+							from: { element: { types: "actions" } },
 							allow: [
-								{ to: { type: "repositories" } },
-								{ to: { type: "infra" } },
-								{ to: { type: "schemas" } },
-								{ to: { type: "types" } },
-								{ to: { type: "utils" } },
+								{
+									to: {
+										element: {
+											types: ["actions", "services", "observability", "schemas", "types", "utils"],
+										},
+									},
+								},
+								{ to: { file: { categories: "auth" } } },
 							],
 						},
 						{
-							from: { type: "actions" },
+							from: { element: { types: "components" } },
 							allow: [
-								{ to: { type: "actions" } },
-								{ to: { type: "services" } },
-								{ to: { type: "observability" } },
-								{ to: { type: "schemas" } },
-								{ to: { type: "types" } },
-								{ to: { type: "utils" } },
+								{
+									to: {
+										element: {
+											types: [
+												"components",
+												"stores",
+												"services",
+												"utils",
+												"types",
+												"schemas",
+												"assets",
+												"styles",
+											],
+										},
+									},
+								},
 							],
 						},
 						{
-							from: { type: "components" },
+							from: { element: { types: "pages" } },
 							allow: [
-								{ to: { type: "components" } },
-								{ to: { type: "stores" } },
-								{ to: { type: "utils" } },
-								{ to: { type: "types" } },
-								{ to: { type: "schemas" } },
-								{ to: { type: "assets" } },
-								{ to: { type: "styles" } },
+								{
+									to: {
+										element: {
+											types: [
+												"services",
+												"components",
+												"observability",
+												"schemas",
+												"types",
+												"utils",
+												"stores",
+												"styles",
+											],
+										},
+									},
+								},
+								{ to: { file: { categories: "auth" } } },
 							],
 						},
 						{
-							from: { type: "pages" },
+							from: { element: { types: "stores" } },
+							allow: [{ to: { element: { types: ["utils", "types", "schemas", "services"] } } }],
+						},
+						{
+							from: { element: { types: "infra" } },
+							allow: [{ to: { element: { types: ["schemas", "types", "utils"] } } }],
+						},
+						{
+							from: { element: { types: "observability" } },
+							allow: [{ to: { element: { types: ["types", "utils"] } } }],
+						},
+						{
+							from: { file: { categories: "auth" } },
 							allow: [
-								{ to: { type: "services" } },
-								{ to: { type: "components" } },
-								{ to: { type: "auth" } },
-								{ to: { type: "observability" } },
-								{ to: { type: "schemas" } },
-								{ to: { type: "types" } },
-								{ to: { type: "utils" } },
-								{ to: { type: "stores" } },
-								{ to: { type: "styles" } },
+								{
+									to: {
+										element: {
+											types: ["infra", "email", "schemas", "types", "utils"],
+										},
+									},
+								},
 							],
 						},
 						{
-							from: { type: "stores" },
+							from: { element: { types: "email" } },
+							allow: [{ to: { element: { types: ["types", "utils"] } } }],
+						},
+						{
+							from: { element: { types: "middleware" } },
 							allow: [
-								{ to: { type: "utils" } },
-								{ to: { type: "types" } },
-								{ to: { type: "schemas" } },
+								{ to: { element: { types: ["middleware", "types", "utils"] } } },
+								{ to: { file: { categories: "auth" } } },
 							],
 						},
 						{
-							from: { type: "infra" },
-							allow: [
-								{ to: { type: "schemas" } },
-								{ to: { type: "types" } },
-								{ to: { type: "utils" } },
-							],
+							from: { element: { types: "schemas" } },
+							allow: [{ to: { element: { types: ["types"] } } }],
 						},
 						{
-							from: { type: "observability" },
-							allow: [{ to: { type: "types" } }, { to: { type: "utils" } }],
+							from: { element: { types: "utils" } },
+							allow: [{ to: { element: { types: ["types"] } } }],
 						},
-						{
-							from: { type: "auth" },
-							allow: [
-								{ to: { type: "infra" } },
-								{ to: { type: "email" } },
-								{ to: { type: "schemas" } },
-								{ to: { type: "types" } },
-								{ to: { type: "utils" } },
-							],
-						},
-						{
-							from: { type: "email" },
-							allow: [{ to: { type: "types" } }, { to: { type: "utils" } }],
-						},
-						{
-							from: { type: "middleware" },
-							allow: [
-								{ to: { type: "middleware" } },
-								{ to: { type: "auth" } },
-								{ to: { type: "types" } },
-								{ to: { type: "utils" } },
-							],
-						},
-						{ from: { type: "schemas" }, allow: [{ to: { type: "types" } }] },
-						{ from: { type: "utils" }, allow: [{ to: { type: "types" } }] },
 					],
 				},
 			],
-			"boundaries/no-unknown": "error",
+			"boundaries/no-unknown-dependencies": "error",
 			"boundaries/no-unknown-files": "error",
 		},
 	},
@@ -181,15 +202,14 @@ export default [
 		files: ["src/__tests__/**"],
 		rules: {
 			"boundaries/dependencies": "off",
-			"boundaries/no-unknown": "off",
+			"boundaries/no-unknown-dependencies": "off",
 			"boundaries/no-unknown-files": "off",
 		},
 	},
 	{
 		files: ["**/*.css"],
 		rules: {
-			"boundaries/no-unknown": "off",
-			"boundaries/no-unknown-files": "off",
+			"boundaries/no-unknown-dependencies": "off",
 			"boundaries/no-unknown-files": "off",
 		},
 	},
