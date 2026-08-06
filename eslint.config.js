@@ -36,6 +36,10 @@ export default [
 		files: ["src/**/*.{js,ts,svelte,astro}"],
 		plugins: { boundaries },
 		settings: {
+			// Without a resolver, `eslint-plugin-boundaries` cannot map the `@services/*`,
+			// `@repositories/*` … path aliases onto the elements below, so every rule in
+			// this block silently matches nothing. Keep this entry — the whole layer
+			// policy is inert without it.
 			"import/resolver": {
 				typescript: {
 					alwaysTryTypes: true,
@@ -51,6 +55,9 @@ export default [
 				{ type: "stores", pattern: "src/stores/**" },
 				{ type: "infra", pattern: "src/infra/**" },
 				{ type: "observability", pattern: "src/observability/**" },
+				// `auth` is two files, not a directory, so it needs `mode: "file"` —
+				// the default `folder` mode would never match them.
+				{ type: "auth", pattern: ["src/auth.ts", "src/auth-client.ts"], mode: "file" },
 				{ type: "email", pattern: "src/email/**" },
 				{ type: "schemas", pattern: "src/schemas/**" },
 				{ type: "types", pattern: "src/types/**" },
@@ -59,135 +66,135 @@ export default [
 				{ type: "middleware", pattern: "src/middleware/**" },
 				{ type: "styles", pattern: "src/styles/**" },
 			],
-			"boundaries/files": [{ category: "auth", pattern: ["src/auth.ts", "src/auth-client.ts"] }],
 		},
 		rules: {
 			"boundaries/dependencies": [
 				"error",
 				{
 					default: "disallow",
-					policies: [
+					rules: [
 						{
-							from: { element: { types: "repositories" } },
-							allow: [{ to: { element: { types: ["infra", "schemas", "types", "utils"] } } }],
-						},
-						{
-							from: { element: { types: "services" } },
+							from: { type: "repositories" },
 							allow: [
-								{
-									to: {
-										element: {
-											types: ["repositories", "infra", "schemas", "types", "utils"],
-										},
-									},
-								},
-								{ to: { file: { categories: "auth" } } },
+								{ to: { type: "infra" } },
+								{ to: { type: "schemas" } },
+								{ to: { type: "types" } },
+								{ to: { type: "utils" } },
 							],
 						},
 						{
-							from: { element: { types: "actions" } },
+							from: { type: "services" },
 							allow: [
-								{
-									to: {
-										element: {
-											types: ["actions", "services", "observability", "schemas", "types", "utils"],
-										},
-									},
-								},
-								{ to: { file: { categories: "auth" } } },
+								{ to: { type: "services" } },
+								{ to: { type: "repositories" } },
+								{ to: { type: "infra" } },
+								{ to: { type: "schemas" } },
+								// `src/services/auth/*` is the adapter over better-auth: it is the
+								// only layer allowed to reach the `auth` instance directly, so that
+								// actions and pages depend on our vocabulary, not on better-auth's.
+								{ to: { type: "auth" } },
+								{ to: { type: "email" } },
+								{ to: { type: "types" } },
+								{ to: { type: "utils" } },
 							],
 						},
 						{
-							from: { element: { types: "components" } },
+							from: { type: "actions" },
 							allow: [
-								{
-									to: {
-										element: {
-											types: [
-												"components",
-												"stores",
-												"services",
-												"utils",
-												"types",
-												"schemas",
-												"assets",
-												"styles",
-											],
-										},
-									},
-								},
-								{ to: { file: { categories: "auth" } } },
+								{ to: { type: "actions" } },
+								{ to: { type: "services" } },
+								{ to: { type: "observability" } },
+								{ to: { type: "schemas" } },
+								{ to: { type: "auth" } },
+								{ to: { type: "types" } },
+								{ to: { type: "utils" } },
 							],
 						},
 						{
-							from: { element: { types: "pages" } },
+							from: { type: "components" },
 							allow: [
-								{
-									to: {
-										element: {
-											types: [
-												"services",
-												"components",
-												"observability",
-												"schemas",
-												"types",
-												"utils",
-												"stores",
-												"styles",
-											],
-										},
-									},
-								},
-								{ to: { file: { categories: "auth" } } },
+								{ to: { type: "components" } },
+								{ to: { type: "stores" } },
+								{ to: { type: "utils" } },
+								{ to: { type: "types" } },
+								{ to: { type: "schemas" } },
+								{ to: { type: "assets" } },
+								{ to: { type: "styles" } },
+								{ to: { type: "auth" } },
 							],
 						},
 						{
-							from: { element: { types: "stores" } },
-							allow: [{ to: { element: { types: ["utils", "types", "schemas", "services"] } } }],
-						},
-						{
-							from: { element: { types: "infra" } },
-							allow: [{ to: { element: { types: ["schemas", "types", "utils"] } } }],
-						},
-						{
-							from: { element: { types: "observability" } },
-							allow: [{ to: { element: { types: ["types", "utils"] } } }],
-						},
-						{
-							from: { file: { categories: "auth" } },
+							from: { type: "pages" },
 							allow: [
-								{
-									to: {
-										element: {
-											types: ["infra", "email", "schemas", "types", "utils"],
-										},
-									},
-								},
+								{ to: { type: "services" } },
+								{ to: { type: "components" } },
+								{ to: { type: "auth" } },
+								{ to: { type: "observability" } },
+								{ to: { type: "schemas" } },
+								{ to: { type: "types" } },
+								{ to: { type: "utils" } },
+								{ to: { type: "stores" } },
+								{ to: { type: "styles" } },
+								{ to: { type: "assets" } },
 							],
 						},
 						{
-							from: { element: { types: "email" } },
-							allow: [{ to: { element: { types: ["types", "utils"] } } }],
-						},
-						{
-							from: { element: { types: "middleware" } },
+							from: { type: "stores" },
 							allow: [
-								{ to: { element: { types: ["middleware", "types", "utils"] } } },
-								{ to: { file: { categories: "auth" } } },
+								{ to: { type: "utils" } },
+								{ to: { type: "types" } },
+								{ to: { type: "schemas" } },
 							],
 						},
 						{
-							from: { element: { types: "schemas" } },
-							allow: [{ to: { element: { types: ["types"] } } }],
+							from: { type: "infra" },
+							allow: [
+								{ to: { type: "schemas" } },
+								{ to: { type: "types" } },
+								{ to: { type: "utils" } },
+							],
 						},
 						{
-							from: { element: { types: "utils" } },
-							allow: [{ to: { element: { types: ["types"] } } }],
+							from: { type: "observability" },
+							allow: [{ to: { type: "types" } }, { to: { type: "utils" } }],
+						},
+						{
+							from: { type: "auth" },
+							allow: [
+								{ to: { type: "infra" } },
+								{ to: { type: "email" } },
+								{ to: { type: "schemas" } },
+								{ to: { type: "types" } },
+								{ to: { type: "utils" } },
+							],
+						},
+						{
+							from: { type: "email" },
+							allow: [{ to: { type: "types" } }, { to: { type: "utils" } }],
+						},
+						{
+							from: { type: "middleware" },
+							allow: [
+								{ to: { type: "middleware" } },
+								{ to: { type: "auth" } },
+								{ to: { type: "types" } },
+								{ to: { type: "utils" } },
+							],
+						},
+						{ from: { type: "schemas" }, allow: [{ to: { type: "types" } }] },
+						{ from: { type: "utils" }, allow: [{ to: { type: "types" } }] },
+						// Type-only imports are erased at compile time, so they create no
+						// runtime coupling. The UI is allowed to *name* the shapes the service
+						// layer returns; the rules above still stop it from *calling* into it.
+						{
+							from: [{ type: "components" }, { type: "stores" }],
+							allow: [{ to: { type: "services" } }],
+							dependency: { kind: "type" },
 						},
 					],
 				},
 			],
-			"boundaries/no-unknown-dependencies": "error",
+			"boundaries/no-unknown": "error",
 			"boundaries/no-unknown-files": "error",
 		},
 	},
@@ -195,7 +202,7 @@ export default [
 		files: ["src/__tests__/**"],
 		rules: {
 			"boundaries/dependencies": "off",
-			"boundaries/no-unknown-dependencies": "off",
+			"boundaries/no-unknown": "off",
 			"boundaries/no-unknown-files": "off",
 		},
 	},
@@ -203,14 +210,14 @@ export default [
 		files: ["src/env.d.ts"],
 		rules: {
 			"boundaries/dependencies": "off",
-			"boundaries/no-unknown-dependencies": "off",
+			"boundaries/no-unknown": "off",
 			"boundaries/no-unknown-files": "off",
 		},
 	},
 	{
 		files: ["**/*.css"],
 		rules: {
-			"boundaries/no-unknown-dependencies": "off",
+			"boundaries/no-unknown": "off",
 			"boundaries/no-unknown-files": "off",
 		},
 	},
