@@ -109,3 +109,7 @@ export async function performPasswordReset(
 
 	if (!response.ok) throw new Error(AuthErrors.RESET_FAILED);
 }
+
+export async function signOutUser(requestHeaders: Headers) {
+	await auth.api.signOut({ headers: requestHeaders });
+}

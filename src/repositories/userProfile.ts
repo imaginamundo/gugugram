@@ -80,4 +80,9 @@ export const userProfileRepository = {
 	updateUser: async (userId: string, data: UpdateUserPayload) => {
 		return db.update(users).set(data).where(eq(users.id, userId));
 	},
+
+	getAllUsernames: async (): Promise<string[]> => {
+		const rows = await db.select({ username: users.username }).from(users);
+		return rows.map((row) => row.username);
+	},
 };

@@ -2,7 +2,6 @@ import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
 import { withAuth } from "@utils/action-guard";
-import { checkRateLimit } from "@utils/rate-limit";
 import {
 	createCommunity as createCommunityService,
 	removeCommunity,
@@ -19,7 +18,6 @@ import {
 	updateCommunity,
 } from "@services/community";
 import { CommunityErrors, ImageUploadErrors } from "@customTypes/errors";
-import { communityRepository } from "@repositories/community";
 
 const CreateCommunitySchema = z.object({
 	title: z.string().min(3).max(100),
@@ -116,8 +114,6 @@ function mapCommunityError(message: string): string {
 			return message;
 	}
 }
-
-const RATE_LIMIT_MS = 5000;
 
 export const createCommunity = defineAction({
 	accept: "form",
@@ -302,13 +298,6 @@ export const createResponse = defineAction({
 	handler: withAuth(async (input: FormData, _, session) => {
 		const { fields, success: schemaSuccess } = parseSchema(input, CreateResponseSchema);
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
-
-		const lastPostResponse = await communityRepository.getLatestResponseByAuthor(
-			fields.postId,
-			session.id,
-		);
-
-		checkRateLimit(lastPostResponse?.createdAt, RATE_LIMIT_MS, "Excesso de respostas");
 
 		try {
 			await createResponseService(session.id, fields.postId, fields.content);

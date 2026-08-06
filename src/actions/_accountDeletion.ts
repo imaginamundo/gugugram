@@ -2,8 +2,7 @@ import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
 import { withAuth } from "@utils/action-guard";
-import { auth } from "@auth";
-
+import { signOutUser } from "@services/auth";
 import { deleteOwnAccount } from "@services/auth/deletion";
 import { AccountDeletionErrors } from "@customTypes/errors";
 import { trackServerEvent, flushServerEvents } from "@observability/tracking-server";
@@ -25,9 +24,7 @@ export const deleteAccount = defineAction({
 
 			// Cascade dropped the session row but the browser/app still holds the
 			// cookie — clear it so the next request is unambiguously logged out.
-			await auth.api.signOut({
-				headers: context.request.headers,
-			});
+			await signOutUser(context.request.headers);
 
 			trackServerEvent({
 				distinctId: session.username ?? session.id,

@@ -2,6 +2,7 @@ import sanitizeHtml from "sanitize-html";
 import { communityRepository, type UpdateCommunityPayload } from "@repositories/community";
 import { slugify } from "@utils/slugify";
 import { parseUser } from "@utils/user";
+import { checkRateLimit } from "@utils/rate-limit";
 import { CommunityErrors } from "@customTypes/errors";
 import { checkImage, uploadImage } from "@services/uploadImage/uploadImage";
 import { friendshipPossibleStatus } from "@schemas/database";
@@ -13,6 +14,7 @@ import type {
 import { deleteImage } from "@services/uploadImage/deleteImage";
 
 const PAGE_SIZE = 20;
+const RATE_LIMIT_MS = 5000;
 
 function sanitize(text: string): string {
 	return sanitizeHtml(text, { allowedTags: [] });
@@ -348,6 +350,9 @@ export async function createResponse(
 	postId: string,
 	content: string,
 ): Promise<void> {
+	const lastResponse = await communityRepository.getLatestResponseByAuthor(postId, userId);
+	checkRateLimit(lastResponse?.createdAt, RATE_LIMIT_MS, "Excesso de respostas");
+
 	const post = await communityRepository.getPostById(postId);
 	if (!post) throw new Error(CommunityErrors.POST_NOT_FOUND);
 

@@ -33,6 +33,7 @@ vi.mock("../../repositories/community", () => ({
 		insertPost: vi.fn().mockResolvedValue(undefined),
 		getPostsByCommunity: vi.fn().mockResolvedValue([{ id: "post-1" }]),
 		insertResponse: vi.fn().mockResolvedValue(undefined),
+		getLatestResponseByAuthor: vi.fn().mockResolvedValue(undefined),
 	},
 }));
 
