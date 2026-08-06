@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { imageModalStore as store } from "@stores/imagePostModalStore.svelte";
+	// Presentational only: rendered on the server with no `client:*` directive,
+	// so it ships no JavaScript of its own. Opening the modal is handled by the
+	// single delegated listener in `delegateImagePostClicks`, which resolves
+	// `data-post-id` against the payload `ImagePostList.astro` emits.
 	import type { PostType } from "@services/imagePost";
 
 	const { post, index }: { post: PostType; index?: number } = $props();
-
-	function handleOpenPostDetails(e: Event) {
-		e.preventDefault();
-		store.post = post;
-	}
 
 	const accessibleName = $derived(post.description ? post.description : `Foto de ${post.username}`);
 
@@ -21,7 +19,7 @@
 <a
 	href={`/${post.username}/${post.id}`}
 	aria-haspopup="dialog"
-	onclick={handleOpenPostDetails}
+	data-post-id={post.id}
 	class="button button-image"
 >
 	{#if post.commentsCount > 0}
