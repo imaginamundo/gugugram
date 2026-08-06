@@ -38,7 +38,7 @@ export const updateProfile = defineAction({
 				},
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return { success: true as const };
 		} catch (error) {

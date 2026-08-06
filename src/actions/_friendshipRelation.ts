@@ -30,7 +30,7 @@ export const sendFriendRequest = defineAction({
 				properties: { status: resultingStatus, target_user_id: fields.targetUserId },
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return { success: true as const, status: resultingStatus };
 		} catch (error) {
@@ -62,7 +62,7 @@ export const acceptFriendRequest = defineAction({
 				properties: { target_user_id: fields.targetUserId },
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return { success: true as const };
 		} catch {
@@ -85,7 +85,7 @@ export const removeFriendship = defineAction({
 				properties: { target_user_id: fields.targetUserId },
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return { success: true as const };
 		} catch {

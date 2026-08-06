@@ -25,7 +25,7 @@ export const sendMessage = defineAction({
 				event: "message_sent",
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return { success: true as const };
 		} catch (error) {

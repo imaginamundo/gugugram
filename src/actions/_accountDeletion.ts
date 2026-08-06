@@ -33,7 +33,7 @@ export const deleteAccount = defineAction({
 				distinctId: session.username ?? session.id,
 				event: "account_deleted",
 			});
-			await flushServerEvents();
+			flushServerEvents();
 
 			return { success: true as const };
 		} catch (error) {
