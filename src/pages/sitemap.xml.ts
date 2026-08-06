@@ -1,41 +1,38 @@
 import type { APIRoute } from "astro";
-import { db } from "@infra/database";
-import { users } from "@schemas/database";
+import { getSitemapUserPageCount } from "@services/sitemap";
+import { escapeXml } from "@utils/xml";
+
+// A user list barely changes by the hour, and crawlers re-fetch the index far
+// more often than it moves.
+const CACHE_CONTROL = "public, max-age=21600";
 
 export const GET: APIRoute = async ({ site }) => {
-	const allUsers = await db.select({ username: users.username }).from(users);
+	const userPageCount = await getSitemapUserPageCount();
 
-	const userUrls = allUsers
+	const sitemaps = [
+		"sitemap-pages.xml",
+		...Array.from({ length: userPageCount }, (_, i) => `sitemap-users-${i + 1}.xml`),
+	];
+
+	const entries = sitemaps
 		.map(
-			(user) => `
-    <url>
-      <loc>${site}${user.username}</loc>
-      <changefreq>weekly</changefreq>
-      <priority>0.8</priority>
-    </url>
+			(path) => `
+    <sitemap>
+      <loc>${escapeXml(`${site}${path}`)}</loc>
+    </sitemap>
   `,
 		)
 		.join("");
 
-	const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-      <url>
-        <loc>${site}</loc>
-        <changefreq>daily</changefreq>
-        <priority>1.0</priority>
-      </url>
-      <url>
-        <loc>${site}sobre</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.8</priority>
-      </url>
-      ${userUrls}
-    </urlset>`;
+	const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
+    <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      ${entries}
+    </sitemapindex>`;
 
-	return new Response(sitemap, {
+	return new Response(sitemapIndex, {
 		headers: {
 			"Content-Type": "application/xml",
-			"Cache-Control": "public, max-age=3600",
+			"Cache-Control": CACHE_CONTROL,
 		},
 	});
 };

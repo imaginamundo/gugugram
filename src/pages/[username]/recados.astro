@@ -1,6 +1,6 @@
 ---
 import { getProfile } from "@services/user/profile.ts";
-import { getMessages, updateLastRead } from "@services/message";
+import { getMessages, updateLastRead, MESSAGES_PAGE_SIZE } from "@services/message";
 import Layout from "@layout/Main.astro";
 import ProfileHeader from "@components/profile/ProfileHeader/ProfileHeader.astro";
 import ProfileTabs from "@components/profile/ProfileTabs/ProfileTabs.svelte";
@@ -19,9 +19,15 @@ const { user, messagesCount, unreadMessagesCount, friendsCount, pendingFriendReq
 
 if (!user) return new Response(null, { status: 404 });
 
+const pageParam = Astro.url.searchParams.get("page");
+const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+const totalPages = Math.max(1, Math.ceil(messagesCount / MESSAGES_PAGE_SIZE));
+
+if (page > totalPages) return Astro.redirect(`?page=${totalPages}`, 307);
+
 await updateLastRead(user.id, session, unreadMessagesCount);
 
-const { messagesReceived } = await getMessages(user.username);
+const { messagesReceived } = await getMessages(user.username, page);
 
 const seo = {
 	title: `Recados de ${username}`,
@@ -40,6 +46,6 @@ const seo = {
 		{unreadMessagesCount}
 		client:load
 	>
-		<Messages {user} messages={messagesReceived} />
+		<Messages {user} messages={messagesReceived} {page} {totalPages} />
 	</ProfileTabs>
 </Layout>

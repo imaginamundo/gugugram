@@ -1,5 +1,5 @@
 import { db } from "@infra/database";
-import { and, eq, desc, sql } from "drizzle-orm";
+import { and, count, eq, desc, sql } from "drizzle-orm";
 import { imagePosts, imagePostComments } from "@schemas/database";
 
 const commentsCountExtra = {
@@ -92,12 +92,22 @@ export const imagePostRepository = {
 	},
 
 	// --- COMMENT QUERIES ---
-	getCommentsByPostId: async (postId: string) => {
+	getCommentsByPostId: async (postId: string, limit: number, offset: number) => {
 		return db.query.imagePostComments.findMany({
 			where: eq(imagePostComments.imageId, postId),
 			orderBy: [desc(imagePostComments.createdAt)],
 			with: { author: { columns: { id: true, username: true } } },
+			limit,
+			offset,
 		});
+	},
+
+	countCommentsByPostId: async (postId: string) => {
+		const result = await db
+			.select({ count: count() })
+			.from(imagePostComments)
+			.where(eq(imagePostComments.imageId, postId));
+		return result[0].count;
 	},
 
 	getLatestCommentByAuthor: async (authorId: string) => {

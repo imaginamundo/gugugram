@@ -4,7 +4,7 @@
 	import { formatDate } from "@utils/date";
 	import Button from "@ui/Button.svelte";
 	import Input from "@ui/Input.svelte";
-	import type { CommentType } from "@services/imagePost";
+	import type { CommentType, CommentsPageType } from "@services/imagePost";
 
 	const {
 		comments,
@@ -19,23 +19,48 @@
 	} = $props();
 
 	let fetchedComments = $state<CommentType[]>([]);
+	let fetchedPage = $state(0);
+	let fetchedTotalPages = $state(1);
+	let fetchedTotalCount = $state(0);
 	let hasFetched = $state(false);
+	let isLoadingMore = $state(false);
 	let isLoading = $derived(comments === undefined && !hasFetched);
 	let displayComments = $derived(comments !== undefined ? comments : fetchedComments);
+	// The fetched list is one page of a larger set, so the header count comes
+	// from the server total rather than from what is currently rendered.
+	let totalComments = $derived(comments !== undefined ? comments.length : fetchedTotalCount);
+	let hasMore = $derived(comments === undefined && hasFetched && fetchedPage < fetchedTotalPages);
 
 	const sessionId = $derived(session?.id);
+
+	async function loadPage(page: number) {
+		const res = await fetch(`/api/post/${postId}/comments?page=${page}`);
+		if (!res.ok) throw new Error("Erro ao buscar comentários");
+
+		const data: CommentsPageType = await res.json();
+
+		fetchedComments = page === 1 ? data.items : [...fetchedComments, ...data.items];
+		fetchedPage = data.pagination.page;
+		fetchedTotalPages = data.pagination.totalPages;
+		fetchedTotalCount = data.pagination.totalCount;
+	}
+
+	async function loadMore() {
+		if (isLoadingMore) return;
+		isLoadingMore = true;
+		try {
+			await loadPage(fetchedPage + 1);
+		} catch (err) {
+			console.error(err);
+		} finally {
+			isLoadingMore = false;
+		}
+	}
 
 	onMount(() => {
 		if (comments !== undefined) return;
 
-		fetch(`/api/post/${postId}/comments`)
-			.then((res) => {
-				if (!res.ok) throw new Error("Erro ao buscar comentários");
-				return res.json();
-			})
-			.then((data) => {
-				fetchedComments = data;
-			})
+		loadPage(1)
 			.catch((err) => {
 				console.error(err);
 			})
@@ -51,7 +76,7 @@
 			{#if isLoading}
 				Comentários (...)
 			{:else}
-				Comentários ({displayComments.length})
+				Comentários ({totalComments})
 			{/if}
 		</strong>
 	</p>
@@ -104,6 +129,12 @@
 			</div>
 		{/each}
 	</div>
+
+	{#if hasMore}
+		<Button type="button" class="mt" onclick={loadMore} disabled={isLoadingMore}>
+			{isLoadingMore ? "Carregando..." : "Carregar mais comentários"}
+		</Button>
+	{/if}
 {/if}
 
 <style>
