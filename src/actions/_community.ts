@@ -103,6 +103,8 @@ function mapCommunityError(message: string): string {
 			return "Erro ao enviar a imagem. Tente novamente.";
 		case CommunityErrors.NO_IMAGE_TO_REMOVE:
 			return "Imagem inexistente.";
+		case CommunityErrors.DB_INSERT_FAILED:
+			return "Não foi possível salvar. Tente novamente.";
 
 		case ImageUploadErrors.FILE_TOO_LARGE:
 			return "A imagem deve ter no máximo 1MB.";

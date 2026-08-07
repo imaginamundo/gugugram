@@ -30,7 +30,7 @@ vi.mock("../../repositories/community", () => ({
 		getResponseById: vi.fn(),
 		deleteResponse: vi.fn(),
 		deleteResponseAsModerator: vi.fn().mockResolvedValue(undefined),
-		insertPost: vi.fn().mockResolvedValue(undefined),
+		insertPost: vi.fn().mockResolvedValue([{ id: "post-1" }]),
 		getPostsByCommunity: vi.fn().mockResolvedValue([{ id: "post-1" }]),
 		insertResponse: vi.fn().mockResolvedValue(undefined),
 	},

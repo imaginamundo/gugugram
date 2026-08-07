@@ -115,21 +115,18 @@ export async function createCommunity(
 		imageUrl = await uploadImage(file);
 	}
 
-	const id = crypto.randomUUID();
-	await communityRepository.insertCommunity(
+	const [created] = await communityRepository.insertCommunity(
 		ownerId,
 		sanitizedTitle,
 		slug,
 		sanitizedDescription,
 		imageUrl,
 	);
+	if (!created) throw new Error(CommunityErrors.DB_INSERT_FAILED);
 
-	const created = await communityRepository.getCommunityBySlug(slug);
-	const communityId = created?.id ?? id;
+	await communityRepository.insertSubscriber(created.id, ownerId);
 
-	await communityRepository.insertSubscriber(communityId, ownerId);
-
-	return { id: communityId, slug };
+	return { id: created.id, slug };
 }
 
 export async function removeCommunity(requesterId: string, communitySlug: string): Promise<void> {
@@ -318,10 +315,15 @@ export async function createPost(
 	const sanitizedTitle = sanitize(title);
 	const sanitizedContent = sanitize(content);
 
-	await communityRepository.insertPost(communityId, userId, sanitizedTitle, sanitizedContent);
+	const [created] = await communityRepository.insertPost(
+		communityId,
+		userId,
+		sanitizedTitle,
+		sanitizedContent,
+	);
+	if (!created) throw new Error(CommunityErrors.DB_INSERT_FAILED);
 
-	const posts = await communityRepository.getPostsByCommunity(communityId, 1, 1);
-	return { id: posts[0]?.id ?? "" };
+	return { id: created.id };
 }
 
 export async function removePost(requesterId: string, postId: string): Promise<void> {

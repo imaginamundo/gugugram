@@ -15,10 +15,10 @@ vi.mock("../../repositories/community", () => ({
 	communityRepository: {
 		getCommunityBySlug: vi.fn(),
 		getCommunityById: vi.fn(),
-		insertCommunity: vi.fn().mockResolvedValue(undefined),
+		insertCommunity: vi.fn().mockResolvedValue([{ id: "community-1" }]),
 		insertSubscriber: vi.fn().mockResolvedValue(undefined),
 		getSubscriber: vi.fn().mockResolvedValue(null),
-		insertPost: vi.fn().mockResolvedValue(undefined),
+		insertPost: vi.fn().mockResolvedValue([{ id: "post-1" }]),
 		getPostsByCommunity: vi.fn().mockResolvedValue([{ id: "post-1" }]),
 		getPostById: vi.fn(),
 		insertResponse: vi.fn().mockResolvedValue(undefined),
@@ -59,12 +59,12 @@ describe("Property 1: Sanitização de título e descrição na criação de com
 				(communityRepository.getCommunityById as ReturnType<typeof vi.fn>).mockResolvedValue(
 					undefined,
 				);
-				(communityRepository.insertCommunity as ReturnType<typeof vi.fn>).mockResolvedValue(
+				(communityRepository.insertCommunity as ReturnType<typeof vi.fn>).mockResolvedValue([
+					{ id: "community-1" },
+				]);
+				(communityRepository.getCommunityBySlug as ReturnType<typeof vi.fn>).mockResolvedValue(
 					undefined,
 				);
-				(communityRepository.getCommunityBySlug as ReturnType<typeof vi.fn>)
-					.mockResolvedValueOnce(undefined)
-					.mockResolvedValueOnce({ id: "c-1", slug: "slug" });
 				(communityRepository.insertSubscriber as ReturnType<typeof vi.fn>).mockResolvedValue(
 					undefined,
 				);
@@ -90,12 +90,12 @@ describe("Property 1: Sanitização de título e descrição na criação de com
 			fc.asyncProperty(validTitleArb, textWithHtmlArb, async (title, dirtyDesc) => {
 				vi.clearAllMocks();
 				const description = dirtyDesc.slice(0, 500);
-				(communityRepository.getCommunityBySlug as ReturnType<typeof vi.fn>)
-					.mockResolvedValueOnce(undefined)
-					.mockResolvedValueOnce({ id: "c-1", slug: "slug" });
-				(communityRepository.insertCommunity as ReturnType<typeof vi.fn>).mockResolvedValue(
+				(communityRepository.getCommunityBySlug as ReturnType<typeof vi.fn>).mockResolvedValue(
 					undefined,
 				);
+				(communityRepository.insertCommunity as ReturnType<typeof vi.fn>).mockResolvedValue([
+					{ id: "community-1" },
+				]);
 				(communityRepository.insertSubscriber as ReturnType<typeof vi.fn>).mockResolvedValue(
 					undefined,
 				);
@@ -134,7 +134,9 @@ describe("Property 7: Sanitização de título e conteúdo do post", () => {
 				(communityRepository.getSubscriber as ReturnType<typeof vi.fn>).mockResolvedValue({
 					id: "sub-1",
 				});
-				(communityRepository.insertPost as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+				(communityRepository.insertPost as ReturnType<typeof vi.fn>).mockResolvedValue([
+					{ id: "post-1" },
+				]);
 				(communityRepository.getPostsByCommunity as ReturnType<typeof vi.fn>).mockResolvedValue([
 					{ id: "post-1" },
 				]);
@@ -167,7 +169,9 @@ describe("Property 7: Sanitização de título e conteúdo do post", () => {
 				(communityRepository.getSubscriber as ReturnType<typeof vi.fn>).mockResolvedValue({
 					id: "sub-1",
 				});
-				(communityRepository.insertPost as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+				(communityRepository.insertPost as ReturnType<typeof vi.fn>).mockResolvedValue([
+					{ id: "post-1" },
+				]);
 				(communityRepository.getPostsByCommunity as ReturnType<typeof vi.fn>).mockResolvedValue([
 					{ id: "post-1" },
 				]);

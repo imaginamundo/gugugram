@@ -14,7 +14,7 @@ vi.mock("../../infra/storage", () => ({
 vi.mock("../../repositories/community", () => ({
 	communityRepository: {
 		getCommunityBySlug: vi.fn(),
-		insertCommunity: vi.fn().mockResolvedValue(undefined),
+		insertCommunity: vi.fn().mockResolvedValue([{ id: "community-1" }]),
 		insertSubscriber: vi.fn().mockResolvedValue(undefined),
 	},
 }));
@@ -93,9 +93,7 @@ describe("createCommunity image validation", () => {
 	});
 
 	it("uploads and inserts when the image is valid", async () => {
-		(communityRepository.getCommunityBySlug as Mock)
-			.mockResolvedValueOnce(undefined)
-			.mockResolvedValueOnce({ id: "c-1", slug: "valid-title" });
+		(communityRepository.getCommunityBySlug as Mock).mockResolvedValue(undefined);
 		(imageSize as Mock).mockReturnValue({ width: 30, height: 30 });
 
 		await createCommunity("user-1", "Valid Title", null, tinyPngDataUrl);
