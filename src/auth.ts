@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { username } from "better-auth/plugins";
+import { AUTH_SECRET } from "astro:env/server";
 import { db } from "@infra/database";
 import { sendEmail } from "@email/email";
 import * as schema from "@schemas/database";
@@ -10,8 +11,11 @@ import {
 	resetPasswordTextTemplate,
 } from "@email/templates/resetPassword";
 
+const baseURL = import.meta.env.DEV ? "http://localhost:4321" : import.meta.env.SITE;
+
 export const auth = betterAuth({
-	baseURL: import.meta.env.SITE,
+	baseURL,
+	secret: AUTH_SECRET,
 	database: drizzleAdapter(db, {
 		provider: "pg",
 		schema: {
