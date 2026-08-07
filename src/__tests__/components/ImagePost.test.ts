@@ -48,6 +48,29 @@ describe("ImagePost", () => {
 		expect(screen.queryByText("0")).not.toBeInTheDocument();
 	});
 
+	describe("above-the-fold loading hints", () => {
+		it.each([0, 1, 19])("loads index %i eagerly with high priority", (index) => {
+			render(ImagePost, { props: { post: basePost, index } });
+			const image = screen.getByRole("img");
+			expect(image).toHaveAttribute("loading", "eager");
+			expect(image).toHaveAttribute("fetchpriority", "high");
+		});
+
+		it.each([20, 119])("lazy-loads index %i", (index) => {
+			render(ImagePost, { props: { post: basePost, index } });
+			const image = screen.getByRole("img");
+			expect(image).toHaveAttribute("loading", "lazy");
+			expect(image).toHaveAttribute("fetchpriority", "auto");
+		});
+
+		it("lazy-loads when no index is provided", () => {
+			render(ImagePost, { props: { post: basePost } });
+			const image = screen.getByRole("img");
+			expect(image).toHaveAttribute("loading", "lazy");
+			expect(image).toHaveAttribute("fetchpriority", "auto");
+		});
+	});
+
 	it("sets imageModalStore.post on click", async () => {
 		const { imageModalStore } = await import("../../stores/imagePostModalStore.svelte");
 		const user = userEvent.setup();

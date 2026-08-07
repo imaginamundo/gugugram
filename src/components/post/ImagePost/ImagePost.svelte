@@ -10,6 +10,12 @@
 	}
 
 	const accessibleName = $derived(post.description ? post.description : `Foto de ${post.username}`);
+
+	// The first screenful of the grid loads eagerly so the LCP image is not
+	// deferred. `index` is 0-based, so it must be compared against `undefined`
+	// rather than tested for truthiness — `!!0` is `false` and would lazy-load
+	// the very first image.
+	const isAboveTheFold = $derived(index !== undefined && index < 20);
 </script>
 
 <a
@@ -27,7 +33,7 @@
 		width="120"
 		height="120"
 		alt={accessibleName}
-		loading={!!index && index < 20 ? "eager" : "lazy"}
-		fetchpriority={!!index && index < 20 ? "high" : "auto"}
+		loading={isAboveTheFold ? "eager" : "lazy"}
+		fetchpriority={isAboveTheFold ? "high" : "auto"}
 	/>
 </a>
