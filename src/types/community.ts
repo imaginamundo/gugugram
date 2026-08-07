@@ -26,6 +26,13 @@ export type CommunityPostDetailType = CommunityPostType & {
 	responses: CommunityResponseType[];
 };
 
+/**
+ * A post plus its author's username and nothing else — no aggregate counts and
+ * no responses. Used by the paginated detail view, which counts and pages the
+ * responses separately instead of loading all of them.
+ */
+export type CommunityPostWithAuthorType = Omit<CommunityPostType, "responseCount" | "lastActivity">;
+
 export type CommunityResponseType = {
 	id: string;
 	postId: string;
