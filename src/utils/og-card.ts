@@ -39,9 +39,9 @@ export function buildOgCardSvg(imageHref: string, username: string): string {
   <rect x="41" y="597" width="1198" height="2" fill="#808080"/>
   <rect x="1237" y="41" width="2" height="558" fill="#808080"/>
 
-  	<!-- title bar -->
-  	<rect x="44" y="44" width="1192" height="44" fill="url(#title-bar)"/>
-  	<text x="56" y="74" font-size="24" font-weight="bold" fill="#ffffff">Gugugram - Imagem de ${safeUsername}</text>
+ 	<!-- title bar -->
+ 	<rect x="44" y="44" width="1192" height="53" fill="url(#title-bar)"/>
+ 	<text x="56" y="80" font-size="30" font-weight="bold" fill="#ffffff">Gugugram - Imagem de ${safeUsername}</text>
 
 	<!-- 1:1 image with the site's image-border (gray top/left, white bottom/right),
 	     filling down to the window body bottom -->
@@ -53,8 +53,8 @@ export function buildOgCardSvg(imageHref: string, username: string): string {
 	<image href="${safeHref}" x="53" y="110" width="478" height="478" preserveAspectRatio="xMidYMid slice" image-rendering="optimizeSpeed"/>
 
   <!-- profile header, matching the site's post page -->
-  <text x="552" y="160" font-size="44" font-weight="bold" fill="#222222" letter-spacing="1">${safeUsername}</text>
-  <text x="552" y="210" font-size="24" fill="#222222">Compartilhou uma foto!</text>
+  <text x="552" y="172" font-size="70" font-weight="bold" fill="#222222" letter-spacing="1">${safeUsername}</text>
+  <text x="552" y="245" font-size="50" fill="#222222">Compartilhou uma foto!</text>
 
 	<!-- comments-style sunken field, bottom-aligned with the loaded image -->
 	<rect x="552" y="489" width="664" height="100" fill="#c0c0c0"/>
@@ -67,6 +67,6 @@ export function buildOgCardSvg(imageHref: string, username: string): string {
 	<rect x="552" y="586" width="664" height="2" fill="#dfdfdf"/>
 	<rect x="1213" y="489" width="2" height="100" fill="#dfdfdf"/>
 	<rect x="555" y="492" width="658" height="94" fill="#ffffff"/>
-	<text x="580" y="550" font-size="22" fill="#222222">Veja a foto e os comentários na página!</text>
+	<text x="580" y="555" font-size="35" fill="#222222">Veja a foto e os comentários na página!</text>
   </svg>`;
 }
