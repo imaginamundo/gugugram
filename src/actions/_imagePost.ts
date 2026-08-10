@@ -73,7 +73,6 @@ export const uploadImagePost = defineAction({
 
 const DeleteImageSchema = z.object({
 	id: z.string(),
-	imageUrl: z.string(),
 });
 
 export const deleteImagePost = defineAction({
@@ -83,7 +82,7 @@ export const deleteImagePost = defineAction({
 		if (!schemaSuccess) return { success: false as const, error: "Dados inválidos." };
 
 		try {
-			await removeImagePost(session.id, fields.id, fields.imageUrl);
+			await removeImagePost(session.id, fields.id);
 			trackServerEvent({
 				distinctId: session.username ?? session.id,
 				event: "image_post_deleted",
@@ -97,9 +96,6 @@ export const deleteImagePost = defineAction({
 			if (error instanceof Error) {
 				let message: string;
 				switch (error.message) {
-					case ImagePostErrors.INVALID_IMAGE_URL:
-						message = "URL de imagem inválida.";
-						break;
 					case ImagePostErrors.POST_NOT_FOUND_OR_FORBIDDEN:
 						message = "Imagem não encontrada ou sem permissão para exclusão.";
 						break;

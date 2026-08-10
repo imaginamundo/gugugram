@@ -1,7 +1,7 @@
 import sanitizeHtml from "sanitize-html";
 import { imagePostRepository } from "@repositories/imagePost.ts";
 import { ImagePostErrors } from "@customTypes/errors";
-import { checkRateLimit } from "@utils/rate-limit";
+import { checkRateLimit } from "@utils/content-rate-limit";
 import { checkImage, uploadImage } from "@services/uploadImage/uploadImage";
 import { deleteImage } from "@services/uploadImage/deleteImage";
 
@@ -112,17 +112,15 @@ export async function processAndUploadImagePost(userId: string, file: File, desc
 	return uploadedImage;
 }
 
-export async function removeImagePost(userId: string, postId: string, imageUrl: string) {
-	const imageKey = imageUrl.split("/").pop();
-	if (!imageKey) throw new Error(ImagePostErrors.INVALID_IMAGE_URL);
+export async function removeImagePost(userId: string, postId: string) {
+	const deletedRows = await imagePostRepository.deletePost(postId, userId);
 
-	const deletedRow = await imagePostRepository.deletePost(postId, userId);
-
-	if (deletedRow.length === 0) {
+	if (deletedRows.length === 0) {
 		throw new Error(ImagePostErrors.POST_NOT_FOUND_OR_FORBIDDEN);
 	}
 
-	await deleteImage(imageKey);
+	const imageKey = deletedRows[0].image.split("/").pop();
+	if (imageKey) await deleteImage(imageKey);
 }
 
 export async function addImageComment(userId: string, imageId: string, body: string) {

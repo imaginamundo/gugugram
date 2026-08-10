@@ -1,6 +1,7 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
+import { checkAuthRateLimit } from "@utils/auth-rate-limit";
 import { sendPasswordResetEmail, performPasswordReset } from "@services/auth";
 import { trackServerEvent, flushServerEvents } from "@observability/tracking-server";
 
@@ -15,6 +16,7 @@ export const requestPasswordReset = defineAction({
 		if (!schemaSuccess) throw new Error("Dados inválidos.");
 
 		try {
+			checkAuthRateLimit(context.clientAddress, fields.email.toLowerCase());
 			await sendPasswordResetEmail(
 				fields.email,
 				`${import.meta.env.SITE}/nova-senha`,
@@ -50,6 +52,7 @@ export const resetPassword = defineAction({
 		if (!schemaSuccess) return { success: false as const, error: "Token inválido." };
 
 		try {
+			checkAuthRateLimit(context.clientAddress, fields.token);
 			await performPasswordReset(fields.newPassword, fields.token, context.request.headers);
 			trackServerEvent({
 				distinctId: "anonymous",

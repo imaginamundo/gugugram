@@ -123,15 +123,6 @@ describe("imagePost service: known failures throw SCREAMING_SNAKE_CASE error cod
 		);
 	});
 
-	it("INVALID_IMAGE_URL when imageUrl has no extractable key", async () => {
-		await fc.assert(
-			fc.asyncProperty(fc.constantFrom("https://example.com/"), async (imageUrl) => {
-				await assertThrowsErrorCode(() => removeImagePost("user-1", "post-1", imageUrl));
-			}),
-			{ numRuns: 50 },
-		);
-	});
-
 	it("POST_NOT_FOUND_OR_FORBIDDEN when deletePost returns []", async () => {
 		(imagePostRepository.deletePost as ReturnType<typeof vi.fn>).mockResolvedValue([]);
 		await fc.assert(
@@ -139,13 +130,33 @@ describe("imagePost service: known failures throw SCREAMING_SNAKE_CASE error cod
 				fc.string({ minLength: 1 }),
 				fc.string({ minLength: 1 }),
 				async (userId, postId) => {
-					await assertThrowsErrorCode(() =>
-						removeImagePost(userId, postId, "https://example.com/img.png"),
-					);
+					await assertThrowsErrorCode(() => removeImagePost(userId, postId));
 				},
 			),
 			{ numRuns: 50 },
 		);
+	});
+
+	it("deletes only the image stored on the deleted post row, never a caller-supplied key", async () => {
+		(imagePostRepository.deletePost as ReturnType<typeof vi.fn>).mockResolvedValue([
+			{ id: "post-1", image: "https://utfs.io/f/real-key.png" },
+		]);
+
+		await removeImagePost("user-1", "post-1");
+
+		expect(imagePostRepository.deletePost).toHaveBeenCalledWith("post-1", "user-1");
+		expect(utapi.deleteFiles).toHaveBeenCalledTimes(1);
+		expect(utapi.deleteFiles).toHaveBeenCalledWith("real-key.png");
+	});
+
+	it("does not delete anything when the deleted row has no image url", async () => {
+		(imagePostRepository.deletePost as ReturnType<typeof vi.fn>).mockResolvedValue([
+			{ id: "post-1", image: "" },
+		]);
+
+		await removeImagePost("user-1", "post-1");
+
+		expect(utapi.deleteFiles).not.toHaveBeenCalled();
 	});
 
 	it("COMMENT_INVALID when sanitized body is empty", async () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
 
-import { checkRateLimit } from "../../utils/rate-limit";
+import { checkRateLimit } from "../../utils/content-rate-limit";
 
 const RATE_LIMIT_MS = 5000;
 

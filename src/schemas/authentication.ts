@@ -36,7 +36,7 @@ const emailSchema = z
 
 const usernameOrEmailSchema = z.union([usernameSchema, emailSchema]);
 
-const passwordSchema = z.string().min(1, OBLIGATORY_FIELD).max(40, FIELD_SIZE_LIMIT(14));
+const passwordSchema = z.string().min(1, OBLIGATORY_FIELD).max(40, FIELD_SIZE_LIMIT(40));
 
 export const LoginSchema = z.object({
 	identity: usernameOrEmailSchema,

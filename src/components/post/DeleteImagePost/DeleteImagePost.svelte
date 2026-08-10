@@ -23,7 +23,6 @@
 			<div class="flex gap justify-center mt">
 				<form action={actions.deleteImagePost} method="POST" class="flex gap">
 					<input type="hidden" name="id" value={post.id} />
-					<input type="hidden" name="imageUrl" value={post.image} />
 					<Button>
 						<img src="/icons/recycle_bin_empty-1.png" alt="Ícone de restrição" />
 						Quero apagar essa imagem

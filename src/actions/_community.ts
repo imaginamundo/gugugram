@@ -2,7 +2,7 @@ import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { parseSchema } from "@utils/validation";
 import { withAuth } from "@utils/action-guard";
-import { checkRateLimit } from "@utils/rate-limit";
+import { checkRateLimit } from "@utils/content-rate-limit";
 import {
 	createCommunity as createCommunityService,
 	removeCommunity,

@@ -1,7 +1,7 @@
 import sanitizeHtml from "sanitize-html";
 import { messageRepository } from "@repositories/message";
 import { MessageErrors } from "@customTypes/errors";
-import { checkRateLimit } from "@utils/rate-limit";
+import { checkRateLimit } from "@utils/content-rate-limit";
 
 const RATE_LIMIT_MS = 5000;
 

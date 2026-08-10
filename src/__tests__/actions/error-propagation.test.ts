@@ -63,7 +63,6 @@ function validSendMessageInput(): FormData {
 function validDeleteImagePostInput(): FormData {
 	const fd = new FormData();
 	fd.append("id", "post-123");
-	fd.append("imageUrl", "https://example.com/img.png");
 	return fd;
 }
 
@@ -93,7 +92,6 @@ const SWITCH_CODES = [
 	"INVALID_IMAGE_DIMENSIONS",
 	"UPLOAD_FAILED",
 	"DB_INSERT_FAILED",
-	"INVALID_IMAGE_URL",
 	"POST_NOT_FOUND_OR_FORBIDDEN",
 	"COMMENT_INVALID",
 	"POST_NOT_FOUND",
@@ -148,13 +146,6 @@ type ErrorCodeCase = {
 };
 
 const knownErrorCodes: ErrorCodeCase[] = [
-	{
-		code: "INVALID_IMAGE_URL",
-		action: deleteImagePost as unknown as ActionConfig,
-		input: validDeleteImagePostInput,
-		mockKey: "removeImagePost",
-		svcNs: imagePostSvc as unknown as Record<string, ReturnType<typeof vi.fn>>,
-	},
 	{
 		code: "POST_NOT_FOUND_OR_FORBIDDEN",
 		action: deleteImagePost as unknown as ActionConfig,
@@ -264,7 +255,6 @@ describe("action response never exposes DB error details", () => {
 
 	it("action error string contains no SQL fragments when service throws an Error_Code", async () => {
 		const errorCodeArb = fc.constantFrom(
-			"INVALID_IMAGE_URL",
 			"POST_NOT_FOUND_OR_FORBIDDEN",
 			"COMMENT_INVALID",
 			"POST_NOT_FOUND",

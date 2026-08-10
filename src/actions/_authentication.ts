@@ -1,6 +1,7 @@
 import { defineAction } from "astro:actions";
 import { authenticateUser, registerNewUser } from "@services/auth";
 import { parseSchema } from "@utils/validation";
+import { checkAuthRateLimit } from "@utils/auth-rate-limit";
 import { LoginSchema, RegisterSchema } from "@schemas/authentication";
 import { applySetCookie } from "@utils/cookie";
 import {
@@ -24,6 +25,7 @@ export const login = defineAction({
 		}
 
 		try {
+			checkAuthRateLimit(context.clientAddress, fields.identity.toLowerCase());
 			const { data, headers } = await authenticateUser(fields.identity, fields.password);
 
 			applySetCookie(headers, context.cookies);
@@ -69,6 +71,7 @@ export const register = defineAction({
 		}
 
 		try {
+			checkAuthRateLimit(context.clientAddress, fields.email.toLowerCase());
 			const { headers } = await registerNewUser(fields.email, fields.username, fields.password);
 
 			applySetCookie(headers, context.cookies);
