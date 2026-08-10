@@ -428,6 +428,13 @@ label:focus-within {
 	position: relative;
 	padding: 0;
 }
+.button-image:focus:after {
+    content: ' ';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-shadow: inset white 0 0 0 3px;
+}
 .image-comment-counter {
 	position: absolute;
 	top: 1px;
@@ -438,6 +445,12 @@ label:focus-within {
 .image-border {
 	box-shadow: var(--border-image);
 	padding: 1px;
+}
+.image-focus:focus-within::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 10px 10px rgba(246, 218, 33, 1);
 }
 
 .field-border {
