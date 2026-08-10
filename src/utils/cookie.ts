@@ -8,7 +8,11 @@ export function applySetCookie(headers: Headers, cookies: AstroCookies) {
 	setCookies.forEach((cookieStr) => {
 		const parts = cookieStr.split(";").map((p) => p.trim());
 		const [nameValue, ...attributes] = parts;
-		const [name, value] = nameValue.split("=");
+
+		const eqIndex = nameValue.indexOf("=");
+		if (eqIndex === -1) return;
+		const name = nameValue.slice(0, eqIndex);
+		const value = nameValue.slice(eqIndex + 1);
 
 		if (!name || value === undefined) return;
 

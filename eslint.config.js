@@ -15,7 +15,6 @@ export default [
 			"node_modules/",
 			".vercel",
 			".git",
-			"src/env.d.ts",
 			"src/styles/**",
 		],
 	},
@@ -201,6 +200,14 @@ export default [
 	},
 	{
 		files: ["src/__tests__/**"],
+		rules: {
+			"boundaries/dependencies": "off",
+			"boundaries/no-unknown-dependencies": "off",
+			"boundaries/no-unknown-files": "off",
+		},
+	},
+	{
+		files: ["src/env.d.ts"],
 		rules: {
 			"boundaries/dependencies": "off",
 			"boundaries/no-unknown-dependencies": "off",
