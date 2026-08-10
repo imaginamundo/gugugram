@@ -12,6 +12,7 @@
 			"@infra/*": ["./src/infra/*"],
 			"@observability/*": ["./src/observability/*"],
 			"@auth": ["./src/auth.ts"],
+			"@auth-client": ["./src/auth-client.ts"],
 			"@email/*": ["./src/email/*"],
 			"@customTypes/*": ["./src/types/*"],
 			"@actions/*": ["./src/actions/*"],

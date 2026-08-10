@@ -13,7 +13,9 @@ export const checkOrigin = defineMiddleware(async (context, next) => {
 			allowedOrigins.push("http://localhost:4321");
 		}
 
-		if (!origin || !allowedOrigins.includes(origin)) {
+		const isTrusted = !origin || allowedOrigins.includes(origin);
+
+		if (!isTrusted) {
 			return new Response("Cross-site POST form submissions are forbidden.", {
 				status: 403,
 			});

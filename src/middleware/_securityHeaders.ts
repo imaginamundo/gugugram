@@ -3,7 +3,7 @@ import { defineMiddleware } from "astro:middleware";
 const SECURITY_HEADERS = {
 	"X-Frame-Options": "SAMEORIGIN",
 	"X-Content-Type-Options": "nosniff",
-	"Referrer-Policy": "no-referrer",
+	"Referrer-Policy": "same-origin",
 	"Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
 	"Strict-Transport-Security": "max-age=31536000",
 	"Content-Security-Policy": [

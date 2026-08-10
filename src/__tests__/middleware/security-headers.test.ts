@@ -11,7 +11,7 @@ describe("securityHeaders middleware", () => {
 
 		expect(res.headers.get("X-Frame-Options")).toBe("SAMEORIGIN");
 		expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
-		expect(res.headers.get("Referrer-Policy")).toBe("no-referrer");
+		expect(res.headers.get("Referrer-Policy")).toBe("same-origin");
 		expect(res.headers.get("Strict-Transport-Security")).toBe("max-age=31536000");
 		expect(res.headers.get("Permissions-Policy")).toContain("geolocation=()");
 

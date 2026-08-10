@@ -3,6 +3,7 @@
 	import Button from "@ui/Button.svelte";
 	import Modal from "@ui/Modal.svelte";
 	import { resetTracking, trackEvent } from "@utils/tracking";
+	import { authClient } from "@auth-client";
 
 	let modalRef = $state<HTMLDialogElement | null>(null);
 
@@ -11,27 +12,18 @@
 		modalRef?.showModal();
 	}
 
-	function handleLogout(e: SubmitEvent) {
+	async function handleLogout(e: SubmitEvent) {
 		e.preventDefault();
 
 		trackEvent("user_logged_out");
-
 		resetTracking();
 
-		const form = e.target as HTMLFormElement;
-
-		setTimeout(() => {
-    		// Log out via fetch instead of a programmatic form.submit(): Safari
-    		// sends Origin: null for script-initiated form submissions (which the
-    		// origin check would reject)
-			fetch(form.action, { method: "POST", credentials: "same-origin" }).finally(() => {
-				window.location.href = "/";
-			});
-		}, 250);
+		await authClient.signOut();
+		window.location.href = "/";
 	}
 </script>
 
-<form action="/api/logout" method="POST" onsubmit={handleOpenModal}>
+<form onsubmit={handleOpenModal}>
 	<Button type="submit">Sair da conta</Button>
 </form>
 
@@ -40,8 +32,8 @@
 	<div class="window-body">
 		<p>Tem certeza que deseja sair da sua conta?</p>
 		<div class="flex gap justify-center mt">
-			<form action="/api/logout" method="POST" onsubmit={handleLogout}>
-				<Button type="submit">
+			<form onsubmit={handleLogout}>
+				<Button>
 					<img src="/icons/trust1_restric-1.png" alt="" aria-hidden="true" />
 					Sim, quero sair
 				</Button>

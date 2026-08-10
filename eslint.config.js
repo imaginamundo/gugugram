@@ -8,15 +8,7 @@ import boundaries from "eslint-plugin-boundaries";
 
 export default [
 	{
-		ignores: [
-			"drizzle/",
-			"dist/",
-			".astro/",
-			"node_modules/",
-			".vercel",
-			".git",
-			"src/styles/**",
-		],
+		ignores: ["drizzle/", "dist/", ".astro/", "node_modules/", ".vercel", ".git", "src/styles/**"],
 	},
 	{
 		languageOptions: {
@@ -67,7 +59,7 @@ export default [
 				{ type: "middleware", pattern: "src/middleware/**" },
 				{ type: "styles", pattern: "src/styles/**" },
 			],
-			"boundaries/files": [{ category: "auth", pattern: "src/auth.ts" }],
+			"boundaries/files": [{ category: "auth", pattern: ["src/auth.ts", "src/auth-client.ts"] }],
 		},
 		rules: {
 			"boundaries/dependencies": [
@@ -124,6 +116,7 @@ export default [
 										},
 									},
 								},
+								{ to: { file: { categories: "auth" } } },
 							],
 						},
 						{
