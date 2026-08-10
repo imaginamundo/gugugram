@@ -428,12 +428,19 @@ label:focus-within {
 	position: relative;
 	padding: 0;
 }
+.button-image:focus {
+    background-color: #000080;
+}
+.button-image:focus img {
+    mix-blend-mode: screen;
+    filter: grayscale(100%);
+}
 .button-image:focus:after {
     content: ' ';
     position: absolute;
     width: 100%;
     height: 100%;
-    box-shadow: inset white 0 0 0 3px;
+    box-shadow: var(--border-image);
 }
 .image-comment-counter {
 	position: absolute;
