@@ -131,10 +131,10 @@
 </script>
 
 <Button
-	class="button-grayscale button-borderless eader-button flex gap center p w-full justify-center"
+	class="button-grayscale button-borderless header-button flex gap center p w-full justify-center"
 	onclick={triggerFileInput}
 >
-	<img src="/icons/camera3_plus-3.png" width="32" height="32" alt="Ícone de casa" />
+	<img src="/icons/camera3_plus-3.png" width="32" height="32" alt="" aria-hidden="true" />
 	Adicionar foto
 </Button>
 <input

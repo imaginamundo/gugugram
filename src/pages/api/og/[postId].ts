@@ -1,11 +1,20 @@
 import type { APIRoute } from "astro";
-import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
-import { html } from "satori-html";
 import { getImagePost } from "@services/imagePost";
+import { ALLOWED_IMAGE_HOSTS, buildOgCardSvg, OG_CARD_WIDTH } from "@utils/og-card";
 
-const fontFile = await fetch("https://og-playground.vercel.app/inter-latin-ext-700-normal.woff");
-const fontData = await fontFile.arrayBuffer();
+async function fetchPostImage(url: string): Promise<Buffer | null> {
+	try {
+		const parsed = new URL(url);
+		if (!ALLOWED_IMAGE_HOSTS.test(parsed.host)) return null;
+
+		const response = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+		if (!response.ok) return null;
+		return Buffer.from(await response.arrayBuffer());
+	} catch {
+		return null;
+	}
+}
 
 export const GET: APIRoute = async ({ params, request }) => {
 	const { postId } = params;
@@ -20,55 +29,25 @@ export const GET: APIRoute = async ({ params, request }) => {
 		? post.image
 		: new URL(post.image, requestUrl.origin).toString();
 
-	const markup = html`
-		<div
-			style="display: flex; background-color: #008080; width: 100%; height: 100%; padding: 40px; justify-content: center; align-items: center;"
-		>
-			<div
-				style="display: flex; flex-direction: column; background-color: #c0c0c0; width: 100%; height: 100%; border-top: 4px solid #ffffff; border-left: 4px solid #ffffff; border-right: 4px solid #808080; border-bottom: 4px solid #808080; box-shadow: 10px 10px 0px rgba(0,0,0,0.5);"
-			>
-				<div
-					style="display: flex; background-color: #000080; color: #ffffff; font-size: 30px; font-weight: bold; align-items: center;"
-				>
-					<div style="margin: 10px 20px">Gugugram - A rede social da galera!</div>
-				</div>
+	const svg = buildOgCardSvg(imageUrl, post.username);
 
-				<div style="display: flex; flex-direction: row; padding: 30px; gap: 40px; height: 89%;">
-					<img
-						src="${imageUrl}"
-						style="width: 450px; height: 100%; object-fit: cover; border-top: 4px solid #808080; border-left: 4px solid #808080; border-right: 4px solid #ffffff; border-bottom: 4px solid #ffffff;"
-					/>
-
-					<div
-						style="display: flex; flex-direction: column; justify-content: space-between; flex: 1;"
-					>
-						<div style="display: flex; flex-direction: column;">
-							<h1 style="font-size: 50px; margin: 0; color: #000;">${post.username}</h1>
-							<p style="font-size: 30px; color: #333; margin-top: 10px;">Compartilhou uma foto!</p>
-						</div>
-
-						<div
-							style="display: flex; background-color: #ffffff; padding: 20px; border-top: 4px solid #808080; border-left: 4px solid #808080; border-right: 4px solid #ffffff; border-bottom: 4px solid #ffffff; font-size: 28px; color: #000;"
-						>
-							Ver a foto original e ler os comentários na página!
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	`;
-
-	const svg = await satori(markup, {
-		width: 1200,
-		height: 630,
-		fonts: [{ name: "Inter", data: fontData, weight: 700, style: "normal" }],
+	const resvg = new Resvg(svg, {
+		font: {
+			loadSystemFonts: true,
+		},
+		imageRendering: 1,
+		fitTo: { mode: "width", value: OG_CARD_WIDTH },
 	});
 
-	const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 1200 } });
-	const pngBuffer = resvg.render().asPng();
-	const webData = new Uint8Array(pngBuffer);
+	const unresolved = resvg.imagesToResolve();
+	if (unresolved.length > 0) {
+		const image = await fetchPostImage(unresolved[0]);
+		if (image) resvg.resolveImage(unresolved[0], image);
+	}
 
-	return new Response(webData, {
+	const png = resvg.render().asPng();
+
+	return new Response(new Uint8Array(png), {
 		headers: {
 			"Content-Type": "image/png",
 			"Cache-Control": "public, max-age=31536000, immutable",

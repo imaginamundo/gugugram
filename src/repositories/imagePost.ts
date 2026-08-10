@@ -1,6 +1,6 @@
 import { db } from "@infra/database";
 import { and, eq, desc, sql } from "drizzle-orm";
-import { imagePosts, imagePostComments } from "@schemas/database";
+import { imagePosts, imagePostComments, users } from "@schemas/database";
 
 const commentsCountExtra = {
 	commentsCount:
@@ -60,6 +60,17 @@ export const imagePostRepository = {
 			where: eq(imagePosts.authorId, authorId),
 			orderBy: [desc(imagePosts.createdAt)],
 		});
+	},
+
+	// Used by the sitemap: recent posts with their author usernames so each post
+	// URL (/[username]/[postId]) can be listed. No comment counts needed here.
+	getPostsForSitemap: async (limit = 1000) => {
+		return db
+			.select({ id: imagePosts.id, username: users.username })
+			.from(imagePosts)
+			.innerJoin(users, eq(imagePosts.authorId, users.id))
+			.orderBy(desc(imagePosts.createdAt))
+			.limit(limit);
 	},
 
 	// Used by account deletion. The post rows cascade away with the user, but we

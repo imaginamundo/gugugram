@@ -42,6 +42,13 @@ export async function getLatestImagePosts(): Promise<PostType[]> {
 	}));
 }
 
+export async function getPostsForSitemap(
+	limit = 1000,
+): Promise<{ id: string; username: string }[]> {
+	const posts = await imagePostRepository.getPostsForSitemap(limit);
+	return posts.map(({ id, username }) => ({ id, username }));
+}
+
 export async function getImagePosts(username: string): Promise<PostType[]> {
 	const user = await imagePostRepository.getPostsByUsername(username);
 
