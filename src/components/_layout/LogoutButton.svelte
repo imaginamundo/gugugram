@@ -21,7 +21,12 @@
 		const form = e.target as HTMLFormElement;
 
 		setTimeout(() => {
-			form.submit();
+    		// Log out via fetch instead of a programmatic form.submit(): Safari
+    		// sends Origin: null for script-initiated form submissions (which the
+    		// origin check would reject)
+			fetch(form.action, { method: "POST", credentials: "same-origin" }).finally(() => {
+				window.location.href = "/";
+			});
 		}, 250);
 	}
 </script>
