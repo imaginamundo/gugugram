@@ -1,8 +1,29 @@
 import type { APIRoute } from "astro";
+import { mkdir, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { renderAsync } from "@resvg/resvg-js";
 import { getPostForOg } from "@services/imagePost";
 import { ALLOWED_IMAGE_HOSTS, buildOgCardSvg, OG_CARD_WIDTH } from "@utils/og-card";
 import { detectImageMime } from "@utils/imageMime";
+import { msSansSerifBase64 } from "@utils/og-fonts";
+
+let fontFilePathPromise: Promise<string | null> | null = null;
+
+function loadFontFilePath(): Promise<string | null> {
+	fontFilePathPromise ??= (async () => {
+		try {
+			const dir = join(tmpdir(), "gugugram-og-fonts");
+			await mkdir(dir, { recursive: true });
+			const file = join(dir, "ms-sans-serif.ttf");
+			await writeFile(file, Buffer.from(msSansSerifBase64, "base64"));
+			return file;
+		} catch {
+			return null;
+		}
+	})();
+	return fontFilePathPromise;
+}
 
 const FALLBACK_IMAGE =
 	"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
@@ -49,7 +70,15 @@ export const GET: APIRoute = async ({ params, request }) => {
 	const dataUri = (await fetchPostImageAsDataUri(imageUrl)) ?? FALLBACK_IMAGE;
 	const svg = buildOgCardSvg(dataUri, post.username);
 
+	const fontFilePath = await loadFontFilePath();
 	const rendered = await renderAsync(svg, {
+		font: fontFilePath
+			? {
+					loadSystemFonts: false,
+					fontFiles: [fontFilePath],
+					defaultFontFamily: "Microsoft Sans Serif",
+				}
+			: { loadSystemFonts: true },
 		imageRendering: 1,
 		fitTo: { mode: "width", value: OG_CARD_WIDTH },
 	});
