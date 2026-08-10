@@ -1,16 +1,34 @@
 import type { APIRoute } from "astro";
-import { Resvg } from "@resvg/resvg-js";
-import { getImagePost } from "@services/imagePost";
+import { renderAsync } from "@resvg/resvg-js";
+import { getPostForOg } from "@services/imagePost";
 import { ALLOWED_IMAGE_HOSTS, buildOgCardSvg, OG_CARD_WIDTH } from "@utils/og-card";
+import { detectImageMime } from "@utils/imageMime";
 
-async function fetchPostImage(url: string): Promise<Buffer | null> {
+const FALLBACK_IMAGE =
+	"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
+const IMAGE_FETCH_TIMEOUT_MS = 5_000;
+
+const OG_HEADERS: Record<string, string> = {
+	"Content-Type": "image/png",
+	"Cache-Control":
+		"public, s-maxage=31536000, stale-while-revalidate=31536000, max-age=31536000, immutable",
+};
+
+function pngResponse(png: Buffer): Response {
+	return new Response(new Uint8Array(png), { headers: OG_HEADERS });
+}
+
+async function fetchPostImageAsDataUri(url: string): Promise<string | null> {
 	try {
 		const parsed = new URL(url);
 		if (!ALLOWED_IMAGE_HOSTS.test(parsed.host)) return null;
 
-		const response = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+		const response = await fetch(url, { signal: AbortSignal.timeout(IMAGE_FETCH_TIMEOUT_MS) });
 		if (!response.ok) return null;
-		return Buffer.from(await response.arrayBuffer());
+
+		const data = Buffer.from(await response.arrayBuffer());
+		return `data:${detectImageMime(data)};base64,${data.toString("base64")}`;
 	} catch {
 		return null;
 	}
@@ -20,8 +38,7 @@ export const GET: APIRoute = async ({ params, request }) => {
 	const { postId } = params;
 	if (!postId) return new Response("Not found", { status: 404 });
 
-	const post = await getImagePost(postId);
-
+	const post = await getPostForOg(postId);
 	if (!post) return new Response("Not found", { status: 404 });
 
 	const requestUrl = new URL(request.url);
@@ -29,28 +46,13 @@ export const GET: APIRoute = async ({ params, request }) => {
 		? post.image
 		: new URL(post.image, requestUrl.origin).toString();
 
-	const svg = buildOgCardSvg(imageUrl, post.username);
+	const dataUri = (await fetchPostImageAsDataUri(imageUrl)) ?? FALLBACK_IMAGE;
+	const svg = buildOgCardSvg(dataUri, post.username);
 
-	const resvg = new Resvg(svg, {
-		font: {
-			loadSystemFonts: true,
-		},
+	const rendered = await renderAsync(svg, {
 		imageRendering: 1,
 		fitTo: { mode: "width", value: OG_CARD_WIDTH },
 	});
 
-	const unresolved = resvg.imagesToResolve();
-	if (unresolved.length > 0) {
-		const image = await fetchPostImage(unresolved[0]);
-		if (image) resvg.resolveImage(unresolved[0], image);
-	}
-
-	const png = resvg.render().asPng();
-
-	return new Response(new Uint8Array(png), {
-		headers: {
-			"Content-Type": "image/png",
-			"Cache-Control": "public, max-age=31536000, immutable",
-		},
-	});
+	return pngResponse(rendered.asPng());
 };

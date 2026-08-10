@@ -98,6 +98,14 @@ export async function getImagePostComments(postId: string): Promise<CommentType[
 	}));
 }
 
+export async function getPostForOg(
+	postId: string,
+): Promise<{ image: string; username: string } | null> {
+	const post = await imagePostRepository.getPostForOg(postId);
+	if (!post) return null;
+	return { image: post.image, username: post.author.username };
+}
+
 export async function processAndUploadImagePost(userId: string, file: File, description?: string) {
 	await checkImage(file);
 

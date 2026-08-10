@@ -42,6 +42,14 @@ export const imagePostRepository = {
 		});
 	},
 
+	getPostForOg: async (id: string) => {
+		return db.query.imagePosts.findFirst({
+			where: eq(imagePosts.id, id),
+			columns: { image: true },
+			with: { author: { columns: { username: true } } },
+		});
+	},
+
 	getPostWithCommentsById: async (id: string) => {
 		return db.query.imagePosts.findFirst({
 			where: eq(imagePosts.id, id),

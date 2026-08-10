@@ -52,7 +52,7 @@ describe("buildOgCardSvg", () => {
 		expect(svg).toContain('<rect x="552" y="588" width="664" height="1" fill="#ffffff"/>');
 		// CTA text sits near the bottom of its box, not centered.
 		expect(svg).toContain(
-			expect(svg).toContain('<text x="580" y="550" font-size="22" fill="#222222">Veja a foto e os comentários na página!</text>');
+			'<text x="580" y="550" font-size="22" fill="#222222">Veja a foto e os comentários na página!</text>',
 		);
 	});
 
