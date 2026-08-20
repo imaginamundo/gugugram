@@ -50,6 +50,13 @@
       "when": 1780932548532,
       "tag": "0006_outstanding_caretaker",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1785960921527,
+      "tag": "0007_fk_indexes",
+      "breakpoints": true
     }
   ]
 }
