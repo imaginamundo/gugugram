@@ -44,7 +44,7 @@ export const login = defineAction({
 				properties: { $session_id: sessionId || undefined },
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return {
 				success: true as const,

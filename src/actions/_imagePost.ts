@@ -34,7 +34,7 @@ export const uploadImagePost = defineAction({
 				properties: { has_description: !!fields.description },
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return {
 				success: true as const,
@@ -89,7 +89,7 @@ export const deleteImagePost = defineAction({
 				properties: { post_id: fields.id },
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return { success: true as const };
 		} catch (error) {
@@ -128,7 +128,7 @@ export const sendImagePostComment = defineAction({
 				properties: { image_id: fields.imageId },
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return { success: true as const };
 		} catch (error) {
@@ -169,7 +169,7 @@ export const deleteImagePostComment = defineAction({
 				properties: { comment_id: fields.commentId },
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return { success: true as const };
 		} catch (error) {

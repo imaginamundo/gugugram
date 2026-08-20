@@ -28,7 +28,7 @@ export const requestPasswordReset = defineAction({
 				event: "password_reset_requested",
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return {
 				success: true as const,
@@ -59,7 +59,7 @@ export const resetPassword = defineAction({
 				event: "password_reset_completed",
 			});
 
-			await flushServerEvents();
+			flushServerEvents();
 
 			return { success: true as const };
 		} catch {

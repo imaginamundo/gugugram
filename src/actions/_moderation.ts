@@ -32,7 +32,7 @@ export const reportImagePost = defineAction({
 				event: "moderation_report_submitted",
 				properties: { target_type: "image_post" },
 			});
-			await flushServerEvents();
+			flushServerEvents();
 			return { success: true as const };
 		} catch (error) {
 			return mapReportError(error);
@@ -58,7 +58,7 @@ export const reportImagePostComment = defineAction({
 				event: "moderation_report_submitted",
 				properties: { target_type: "image_post_comment" },
 			});
-			await flushServerEvents();
+			flushServerEvents();
 			return { success: true as const };
 		} catch (error) {
 			return mapReportError(error);
@@ -84,7 +84,7 @@ export const reportMessage = defineAction({
 				event: "moderation_report_submitted",
 				properties: { target_type: "message" },
 			});
-			await flushServerEvents();
+			flushServerEvents();
 			return { success: true as const };
 		} catch (error) {
 			return mapReportError(error);
@@ -110,7 +110,7 @@ export const reportUser = defineAction({
 				event: "moderation_report_submitted",
 				properties: { target_type: "user" },
 			});
-			await flushServerEvents();
+			flushServerEvents();
 			return { success: true as const };
 		} catch (error) {
 			return mapReportError(error);
