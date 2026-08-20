@@ -15,7 +15,7 @@ vi.mock("../../repositories/community", () => ({
 	communityRepository: {
 		getCommunityBySlug: vi.fn(),
 		getCommunityById: vi.fn(),
-		insertCommunity: vi.fn().mockResolvedValue(undefined),
+		insertCommunity: vi.fn().mockResolvedValue([{ id: "community-1" }]),
 		insertSubscriber: vi.fn().mockResolvedValue(undefined),
 		deleteSubscriber: vi.fn().mockResolvedValue(undefined),
 		getSubscriber: vi.fn(),
@@ -56,12 +56,12 @@ describe("Property 4: Criador é automaticamente assinante", () => {
 				async (ownerId, title) => {
 					vi.clearAllMocks();
 					const communityId = "c-" + Math.random().toString(36).slice(2);
-					(communityRepository.getCommunityBySlug as ReturnType<typeof vi.fn>)
-						.mockResolvedValueOnce(undefined)
-						.mockResolvedValueOnce({ id: communityId, slug: "slug" });
-					(communityRepository.insertCommunity as ReturnType<typeof vi.fn>).mockResolvedValue(
+					(communityRepository.getCommunityBySlug as ReturnType<typeof vi.fn>).mockResolvedValue(
 						undefined,
 					);
+					(communityRepository.insertCommunity as ReturnType<typeof vi.fn>).mockResolvedValue([
+						{ id: communityId },
+					]);
 					(communityRepository.insertSubscriber as ReturnType<typeof vi.fn>).mockResolvedValue(
 						undefined,
 					);
