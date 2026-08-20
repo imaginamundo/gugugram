@@ -255,16 +255,16 @@ export async function getCommunityPost(postId: string): Promise<CommunityPostDet
 const RESPONSES_PAGE_SIZE = 20;
 
 export async function getCommunityPostPaginated(postId: string, page: number) {
-	const postRow = await communityRepository.getPostById(postId);
-	if (!postRow) return null;
-
-	const author = await communityRepository.getPostWithResponses(postId);
-	if (!author) return null;
-
-	const [totalCount, responseRows] = await Promise.all([
+	// All three are keyed only by `postId`, so they run together. The post row
+	// deliberately does not carry its responses — they are counted and paged
+	// below instead of being loaded in full just to render one page of them.
+	const [postRow, totalCount, responseRows] = await Promise.all([
+		communityRepository.getPostWithAuthor(postId),
 		communityRepository.countResponsesByPost(postId),
 		communityRepository.getResponsesByPostPaginated(postId, page, RESPONSES_PAGE_SIZE),
 	]);
+
+	if (!postRow) return null;
 
 	const totalPages = Math.max(1, Math.ceil(totalCount / RESPONSES_PAGE_SIZE));
 
@@ -278,14 +278,14 @@ export async function getCommunityPostPaginated(postId: string, page: number) {
 	}));
 
 	const post: CommunityPostDetailType = {
-		id: author.id,
-		communityId: author.communityId,
-		title: author.title,
-		content: author.content,
-		authorId: author.authorId,
-		authorUsername: author.authorUsername,
+		id: postRow.id,
+		communityId: postRow.communityId,
+		title: postRow.title,
+		content: postRow.content,
+		authorId: postRow.authorId,
+		authorUsername: postRow.authorUsername,
 		responseCount: totalCount,
-		createdAt: author.createdAt,
+		createdAt: postRow.createdAt,
 		responses,
 	};
 
