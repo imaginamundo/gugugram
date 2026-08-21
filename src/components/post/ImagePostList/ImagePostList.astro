@@ -1,5 +1,6 @@
 ---
 import ImagePost from "@components/post/ImagePost/ImagePost.svelte";
+import ImagePostModal from "@components/post/ImagePostModal/ImagePostModal.svelte";
 import type { PostType } from "@services/imagePost";
 
 interface Props {
@@ -7,6 +8,15 @@ interface Props {
 }
 
 const { posts } = Astro.props;
+const session = Astro.locals.user;
+
+// The grid is the only thing that writes to `imageModalStore`, so the modal is
+// rendered here rather than in the global layout, where every page without a
+// grid (/sobre, /entrar, /termos…) was hydrating it eagerly for nothing.
+// `client:idle` is safe at both ends: until the grid hydrates each post is
+// still a real `<a href>` to the standalone post page, and a click landing
+// after the grid but before the modal only sets the store — the modal's
+// `$effect` reads it on mount and opens straight away.
 ---
 
 <div class="flex justify-center flex-wrap">
@@ -18,3 +28,4 @@ const { posts } = Astro.props;
 		)
 	}
 </div>
+{posts.length > 0 && <ImagePostModal {session} client:idle />}

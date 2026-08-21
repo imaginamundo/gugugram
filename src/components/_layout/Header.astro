@@ -5,6 +5,11 @@ import LogoutButton from "@layout/LogoutButton.svelte";
 import UploadImagePostModal from "@components/post/UploadImagePostModal/UploadImagePostModal.svelte";
 
 const session = Astro.locals.user;
+
+// The search box below is a plain GET form the browser submits natively, so its
+// `Input`/`Button` deliberately carry no `client:*` — Astro renders them to
+// static HTML. Hydrating them would ship Svelte on every page of the site just
+// to produce an `<input>` and a `<button>`.
 ---
 
 <div class="header" role="navigation">
@@ -31,14 +36,13 @@ const session = Astro.locals.user;
 			<label class="flex center grow p-sm" for="header-search">
 				Buscar
 				<Input
-					client:load
 					name="q"
 					id="header-search"
 					class="w-full ml-sm"
 					placeholder="Buscar por nome de usuário"
 				/>
 			</label>
-			<Button client:load class="ml-sm">
+			<Button class="ml-sm">
 				<img src="/icons/search-web.png" width="16" height="16" alt="Ícone de lupa e um globo" />
 				Buscar
 			</Button>

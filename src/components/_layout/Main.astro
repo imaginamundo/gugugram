@@ -2,7 +2,6 @@
 import "@styles/global.css";
 import SVGFilters from "@icons/_filter.svg";
 import Header from "./Header.astro";
-import ImagePostModal from "@components/post/ImagePostModal/ImagePostModal.svelte";
 
 const session = Astro.locals.user;
 
@@ -99,7 +98,6 @@ const shareImageURL = shareImage || new URL("/seo/1280x640.png", canonicalURL);
 						</a>
 					</div>
 				</div>
-				<ImagePostModal {session} client:load />
 			</div>
 			<footer class="status-bar" role="contentinfo">
 				<p>
