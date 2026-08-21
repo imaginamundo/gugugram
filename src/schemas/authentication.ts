@@ -42,7 +42,18 @@ const emailSchema = z
 
 const usernameOrEmailSchema = z.union([usernameSchema, emailSchema]);
 
+// Sign-in only checks that something was typed: accounts registered before
+// the minimum was raised still have shorter passwords and must remain usable.
 const passwordSchema = z.string().min(1, OBLIGATORY_FIELD).max(40, FIELD_SIZE_LIMIT(40));
+
+// Whereas a password being *set* has to clear the minimum. Keep this in sync
+// with `minPasswordLength` in `src/auth.ts`, which rejects the same values one
+// layer down.
+export const MIN_PASSWORD_LENGTH = 8;
+const newPasswordSchema = z
+	.string()
+	.min(MIN_PASSWORD_LENGTH, `A senha deve ter no mínimo ${MIN_PASSWORD_LENGTH} caracteres.`)
+	.max(40, FIELD_SIZE_LIMIT(40));
 
 export const LoginSchema = z.object({
 	identity: usernameOrEmailSchema,
@@ -52,5 +63,5 @@ export const LoginSchema = z.object({
 export const RegisterSchema = z.object({
 	username: usernameSchema,
 	email: emailSchema,
-	password: passwordSchema,
+	password: newPasswordSchema,
 });
