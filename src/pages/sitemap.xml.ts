@@ -1,54 +1,39 @@
 import type { APIRoute } from "astro";
-import { getUserUsernames } from "@services/user/profile";
-import { getAllCommunitySlugs } from "@services/community";
-import { getPostsForSitemap } from "@services/imagePost";
+import { getSitemapUserPageCount } from "@services/sitemap";
+import { escapeXml } from "@utils/xml";
 
-// Top-level pages worth indexing. "" is the homepage.
-const STATIC_PAGES = ["", "sobre", "comunidades", "contato", "termos", "privacidade"] as const;
-
-const urlBlock = (
-	site: string | URL | undefined,
-	path: string,
-	changefreq: string,
-	priority: string,
-) => `
-    <url>
-      <loc>${site}${path}</loc>
-      <changefreq>${changefreq}</changefreq>
-      <priority>${priority}</priority>
-    </url>
-  `;
+// A user list barely changes by the hour, and crawlers re-fetch the index far
+// more often than it moves.
+const CACHE_CONTROL = "public, max-age=21600";
 
 export const GET: APIRoute = async ({ site }) => {
-	const [allUsers, communitySlugs, posts] = await Promise.all([
-		getUserUsernames(),
-		getAllCommunitySlugs(),
-		getPostsForSitemap(1000),
-	]);
+	const userPageCount = await getSitemapUserPageCount();
 
-	const staticUrls = STATIC_PAGES.map((path) =>
-		urlBlock(site, path, "daily", path === "" ? "1.0" : "0.8"),
-	).join("");
+	const sitemaps = [
+		"sitemap-pages.xml",
+		"sitemap-content.xml",
+		...Array.from({ length: userPageCount }, (_, i) => `sitemap-users-${i + 1}.xml`),
+	];
 
-	const userUrls = allUsers.map((user) => urlBlock(site, user.username, "weekly", "0.8")).join("");
-
-	const communityUrls = communitySlugs
-		.map((slug) => urlBlock(site, `comunidades/${slug}`, "weekly", "0.8"))
+	const entries = sitemaps
+		.map(
+			(path) => `
+    <sitemap>
+      <loc>${escapeXml(`${site}${path}`)}</loc>
+    </sitemap>
+  `,
+		)
 		.join("");
 
-	const postUrls = posts
-		.map((post) => urlBlock(site, `${post.username}/${post.id}`, "monthly", "0.5"))
-		.join("");
+	const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
+    <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      ${entries}
+    </sitemapindex>`;
 
-	const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-      ${staticUrls}${userUrls}${communityUrls}${postUrls}
-    </urlset>`;
-
-	return new Response(sitemap, {
+	return new Response(sitemapIndex, {
 		headers: {
 			"Content-Type": "application/xml",
-			"Cache-Control": "public, max-age=3600",
+			"Cache-Control": CACHE_CONTROL,
 		},
 	});
 };

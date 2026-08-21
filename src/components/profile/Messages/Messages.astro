@@ -5,12 +5,15 @@ import { actions } from "astro:actions";
 import { formatDate } from "@utils/date";
 import Button from "@ui/Button.svelte";
 import Input from "@ui/Input.svelte";
+import Pagination from "@components/_shared/Pagination/Pagination.astro";
 
 interface Props {
 	messages: MessagesType["messagesReceived"];
 	user: ProfileUser;
+	page?: number;
+	totalPages?: number;
 }
-const { messages, user } = Astro.props;
+const { messages, user, page = 1, totalPages = 1 } = Astro.props;
 const session = Astro.locals.user;
 
 const isOwnProfile = session?.id === user.id;
@@ -43,6 +46,8 @@ const isOwnProfile = session?.id === user.id;
 		))
 	}
 </div>
+
+<Pagination {page} {totalPages} />
 
 {
 	session && session.id !== user.id && (

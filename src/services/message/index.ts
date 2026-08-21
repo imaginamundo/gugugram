@@ -5,12 +5,24 @@ import { checkRateLimit } from "@utils/content-rate-limit";
 
 const RATE_LIMIT_MS = 5000;
 
-export async function getMessages(username: string) {
-	const messagesData = await messageRepository.getMessagesByUsername(username);
+export const MESSAGES_PAGE_SIZE = 50;
 
-	if (!messagesData) return { messagesReceived: [] };
+/**
+ * Returns one page of the messages a user received, newest first. Takes the
+ * receiver's id rather than their username: the caller already has it from
+ * `getProfile`, and it is the value `messages_receiver_created_idx` is keyed
+ * on. Callers get the total from `getProfile`'s `messagesCount`, so there is
+ * no COUNT here.
+ */
+export async function getMessages(receiverId: string, page = 1) {
+	const offset = (Math.max(1, page) - 1) * MESSAGES_PAGE_SIZE;
+	const messagesReceived = await messageRepository.getMessagesByReceiverId(
+		receiverId,
+		MESSAGES_PAGE_SIZE,
+		offset,
+	);
 
-	return messagesData;
+	return { messagesReceived };
 }
 
 export type MessagesType = Awaited<ReturnType<typeof getMessages>>;

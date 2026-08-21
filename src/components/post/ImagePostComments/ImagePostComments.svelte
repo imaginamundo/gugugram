@@ -4,38 +4,73 @@
 	import { formatDate } from "@utils/date";
 	import Button from "@ui/Button.svelte";
 	import Input from "@ui/Input.svelte";
-	import type { CommentType } from "@services/imagePost";
+	import { COMMENTS_PAGE_SIZE } from "@utils/pagination";
+	import type { CommentType, CommentsPageType } from "@services/imagePost";
 
 	const {
 		comments,
+		totalCount,
 		postId,
 		postAuthorId,
 		session,
 	}: {
+		/** First page, server-rendered. Absent inside the modal, which fetches it. */
 		comments?: CommentType[];
+		/** Total across every page, so the header does not count only what is loaded. */
+		totalCount?: number;
 		postId: string;
 		postAuthorId: string;
 		session?: App.Locals["user"];
 	} = $props();
 
 	let fetchedComments = $state<CommentType[]>([]);
+	let fetchedTotalCount = $state(0);
 	let hasFetched = $state(false);
+	let isLoadingMore = $state(false);
 	let isLoading = $derived(comments === undefined && !hasFetched);
-	let displayComments = $derived(comments !== undefined ? comments : fetchedComments);
+	// Server-rendered page 1 (when present) followed by whatever has been paged in.
+	let displayComments = $derived(
+		comments !== undefined ? [...comments, ...fetchedComments] : fetchedComments,
+	);
+	// The rendered list is one page of a larger set, so the header count comes
+	// from the server total rather than from what is currently on screen.
+	let totalComments = $derived(
+		comments !== undefined ? (totalCount ?? comments.length) : fetchedTotalCount,
+	);
+	let hasMore = $derived(!isLoading && displayComments.length < totalComments);
+	// Whole pages already held, so the next request picks up exactly where the
+	// list ends.
+	let nextPage = $derived(Math.floor(displayComments.length / COMMENTS_PAGE_SIZE) + 1);
 
 	const sessionId = $derived(session?.id);
+
+	async function loadPage(page: number) {
+		const res = await fetch(`/api/post/${postId}/comments?page=${page}`);
+		if (!res.ok) throw new Error("Erro ao buscar comentários");
+
+		const data: CommentsPageType = await res.json();
+
+		fetchedComments =
+			page === 1 && comments === undefined ? data.items : [...fetchedComments, ...data.items];
+		fetchedTotalCount = data.pagination.totalCount;
+	}
+
+	async function loadMore() {
+		if (isLoadingMore) return;
+		isLoadingMore = true;
+		try {
+			await loadPage(nextPage);
+		} catch (err) {
+			console.error(err);
+		} finally {
+			isLoadingMore = false;
+		}
+	}
 
 	onMount(() => {
 		if (comments !== undefined) return;
 
-		fetch(`/api/post/${postId}/comments`)
-			.then((res) => {
-				if (!res.ok) throw new Error("Erro ao buscar comentários");
-				return res.json();
-			})
-			.then((data) => {
-				fetchedComments = data;
-			})
+		loadPage(1)
 			.catch((err) => {
 				console.error(err);
 			})
@@ -51,7 +86,7 @@
 			{#if isLoading}
 				Comentários (...)
 			{:else}
-				Comentários ({displayComments.length})
+				Comentários ({totalComments})
 			{/if}
 		</strong>
 	</p>
@@ -104,6 +139,12 @@
 			</div>
 		{/each}
 	</div>
+
+	{#if hasMore}
+		<Button type="button" class="mt" onclick={loadMore} disabled={isLoadingMore}>
+			{isLoadingMore ? "Carregando..." : "Carregar mais comentários"}
+		</Button>
+	{/if}
 {/if}
 
 <style>

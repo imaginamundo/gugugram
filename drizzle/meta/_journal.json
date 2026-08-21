@@ -57,6 +57,13 @@
       "when": 1785960921527,
       "tag": "0007_fk_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1787272414325,
+      "tag": "0008_comments_page_index",
+      "breakpoints": true
     }
   ]
 }

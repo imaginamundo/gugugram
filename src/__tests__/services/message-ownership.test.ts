@@ -12,7 +12,7 @@ vi.mock("../../repositories/message", () => ({
 		deleteMessageById: mockDeleteMessageById,
 		getLatestMessageByAuthor: vi.fn(),
 		insertMessage: vi.fn(),
-		getMessagesByUsername: vi.fn(),
+		getMessagesByReceiverId: vi.fn(),
 		updateLastCheckedAt: vi.fn(),
 	},
 }));

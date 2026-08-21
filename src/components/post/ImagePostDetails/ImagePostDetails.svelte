@@ -72,6 +72,7 @@
 	<div class="post-comments-wrapper">
 		<ImagePostComments
 			comments={post.comments}
+			totalCount={post.commentsCount}
 			postId={post.id}
 			postAuthorId={post.userId}
 			{session}
