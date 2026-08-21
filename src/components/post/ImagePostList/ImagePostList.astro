@@ -7,6 +7,10 @@ interface Props {
 }
 
 const { posts } = Astro.props;
+
+// One payload for the whole grid rather than one serialized prop per post.
+// `<` is escaped so a description can never close the script tag early.
+const payload = JSON.stringify(posts).replace(/</g, "\\u003c");
 ---
 
 <div class="flex justify-center flex-wrap">
@@ -14,7 +18,19 @@ const { posts } = Astro.props;
 		posts.length === 0 ? (
 			<p>Ainda sem nenhuma imagem :(</p>
 		) : (
-			posts.map((post, index) => <ImagePost {post} {index} client:visible />)
+			posts.map((post, index) => <ImagePost {post} {index} />)
 		)
 	}
 </div>
+
+{
+	posts.length > 0 && (
+		<script type="application/json" data-image-post-payload is:inline set:html={payload} />
+	)
+}
+
+<script>
+	import { delegateImagePostClicks } from "@components/post/ImagePostList/delegateImagePostClicks";
+
+	delegateImagePostClicks();
+</script>
